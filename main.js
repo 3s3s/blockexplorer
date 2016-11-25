@@ -1,6 +1,5 @@
 'use strict';
 
-var fs = require('fs');
 var http = require('http');
 
 const g_constants = require('./constants');
