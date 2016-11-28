@@ -1,6 +1,7 @@
 'use strict';
 
-var http = require('http');
+const http = require('http');
+const periodic = require('./API/periodic');
 
 const g_constants = require('./constants');
 
@@ -47,3 +48,10 @@ process.on('uncaughtException', function (err) {
   console.error(err.stack);
   console.log("Node NOT Exiting...");
 });
+
+require("./API/database").Init();
+
+periodic.UpdateTransactions();  setInterval(periodic.UpdateTransactions, g_constants.intervals.mempool_tx);
+periodic.UpdateBlocks();        setInterval(periodic.UpdateBlocks, g_constants.intervals.block);
+periodic.Syncronize();          setInterval(periodic.Syncronize, g_constants.intervals.synchronization);
+

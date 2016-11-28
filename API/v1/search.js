@@ -12,5 +12,5 @@ exports.process = function(query, res)
     query.nBlock = 1;
     rpc.getblockhash(query, function(rpcRet) {
         res.end(JSON.stringify(rpcRet));
-    })
-}
+    });
+};

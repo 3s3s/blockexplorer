@@ -2,6 +2,7 @@
 
 const https = require('https');
 const http = require('http');
+const g_constants = require("./constants");
 
 
 exports.getJSON = function(query, callback)
@@ -57,4 +58,11 @@ exports.postString = function(host, port, path, headers, strBody, callback)
     
     // write data to request body 
     req.end(strBody);    
-}
+};
+
+exports.IsBlockExist = function(strHash, callback)
+{
+    g_constants.dbTables['Blocks'].selectAll("size", "hash='"+strHash+"'", "", function(error, rows) {
+        callback (!error && rows.length);
+    });
+};

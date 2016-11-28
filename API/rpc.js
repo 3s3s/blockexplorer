@@ -44,18 +44,32 @@ exports.getinfo = function(query, callback)
     const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "getinfo", "params": [] }';
     
     rpcPostJSON(strJSON, callback);
-}
+};
 
 exports.getblockcount = function(query, callback)
 {
     const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "getblockcount", "params": [] }';
     
     rpcPostJSON(strJSON, callback);
-}
+};
 
 exports.getblockhash = function(query, callback)
 {
     const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "getblockhash", "params": ['+query.nBlock+'] }';
     
     rpcPostJSON(strJSON, callback);
-}
+};
+
+exports.getblock = function(query, callback)
+{
+    const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "getblock", "params": ["'+query.hash+'"] }';
+    
+    rpcPostJSON(strJSON, callback);
+};
+
+exports.getrawmempool = function(query, callback)
+{
+    const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "getrawmempool", "params": [] }';
+    
+    rpcPostJSON(strJSON, callback);
+};
