@@ -29,15 +29,27 @@ exports.StartSyncronize = function()
             return;
         }
         
-        const aBlockNumbers = function() {
-            var ret = [];
-            for (var i=0; i<rpcRet.data; i++) ret.push(i);
-           // for (var i=0; i<30; i++) ret.push(i);
-            return ret;
-        } ();
-        
-        g_utils.ForEach(aBlockNumbers, SaveBlock);
-        g_utils.ForEach(aBlockNumbers, SaveTransactions);
+        var nBlockStartSyncFrom = 0;
+        g_constants.dbTables['Blocks'].selectAll("*", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
+            if (!error && rows.length)
+                nBlockStartSyncFrom = parseInt(rows[0]); //start sync blocks from max height saved nubmer
+
+            const aBlockNumbers = function() {
+                var ret = [];
+                for (var i=nBlockStartSyncFrom; i<rpcRet.data; i++) ret.push(i);
+               // for (var i=nStartSyncFrom; i<30; i++) ret.push(i);
+                return ret;
+            } ();
+            
+            const aTxNumbers = function() {
+                var ret = [];
+                for (var i=0; i<rpcRet.data; i++) ret.push(i);
+                return ret;
+            } ();
+            
+            g_utils.ForEach(aBlockNumbers, SaveBlock);
+            g_utils.ForEach(aTxNumbers, SaveTransactions);
+        });
     });
     
     function SaveBlock(aBlockNumbers, nIndex, callback)
@@ -160,128 +172,3 @@ exports.StartSyncronize = function()
     }
 };
 
-/*exports.UpdateBlocks = function()
-{
-    g_rpc.getblockcount('', function(rpcRet) {
-        if (rpcRet.status != 'success')
-            return;
-        
-        g_blockkount = rpcRet.data;
-        
-        g_constants.dbTables['Blocks'].selectAll("size", "", "", function(error, rows) {
-            if (error)
-                return;
-            
-            if (rows.length == g_blockkount)
-                return;
-            
-            g_nInitSyncFrom = rows.length;
-        });
-    });
-};
-
-function SyncBlocks()
-{
-    if (g_nInitSyncFrom == g_blockkount) return;
-    
-    g_rpc.getblockhash({'nBlock' : g_nInitSyncFrom}, function (rpcRet) {
-        if (rpcRet.status != 'success')
-            return;
-            
-        g_utils.IsBlockExist(rpcRet.data, function(flag) {
-            if (flag)
-            {
-                g_nInitSyncFrom++;
-                return;
-            }
-            g_rpc.getblock({'hash' : rpcRet.data}, function(rpcRet2) {
-                if (rpcRet2.status != 'success' || !rpcRet2.data.hash)
-                    return;
-                    
-                const arrayTX = (typeof rpcRet2.data.tx === 'string') ? [].push(rpcRet2.data.tx) : rpcRet2.data.tx;
-                    
-                g_constants.dbTables['Blocks'].insert(
-                    rpcRet2.data.hash,
-                    rpcRet2.data.size,
-                    rpcRet2.data.height,
-                    rpcRet2.data.version,
-                    rpcRet2.data.merkleroot,
-                    rpcRet2.data.time,
-                    rpcRet2.data.nonce,
-                    rpcRet2.data.bits,
-                    rpcRet2.data.difficulty,
-                    rpcRet2.data.previousblockhash || "",
-                    rpcRet2.data.nextblockhash || "",
-                    rpcRet2.data.ip || "",
-                    JSON.stringify(arrayTX) || "[]"
-                );
-            });
-        }); 
-    });
-}
-
-function SyncTransactions()
-{
-    //Get current height of sync block with transactions (it stored in key-value table)
-    g_constants.dbTables['KeyValue'].get('CurrSyncBlock', function(err, nBlockHeight) {
-        if (err || nBlockHeight=="")
-        {
-            g_constants.dbTables['KeyValue'].set('CurrSyncBlock', 0);
-            return;
-        }
-       
-        //Get block from database
-        g_utils.GetBlockByHeight(nBlockHeight, function(error, rows) {
-            if (error || !rows || rows.length != 1)
-                return;
-                
-            //Save transactions from table 'Blocks' in sorted array    
-            const txInBlock = JSON.parse(unescape(rows[0].tx)).sort();
-            
-            //Get transactions for given block from table 'Transactions'
-            g_utils.GetBlockTransactions(rows[0].hash, function(errorTx, rowsTx) {
-                if (errorTx || !rowsTx || !rowsTx.length)
-                {
-                    //if error then try to save transactions from block to database
-                    SaveTransactions(rows[0].hash, txInBlock);
-                    return;
-                }
-                
-                var txInTransactions = [];
-                for (var i=0; i<rowsTx.length; i++) txInTransactions.push(rowsTx[i].txid);
-                
-                //Compare transactions in tables 'Blocks' and 'Transactions' for block nBlockHeight
-                if (JSON.stringify(txInBlock)==JSON.stringify(txInTransactions.sort()))
-                {
-                    //if transactions in block is equal with transactions in database - then increase block height
-                    g_constants.dbTables['KeyValue'].set('CurrSyncBlock', parseInt(nBlockHeight)+1);
-                    return;
-                }
-                
-                SaveTransactions(rows[0].hash, txInBlock);
-            });
-            
-        });
-    });
-    
-    function SaveTransactions(hash, arrayTx)
-    {
-        for (var i=0; i<arrayTx.length; i++)
-        {
-            g_constants.dbTables['Transactions'].insert(
-                hash,
-                arrayTx[i].txid,
-                arrayTx[i].locktime | 0,
-                arrayTx[i].vin | "",
-                arrayTx[i].vout | ""
-            );
-        }
-    }
-}
-
-exports.Syncronize = function()
-{
-    SyncBlocks();
-    SyncTransactions();
-
-};*/
