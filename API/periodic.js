@@ -32,12 +32,12 @@ exports.StartSyncronize = function()
         var nBlockStartSyncFrom = 0;
         g_constants.dbTables['Blocks'].selectAll("*", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
             if (!error && rows.length)
-                nBlockStartSyncFrom = parseInt(rows[0]); //start sync blocks from max height saved nubmer
+                nBlockStartSyncFrom = parseInt(rows[0].height); //start sync blocks from max height saved nubmer
 
             const aBlockNumbers = function() {
                 var ret = [];
-                for (var i=nBlockStartSyncFrom; i<rpcRet.data; i++) ret.push(i);
-               // for (var i=nStartSyncFrom; i<30; i++) ret.push(i);
+                //for (var i=nBlockStartSyncFrom; i<rpcRet.data; i++) ret.push(i);
+                for (var i=nBlockStartSyncFrom; i<500; i++) ret.push(i);
                 return ret;
             } ();
             
