@@ -24,6 +24,17 @@ exports.dbTables = [
       ]
     },
     {
+      'name' : 'Transactions',
+      'cols' : [
+        ['blockHash', 'TEXT'],
+        ['blockHeight', 'INT'],
+        ['txid', 'TEXT PRIMARY KEY'],
+        ['time', 'INT'],
+        ['vin', 'TEXT'],
+        ['vout', 'TEXT']
+      ]
+    },
+    {
       'name' : 'KeyValue',
       'cols' : [
           ['key', 'TEXT PRIMARY KEY'],

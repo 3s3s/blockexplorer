@@ -31,11 +31,12 @@ function InitMempoolTimer()
     $.getJSON( "/api/v1/getmempool?"+nCount, function(data) {
       if (data.status == 'success' && (data.data instanceof Array))
       {
-        g_mempoolTXs = data.data.push.apply(data.data, g_mempoolTXs).slice(0, 10);
+        g_mempoolTXs = data.data.concat(g_mempoolTXs).slice(0, 10);
         
+        $('#table_mempool').find("tr:gt(0)").remove();
         for (var i=0; i<g_mempoolTXs.length; i++)
         {
-          $('#table_mempool').append('<tr>'+g_mempoolTXs[i]+'/tr');
+          $('#table_mempool').append('<tr>'+g_mempoolTXs[i]+'</tr>');
         }
         //alert( "success! data = "+JSON.stringify(data) );
       }
@@ -46,11 +47,53 @@ function InitMempoolTimer()
   }, 10000);
 }
 
+var g_Blocks = [];
+function InitBlocksTimer()
+{
+  //const nCount = -1;
+  
+  GetLastBlocks(); setInterval(GetLastBlocks, 10000);
+  
+  function GetLastBlocks()
+  {
+    $.getJSON( "/api/v1/getlastblocks?count=10", function(data) {
+      if (data.status == 'success' && (data.data instanceof Array))
+      {
+        g_Blocks = data.data.concat(g_Blocks).slice(0, 10);
+        
+        $('#table_blocks').find("tr:gt(0)").remove();
+        for (var i=0; i<g_Blocks.length; i++)
+        {
+                  /* <th>Height</th>
+                    <th>Age</th>
+                    <th>Transactions</th>
+                    <th>Total Sent</th>
+                    <th>Size (kB)</th>*/
+          var th = 
+            "<th>"+g_Blocks[i].height+"</th>" + 
+            "<th>"+unescape(g_Blocks[i].time)+"</th>" + 
+            "<th>"+JSON.parse(unescape(g_Blocks[i].tx)).length+"</th>" + 
+            "<th>"+"?"+"</th>" +
+            "<th>"+g_Blocks[i].size+"</th>"  
+          $('#table_blocks').append('<tr>'+th+'</tr>');
+        }
+        //alert( "success! data = "+JSON.stringify(data) );
+      }
+    })
+    .fail(function() {
+//      alert( "error" );
+    })
+    
+  }
+}
+
+
 $(function() {
     
     InitSearch();
     
     InitMempoolTimer();
+    InitBlocksTimer();
 });
 
 

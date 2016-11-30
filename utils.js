@@ -66,3 +66,41 @@ exports.IsBlockExist = function(strHash, callback)
         callback (!error && rows.length);
     });
 };
+
+exports.GetBlockByHeight = function(nHeight, callback)
+{
+    g_constants.dbTables['Blocks'].selectAll("*", "height="+nHeight, "", function(error, rows) {
+        callback (error, rows);
+    });
+};
+
+exports.GetBlockTransactions = function(hash, callback)
+{
+    g_constants.dbTables['Transactions'].selectAll("*", "block='"+hash+"'", "ORDER BY txid", function(error, rows) {
+        callback (error, rows);
+    });
+};
+
+exports.ForEach = function(array, func, callback)
+{
+    Run(array, 0, func);
+    
+    function Run(array, nIndex, func)
+    {
+        func(array, nIndex, function(bRepeat, nTimeout) {
+            if (bRepeat)
+            {
+               setTimeout(Run, nTimeout, array, nIndex, func);
+               return;
+            }
+            
+            if (nIndex+1 >= array.length)
+            {
+                if (callback) callback();
+                return;
+            }
+            
+            setTimeout(Run, nTimeout | 10, array, nIndex+1, func);
+        });
+    }
+}

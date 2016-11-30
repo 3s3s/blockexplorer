@@ -73,3 +73,17 @@ exports.getrawmempool = function(query, callback)
     
     rpcPostJSON(strJSON, callback);
 };
+
+exports.getrawtransaction = function(query, callback)
+{
+    const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "getrawtransaction", "params": ["'+query.txid+'"] }';
+    
+    rpcPostJSON(strJSON, callback);
+};
+
+exports.decoderawtransaction = function(query, callback)
+{
+    const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "decoderawtransaction", "params": ["'+query.tx+'"] }';
+    
+    rpcPostJSON(strJSON, callback);
+};

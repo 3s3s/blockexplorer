@@ -52,6 +52,9 @@ process.on('uncaughtException', function (err) {
 require("./API/database").Init();
 
 periodic.UpdateTransactions();  setInterval(periodic.UpdateTransactions, g_constants.intervals.mempool_tx);
+
+periodic.StartSyncronize();
+/*
 periodic.UpdateBlocks();        setInterval(periodic.UpdateBlocks, g_constants.intervals.block);
-periodic.Syncronize();          setInterval(periodic.Syncronize, g_constants.intervals.synchronization);
+periodic.Syncronize();          setInterval(periodic.Syncronize, g_constants.intervals.synchronization);*/
 
