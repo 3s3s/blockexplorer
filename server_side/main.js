@@ -25,26 +25,60 @@ function InitSearch()
 var g_mempoolTXs = [];
 function InitMempoolTimer()
 {
-  const nCount = -1;
+  GetMempool(); setInterval(GetMempool, 3000);
   
-  setInterval(function(){
-    $.getJSON( "/api/v1/getmempool?"+nCount, function(data) {
+  function GetMempool()
+  {
+    $.getJSON( "/api/v1/getmempool?count=10", function(data) {
       if (data.status == 'success' && (data.data instanceof Array))
       {
-        g_mempoolTXs = data.data.concat(g_mempoolTXs).slice(0, 10);
+        //var oldFirstID = g_mempoolTXs.length ? g_mempoolTXs[0].txid : "";
+        g_mempoolTXs = data.data.slice(0, 10);
         
-        $('#table_mempool').find("tr:gt(0)").remove();
-        for (var i=0; i<g_mempoolTXs.length; i++)
+        //var bFirstUpdated = (!oldFirstID.length || !g_mempoolTXs.length || g_mempoolTXs[0].txid != oldFirstID)
+        if (g_mempoolTXs.length < 10 || !data.data.length)
         {
-          $('#table_mempool').append('<tr>'+g_mempoolTXs[i]+'</tr>');
+          GetLastTransactions(data.data.length);
+          return;
         }
+        
+        UpdateTxTable();
         //alert( "success! data = "+JSON.stringify(data) );
       }
     })
     .fail(function() {
 //      alert( "error" );
     })
-  }, 10000);
+  }
+
+  function GetLastTransactions(lengthPool)
+  {
+    $.getJSON( "/api/v1/getlasttransactions?count=10", function(data) {
+      if (data.status == 'success' && (data.data instanceof Array))
+      {
+        if (lengthPool)
+          g_mempoolTXs = g_mempoolTXs.slice(0, lengthPool).concat(data.data).slice(0, 10);
+        else
+          g_mempoolTXs = data.data.concat(g_mempoolTXs).slice(0, 10);
+
+        UpdateTxTable();
+      }
+    })
+    .fail(function(){}
+    );
+  }
+  
+  function UpdateTxTable()
+  {
+    $('#table_mempool').find("tr:gt(0)").remove();
+    for (var i=0; i<g_mempoolTXs.length; i++)
+    {
+      var th = 
+        "<th>"+g_mempoolTXs[i].txid+"</th>"; 
+
+      $('#table_mempool').append('<tr>'+th+'</tr>');
+    }
+  }
 }
 
 var g_Blocks = [];

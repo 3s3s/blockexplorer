@@ -16,42 +16,79 @@ exports.GetMempoolTXs = function() {return g_mempool};
 exports.UpdateTransactions = function()
 {
     g_rpc.getrawmempool('', function(rpcRet) {
-        g_mempool = rpcRet;
+       // rpcRet.data = ["89bbac49f87c18b01eb418aa134d9a84a7b8a2b6356e61a96313afb134ba0cfd"];
+        if (!rpcRet || rpcRet.status != 'success' || !rpcRet.data)
+            return;
+       
+        g_mempool = [];
+        for (var i=0; i<rpcRet.data.length; i++)
+        {
+            g_mempool.push({'txid' : rpcRet.data[i]});
+        }
     });
 };
 
 exports.StartSyncronize = function()
 {
-    g_rpc.getblockcount('', function(rpcRet) {
-        if (rpcRet.status != 'success')
-        {
-            setTimeout(exports.StartSyncronize, 10000);
-            return;
-        }
-        
-        var nBlockStartSyncFrom = 0;
-        g_constants.dbTables['Blocks'].selectAll("*", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
-            if (!error && rows.length)
-                nBlockStartSyncFrom = parseInt(rows[0].height); //start sync blocks from max height saved nubmer
-
-            const aBlockNumbers = function() {
-                var ret = [];
-                for (var i=nBlockStartSyncFrom; i<rpcRet.data; i++) ret.push(i);
-                //for (var i=nBlockStartSyncFrom; i<500; i++) ret.push(i);
-                return ret;
-            } ();
-            
-            const aTxNumbers = function() {
-                var ret = [];
-                for (var i=0; i<rpcRet.data; i++) ret.push(i);
-                return ret;
-            } ();
-            
-            g_utils.ForEach(aBlockNumbers, SaveBlock);
-            g_utils.ForEach(aTxNumbers, SaveTransactions);
-        });
-    });
+    SyncBlocks();
+    SyncTransactions();
     
+    function SyncBlocks()
+    {
+        g_rpc.getblockcount('', function(rpcRet) {
+            if (rpcRet.status != 'success')
+            {
+                setTimeout(exports.StartSyncronize, 10000);
+                return;
+            }
+            
+            var nBlockStartSyncFrom = 0;
+            g_constants.dbTables['Blocks'].selectAll("*", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
+                if (!error && rows.length)
+                    nBlockStartSyncFrom = parseInt(rows[0].height); //start sync blocks from max height saved nubmer
+    
+                const aBlockNumbers = function() {
+                    var ret = [];
+                    for (var i=nBlockStartSyncFrom; i<rpcRet.data; i++) ret.push(i);
+                    //for (var i=nBlockStartSyncFrom; i<500; i++) ret.push(i);
+                    return ret;
+                } ();
+                
+                g_utils.ForEach(aBlockNumbers, SaveBlock, function() {
+                    setTimeout(SyncBlocks, 30000);
+                });
+            });
+        });
+    }
+    function SyncTransactions()
+    {
+        g_rpc.getblockcount('', function(rpcRet) {
+            if (rpcRet.status != 'success')
+            {
+                setTimeout(exports.StartSyncronize, 10000);
+                return;
+            }
+            
+            var nTxStartSyncFrom = 0;
+            g_constants.dbTables['Transactions'].selectAll("*", "", "ORDER BY blockHeight DESC LIMIT 1", function(error, rows) {
+                if (!error && rows.length && parseInt(rows[0].blockHeight > 1))
+                    nTxStartSyncFrom = parseInt(rows[0].blockHeight) - 1; //start sync transactions from max height saved nubmer minus 1
+                
+                //array with numbers for sync
+                const aTxNumbers = function() {
+                    var ret = [];
+                    for (var i=nTxStartSyncFrom; i<rpcRet.data; i++) ret.push(i);
+                    return ret;
+                } ();
+                
+                //iterate array
+                g_utils.ForEach(aTxNumbers, SaveTransactions, function() {
+                    setTimeout(SyncTransactions, 30000); //after end - try again periodicaly
+                });
+            });
+        });
+    }
+
     function SaveBlock(aBlockNumbers, nIndex, callback)
     {
         if (!aBlockNumbers || !aBlockNumbers.length || aBlockNumbers.length <= nIndex)
