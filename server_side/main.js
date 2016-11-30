@@ -73,7 +73,7 @@ function InitBlocksTimer()
             "<th>"+g_Blocks[i].height+"</th>" + 
             "<th>"+unescape(g_Blocks[i].time)+"</th>" + 
             "<th>"+JSON.parse(unescape(g_Blocks[i].tx)).length+"</th>" + 
-            "<th>"+"?"+"</th>" +
+            "<th>"+g_Blocks[i].hash+"</th>" +
             "<th>"+g_Blocks[i].size+"</th>"  
           $('#table_blocks').append('<tr>'+th+'</tr>');
         }
