@@ -36,8 +36,8 @@ exports.StartSyncronize = function()
 
             const aBlockNumbers = function() {
                 var ret = [];
-                //for (var i=nBlockStartSyncFrom; i<rpcRet.data; i++) ret.push(i);
-                for (var i=nBlockStartSyncFrom; i<500; i++) ret.push(i);
+                for (var i=nBlockStartSyncFrom; i<rpcRet.data; i++) ret.push(i);
+                //for (var i=nBlockStartSyncFrom; i<500; i++) ret.push(i);
                 return ret;
             } ();
             
