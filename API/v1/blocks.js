@@ -15,3 +15,16 @@ exports.GetBlocks = function(query, res)
         res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
     });
 }
+
+exports.GetBlock = function(query, res)
+{
+    g_constants.dbTables['Blocks'].selectAll("*", "hash='"+escape(query.hash)+"'", "", function(error, rows) {
+        if (error || !rows || !rows.length)
+        {
+            res.end( JSON.stringify({'status' : false, 'message' : error}) );
+            return;
+        }
+        
+        res.end( JSON.stringify({'status' : 'success', 'data' : rows[0]}) );
+    });
+}

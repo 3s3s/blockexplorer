@@ -53,6 +53,8 @@ function InitMempoolTimer()
 
   function GetLastTransactions(lengthPool)
   {
+    if ($('#main_page').is(':hidden')) return;
+    
     $.getJSON( "/api/v1/getlasttransactions?count=10", function(data) {
       if (data.status == 'success' && (data.data instanceof Array))
       {
@@ -74,7 +76,7 @@ function InitMempoolTimer()
     for (var i=0; i<g_mempoolTXs.length; i++)
     {
       var th = 
-        "<th>"+g_mempoolTXs[i].txid+"</th>"; 
+        "<td>"+g_mempoolTXs[i].txid+"</td>"; 
 
       $('#table_mempool').append('<tr>'+th+'</tr>');
     }
@@ -90,6 +92,8 @@ function InitBlocksTimer()
   
   function GetLastBlocks()
   {
+    if ($('#main_page').is(':hidden')) return;
+    
     $.getJSON( "/api/v1/getlastblocks?count=10", function(data) {
       if (data.status == 'success' && (data.data instanceof Array))
       {
@@ -103,31 +107,89 @@ function InitBlocksTimer()
                     <th>Transactions</th>
                     <th>Total Sent</th>
                     <th>Size (kB)</th>*/
-          var th = 
-            "<th>"+g_Blocks[i].height+"</th>" + 
-            "<th>"+unescape(g_Blocks[i].time)+"</th>" + 
-            "<th>"+JSON.parse(unescape(g_Blocks[i].tx)).length+"</th>" + 
-            "<th>"+g_Blocks[i].hash+"</th>" +
-            "<th>"+g_Blocks[i].size+"</th>"  
-          $('#table_blocks').append('<tr>'+th+'</tr>');
+          var hashBlock = $('<a hash="'+g_Blocks[i].hash+'" href="#">'+g_Blocks[i].hash+'</a></td>');
+          hashBlock[0].onclick = function()
+          {
+            ShowBlock($(this).attr('hash'));
+          }
+          
+          $('#table_blocks').append($("<tr></tr>").append(
+              "<td>"+g_Blocks[i].height+"</td>" + 
+              "<td>"+unescape(g_Blocks[i].time)+"</td>" + 
+              "<td>"+JSON.parse(unescape(g_Blocks[i].tx)).length+"</td>",
+              $("<td></td>").append(hashBlock),
+              "<td>"+(parseInt(g_Blocks[i].size)*1.0/1024).toFixed(3)+"</td>")
+            );
         }
         //alert( "success! data = "+JSON.stringify(data) );
       }
     })
     .fail(function() {
 //      alert( "error" );
-    })
+    });
     
   }
 }
 
+function ShowBlock(hash)
+{
+    $.getJSON( "/api/v1/getblock?hash="+hash, function(data) {
+      if (data.status == 'success' && (data.data instanceof Object))
+      {
+        $('#main_page').hide();
+        
+        $('#block_page').empty().append(
+          $(Header("Block #"+data.data.height)),
+          $(LeftTable(8, "Summary", ""))
+          )
+          .show();
+      }
+    })
+    .fail(function() {
+//      alert( "error" );
+    });
+}
+
+function Header(str)
+{
+  var ret =
+          '<div class="page-header">'+
+            '<h1>'+str + '</h1>' +
+          '</div>';
+  return ret;
+}
+function LeftTable()
+{
+  var th = "";
+  for (var i=1; i<arguments.length; i++)
+  {
+    th += "<th>"+arguments[i]+"</th>";
+  }
+
+  var ret =
+    $("<div class='row-fluid'></div>").append(
+      $("<div class='span"+arguments[0]+"'></div>").append(
+        $("<table id='left_table' class='table table-striped'></table>").append(
+          $("<tbody></tbody>").append(
+            $("<tr></tr>").append(
+              $(th))
+          )
+        )
+      )
+    );
+    
+  return ret;
+}
 
 $(function() {
+    $('#block_page').hide();
     
     InitSearch();
     
     InitMempoolTimer();
     InitBlocksTimer();
+    
+    $('main_page').show();
 });
 
 

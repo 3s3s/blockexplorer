@@ -83,6 +83,12 @@ exports.GetBlockTransactions = function(hash, callback)
 
 exports.ForEach = function(array, func, callback)
 {
+    if (!array || !array.length)
+    {
+        if (callback) callback();
+        return;
+    }
+    
     Run(array, 0, func);
     
     function Run(array, nIndex, func)

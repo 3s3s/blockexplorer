@@ -13,3 +13,7 @@ body > .container {
 .row-fluid .span6 {
     width: 48.7179%;
 }
+
+.page-header {
+  margin-top: 60px;
+}
