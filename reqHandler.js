@@ -14,6 +14,7 @@ exports.handle = function(app)
     app.get('/api/v1/getlastblocks', onV1Blocks);
     app.get('/api/v1/getlasttransactions', onV1Transactions);
     app.get('/api/v1/getblock', onV1GetBlock);
+    app.get('/api/v1/gettransaction', onV1GetTransaction);
     
     function onV1Search(req, res)
     {
@@ -55,6 +56,17 @@ exports.handle = function(app)
         const query = url.parse(req.url, true).query;
         
         apiTransactionsV1.GetLast(query, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+    }
+    function onV1GetTransaction(req, res)
+    {
+      try {
+        const query = url.parse(req.url, true).query;
+        
+        apiTransactionsV1.GetTransaction(query, res);
       } 
       catch(e) {
         console.log(e.message);

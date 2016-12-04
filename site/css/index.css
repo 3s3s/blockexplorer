@@ -3,17 +3,10 @@
     width: 310px !important;
 }
 
-body > .container {
-  padding: 30px 15px 0;
-}
-.container .text-muted {
-  margin: 20px 0;
-}
-
-.row-fluid .span6 {
-    width: 48.7179%;
-}
-
 .page-header {
   margin-top: 60px;
+}
+
+body {
+  font-size: 13px;
 }

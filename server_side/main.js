@@ -2,6 +2,13 @@
 
 const $ = require('jquery');
 
+function HideAll()
+{
+  $('#main_page').hide();
+  $('#block_page').hide();
+  $('#tx_page').hide();
+}
+
 function InitSearch()
 {
     const inputSearch = $('<input id="main_search_input" type="text" placeholder="block or transaction or address" class="form-control main-search">');
@@ -75,10 +82,10 @@ function InitMempoolTimer()
     $('#table_mempool').find("tr:gt(0)").remove();
     for (var i=0; i<g_mempoolTXs.length; i++)
     {
-      var th = 
-        "<td>"+g_mempoolTXs[i].txid+"</td>"; 
+     // var th = 
+     //   "<td>"+CreateTxHash(g_mempoolTXs[i].txid)+"</td>"; 
 
-      $('#table_mempool').append('<tr>'+th+'</tr>');
+      $('#table_mempool').append($('<tr></tr>').append($('<td></td>').append(CreateTxHash(g_mempoolTXs[i].txid))));
     }
   }
 }
@@ -102,16 +109,11 @@ function InitBlocksTimer()
         $('#table_blocks').find("tr:gt(0)").remove();
         for (var i=0; i<g_Blocks.length; i++)
         {
-                  /* <th>Height</th>
-                    <th>Age</th>
-                    <th>Transactions</th>
-                    <th>Total Sent</th>
-                    <th>Size (kB)</th>*/
-          var hashBlock = $('<a hash="'+g_Blocks[i].hash+'" href="#">'+g_Blocks[i].hash+'</a></td>');
+          const hashBlock = CreateBlockHash(g_Blocks[i].hash);/*$('<a hash="'+g_Blocks[i].hash+'" href="#">'+g_Blocks[i].hash+'</a></td>');
           hashBlock[0].onclick = function()
           {
             ShowBlock($(this).attr('hash'));
-          }
+          }*/
           
           $('#table_blocks').append($("<tr></tr>").append(
               "<td>"+g_Blocks[i].height+"</td>" + 
@@ -131,18 +133,124 @@ function InitBlocksTimer()
   }
 }
 
+function CreateBlockHash(hash)
+{
+  if (!hash || !hash.length)
+    return "";
+    
+  const ret = $('<a hash="'+hash+'" href="#">'+hash+'</a></td>');  
+  ret[0].onclick = function()
+  {
+    ShowBlock($(this).attr('hash'));
+  }
+  return ret;
+}
+
+function CreateTxHash(hash)
+{
+  if (!hash || !hash.length)
+    return "";
+    
+  const ret = $('<a hash="'+hash+'" href="#">'+hash+'</a></td>');  
+  ret[0].onclick = function()
+  {
+    ShowTransaction($(this).attr('hash'));
+  }
+  return ret;
+}
+
+function ShowTransaction(hash)
+{
+    $.getJSON( "/api/v1/gettransaction?hash="+hash, function(data) {
+      if (data.status == 'success' && (data.data instanceof Object))
+      {
+        HideAll();
+
+       /* $('#tx_page').empty().append(
+          $(Header("Transaction ")),
+          $("<div class='row-fluid'></div>").append(
+            $(LeftTable(6, "block_table", "Summary", "")),
+            $(LeftTable(6, "block_hashes_table", "Hashes", ""))),
+          $("<div class='row-fluid'></div>").append(
+            $(LeftTable(12, "block_tx_table", "Transactions", "")))
+          )
+          .show();
+        
+        $('#block_table').append(
+          $("<tr></tr>").append("<td>"+"Number Of Transactions"+"</td>"+"<td>"+JSON.parse(unescape(data.data.tx)).length+"</td>"),
+          $("<tr></tr>").append("<td>"+"Height"+"</td>"+"<td>"+data.data.height+"</td>"),
+          $("<tr></tr>").append("<td>"+"Timestamp"+"</td>"+"<td>"+unescape(data.data.time)+"</td>"),
+          $("<tr></tr>").append("<td>"+"Difficulty"+"</td>"+"<td>"+data.data.difficulty+"</td>"),
+          $("<tr></tr>").append("<td>"+"Bits"+"</td>"+"<td>"+data.data.bits+"</td>"),
+          $("<tr></tr>").append("<td>"+"Size"+"</td>"+"<td>"+data.data.size+"</td>"),
+          $("<tr></tr>").append("<td>"+"Nonce"+"</td>"+"<td>"+data.data.nonce+"</td>")
+          );
+
+        //const blkHash = CreateBlockHash(data.data.hash);
+        $('#block_hashes_table').append(
+          $("<tr></tr>").append($("<td>"+"Hash"+"</td>"), $("<td></td>").append(CreateBlockHash(data.data.hash))),
+          $("<tr></tr>").append($("<td>"+"Previous Block"+"</td>"), $("<td></td>").append(CreateBlockHash(data.data.previousblockhash))),
+          $("<tr></tr>").append($("<td>"+"Next Block(s)"+"</td>"), $("<td></td>").append(CreateBlockHash(data.data.nextblockhash))),
+          $("<tr></tr>").append("<td>"+"Merkle Root"+"</td>"+"<td>"+data.data.merkleroot+"</td>")
+          );
+          
+        var txs = JSON.parse(unescape(data.data.tx));
+        
+        for (var i=0; i<txs.length; i++)
+        {
+          $('#block_tx_table').append($("<tr></tr>").append("<td>"+txs[i]+"</td>"));
+        }*/
+        
+      }
+    })
+    .fail(function() {
+//      alert( "error" );
+    });
+  
+}
+
 function ShowBlock(hash)
 {
     $.getJSON( "/api/v1/getblock?hash="+hash, function(data) {
       if (data.status == 'success' && (data.data instanceof Object))
       {
-        $('#main_page').hide();
+        HideAll();
         
         $('#block_page').empty().append(
           $(Header("Block #"+data.data.height)),
-          $(LeftTable(8, "Summary", ""))
+          $("<div class='row-fluid'></div>").append(
+            $(LeftTable(6, "block_table", "Summary", "")),
+            $(LeftTable(6, "block_hashes_table", "Hashes", ""))),
+          $("<div class='row-fluid'></div>").append(
+            $(LeftTable(12, "block_tx_table", "Transactions", "")))
           )
           .show();
+        
+        $('#block_table').append(
+          $("<tr></tr>").append("<td>"+"Number Of Transactions"+"</td>"+"<td>"+JSON.parse(unescape(data.data.tx)).length+"</td>"),
+          $("<tr></tr>").append("<td>"+"Height"+"</td>"+"<td>"+data.data.height+"</td>"),
+          $("<tr></tr>").append("<td>"+"Timestamp"+"</td>"+"<td>"+unescape(data.data.time)+"</td>"),
+          $("<tr></tr>").append("<td>"+"Difficulty"+"</td>"+"<td>"+data.data.difficulty+"</td>"),
+          $("<tr></tr>").append("<td>"+"Bits"+"</td>"+"<td>"+data.data.bits+"</td>"),
+          $("<tr></tr>").append("<td>"+"Size"+"</td>"+"<td>"+data.data.size+"</td>"),
+          $("<tr></tr>").append("<td>"+"Nonce"+"</td>"+"<td>"+data.data.nonce+"</td>")
+          );
+
+        //const blkHash = CreateBlockHash(data.data.hash);
+        $('#block_hashes_table').append(
+          $("<tr></tr>").append($("<td>"+"Hash"+"</td>"), $("<td></td>").append(CreateBlockHash(data.data.hash))),
+          $("<tr></tr>").append($("<td>"+"Previous Block"+"</td>"), $("<td></td>").append(CreateBlockHash(data.data.previousblockhash))),
+          $("<tr></tr>").append($("<td>"+"Next Block(s)"+"</td>"), $("<td></td>").append(CreateBlockHash(data.data.nextblockhash))),
+          $("<tr></tr>").append("<td>"+"Merkle Root"+"</td>"+"<td>"+data.data.merkleroot+"</td>")
+          );
+          
+        var txs = JSON.parse(unescape(data.data.tx));
+        
+        for (var i=0; i<txs.length; i++)
+        {
+          $('#block_tx_table').append($("<tr></tr>").append($("<td></td>").append(CreateTxHash(txs[i]))));
+        }
+        
       }
     })
     .fail(function() {
@@ -161,23 +269,21 @@ function Header(str)
 function LeftTable()
 {
   var th = "";
-  for (var i=1; i<arguments.length; i++)
+  for (var i=2; i<arguments.length; i++)
   {
     th += "<th>"+arguments[i]+"</th>";
   }
 
   var ret =
-    $("<div class='row-fluid'></div>").append(
-      $("<div class='span"+arguments[0]+"'></div>").append(
-        $("<table id='left_table' class='table table-striped'></table>").append(
+      $("<div class='col-xs-"+arguments[0]+"'></div>").append(
+        $("<table id='"+arguments[1]+"' class='table table-striped'></table>").append(
           $("<tbody></tbody>").append(
             $("<tr></tr>").append(
               $(th))
           )
         )
-      )
-    );
-    
+      );
+
   return ret;
 }
 

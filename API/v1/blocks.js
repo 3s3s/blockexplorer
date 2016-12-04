@@ -18,6 +18,11 @@ exports.GetBlocks = function(query, res)
 
 exports.GetBlock = function(query, res)
 {
+    if (!query.hash)
+    {
+        res.end( JSON.stringify({'status' : false, 'message' : 'ERROR: bad query (nead ?hash=...)'}) );
+        return;
+    }
     g_constants.dbTables['Blocks'].selectAll("*", "hash='"+escape(query.hash)+"'", "", function(error, rows) {
         if (error || !rows || !rows.length)
         {
