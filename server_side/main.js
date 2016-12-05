@@ -211,17 +211,27 @@ function ShowTransaction(hash)
           $("<tr></tr>").append($("<td></td>"), $("<td></td>"))
           );
 
-        $('#txs_inputs_table').append(
-          $("<tr></tr>").append($("<td></td>").append(unescape(tx.vin)))
-          );
+//        $('#txs_inputs_table').append(
+//          $("<tr></tr>").append($("<td></td>").append(unescape(tx.vin)))
+//          );
+        for (var i=0; i<vin.length; i++)
+        {
+          var asm = "";
+          if (vin[i].scriptSig && vin[i].scriptSig.asm)
+            asm = $("<tr></tr>").append($("<td></td>").append(unescape(vin[i].scriptSig.asm)));
+          else
+            asm = $("<tr></tr>").append($("<td></td>").append(JSON.stringify(vin[i])));
+            
+          $('#txs_inputs_table').append(asm);
+        }
        
         for (var i=0; i<vout.length; i++)
         {
           var asm = "";
           if (vout[i].scriptPubKey && vout[i].scriptPubKey.asm)
-            $("<tr></tr>").append($("<td></td>").append(unescape(vout[i].scriptPubKey.asm)));
+            asm = $("<tr></tr>").append($("<td></td>").append(unescape(vout[i].scriptPubKey.asm)));
           else
-            $("<tr></tr>").append($("<td></td>").append(tx.vout[i]));
+            asm = $("<tr></tr>").append($("<td></td>").append(JSON.stringify(vout[i])));
             
           $('#txs_outputs_table').append(asm);
         }
@@ -233,15 +243,15 @@ function ShowTransaction(hash)
 
   function ShowTransactionInfo(hash, vin, vout)
   {
-    var td1 = "";    
+    var td1 = $("<td></td>");    
     for (var i=0; i<vin.length; i++)
     {
       if (vin[i].txid)
-        td1 += vin[i].txid + " (out = "+ vin[i].vout + ")";
+        td1.append(CreateTxHash(vin[i].txid), " (out = "+ vin[i].vout + ")");
       else if (vin[i].coinbase)
-        td1 += "Coinbase";
+        td1.append("Coinbase");
         
-      td1 += "<br><br>";
+      td1.append("<br><br>");
     }
     
     var td2 = " >> ";
@@ -263,7 +273,7 @@ function ShowTransaction(hash)
     }
     
     $('#txs_info_table').append(
-      $("<tr></tr>").append("<td>"+td1+"</td>").append("<td>"+td2+"</td>").append("<td>"+td3+"</td>")
+      $("<tr></tr>").append(td1).append("<td>"+td2+"</td>").append("<td>"+td3+"</td>")
       );
   }
 }
@@ -338,15 +348,17 @@ function Header(str, small)
 }
 function LeftTable()
 {
-  var th = $();
+  var th = $("<tr></tr>");
   for (var i=2; i<arguments.length; i++)
   {
     if (!arguments[i].length) 
       continue;
-    th += th"<th>"+arguments[i]+"</th>";
+      
+    th.append($('<th></th>').append(arguments[i]));
+    //th += th"<th>"+arguments[i]+"</th>";
   }
   
-  const tbody = th.length ? $("<tbody></tbody>").append($("<tr></tr>").append($(th))) : $("<tbody></tbody>");
+  const tbody = arguments.length > 2 ? $("<tbody></tbody>").append(th) : $("<tbody></tbody>");
 
   const ret =
       $("<div class='col-xs-"+arguments[0]+"'></div>").append(
