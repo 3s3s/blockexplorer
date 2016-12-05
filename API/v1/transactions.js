@@ -43,14 +43,15 @@ exports.GetTransaction = function(query, res)
                 return;
             }
             
-            var vin = JSON.parse(unescape(rows[0].vin));
+            res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
+            /*var vin = JSON.parse(unescape(rows[0].vin));
             if (vin && vin.length)
             {
                 g_utils.ForEach(vin, SaveInput, function() {
                     rows[0].vin = vin;
                     res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
                 });
-            }
+            }*/
         }
         catch(e)
         {

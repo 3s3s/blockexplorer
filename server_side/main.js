@@ -16,13 +16,24 @@ function InitSearch()
     inputSearch.on('keypress', function (e) {
         if(e.which === 13 && inputSearch.val().length) {
             e.preventDefault();
+            
+            if (!isNaN(inputSearch.val())) //block number
+            {
+              ShowBlock(inputSearch.val());
+              return;
+            }
     
-            $.getJSON( "/api/v1/search?"+encodeURIComponent(inputSearch.val()), function(data) {
+            ShowBlock(inputSearch.val(), function(error) {
+              if (error)
+                ShowTransaction(inputSearch.val());
+            });
+            
+          /*  $.getJSON( "/api/v1/search?"+encodeURIComponent(inputSearch.val()), function(data) {
               alert( "success! data="+JSON.stringify(data) );
             })
               .fail(function() {
                 alert( "error" );
-              })
+              })*/
         }
     });
     
@@ -162,45 +173,54 @@ function CreateTxHash(hash)
 function ShowTransaction(hash)
 {
     $.getJSON( "/api/v1/gettransaction?hash="+hash, function(data) {
-      if (data.status == 'success' && (data.data instanceof Object))
+      if (data.status == 'success' && (data.data instanceof Array))
       {
         HideAll();
+        
+        if (!data.data.length)
+          return;
+          
+        const tx = data.data[0];
 
-       /* $('#tx_page').empty().append(
-          $(Header("Transaction ")),
+        $('#tx_page').empty().append(
+          $(Header("Transaction  ", "<small>View information about a bitcoin transaction</small>")),
           $("<div class='row-fluid'></div>").append(
-            $(LeftTable(6, "block_table", "Summary", "")),
-            $(LeftTable(6, "block_hashes_table", "Hashes", ""))),
+            $(LeftTable(12, "txs_info_table", "", ""))),
           $("<div class='row-fluid'></div>").append(
-            $(LeftTable(12, "block_tx_table", "Transactions", "")))
+            $(LeftTable(6, "txs_table", "Summary", " ")),
+            $(LeftTable(6, "txs_io_table", "Inputs and Outputs", " "))),
+          $("<div class='row-fluid'></div>").append(
+             $(LeftTable(12, "txs_inputs_table", "Input Scripts", " "))),
+          $("<div class='row-fluid'></div>").append(
+             $(LeftTable(12, "txs_outputs_table", "Output Scripts", " ")))
           )
           .show();
+          
+        const vin = JSON.parse(unescape(data.data[0].vin));
+        const vout = JSON.parse(unescape(data.data[0].vout));
         
-        $('#block_table').append(
-          $("<tr></tr>").append("<td>"+"Number Of Transactions"+"</td>"+"<td>"+JSON.parse(unescape(data.data.tx)).length+"</td>"),
-          $("<tr></tr>").append("<td>"+"Height"+"</td>"+"<td>"+data.data.height+"</td>"),
-          $("<tr></tr>").append("<td>"+"Timestamp"+"</td>"+"<td>"+unescape(data.data.time)+"</td>"),
-          $("<tr></tr>").append("<td>"+"Difficulty"+"</td>"+"<td>"+data.data.difficulty+"</td>"),
-          $("<tr></tr>").append("<td>"+"Bits"+"</td>"+"<td>"+data.data.bits+"</td>"),
-          $("<tr></tr>").append("<td>"+"Size"+"</td>"+"<td>"+data.data.size+"</td>"),
-          $("<tr></tr>").append("<td>"+"Nonce"+"</td>"+"<td>"+data.data.nonce+"</td>")
+        $('#txs_info_table').append(
+          $("<tr></tr>").append($("<td></td>").append(CreateTxHash(unescape(tx.txid)))),
+          $("<tr></tr>").append("<td></td>")
           );
 
-        //const blkHash = CreateBlockHash(data.data.hash);
-        $('#block_hashes_table').append(
-          $("<tr></tr>").append($("<td>"+"Hash"+"</td>"), $("<td></td>").append(CreateBlockHash(data.data.hash))),
-          $("<tr></tr>").append($("<td>"+"Previous Block"+"</td>"), $("<td></td>").append(CreateBlockHash(data.data.previousblockhash))),
-          $("<tr></tr>").append($("<td>"+"Next Block(s)"+"</td>"), $("<td></td>").append(CreateBlockHash(data.data.nextblockhash))),
-          $("<tr></tr>").append("<td>"+"Merkle Root"+"</td>"+"<td>"+data.data.merkleroot+"</td>")
+        $('#txs_table').append(
+          $("<tr></tr>").append($("<td>"+"Received Time"+"</td>"), $("<td></td>").append(unescape(tx.time))),
+          $("<tr></tr>").append($("<td>"+"Included In Blocks"+"</td>"), $("<td></td>").append(tx.blockHeight))
           );
           
-        var txs = JSON.parse(unescape(data.data.tx));
-        
-        for (var i=0; i<txs.length; i++)
-        {
-          $('#block_tx_table').append($("<tr></tr>").append("<td>"+txs[i]+"</td>"));
-        }*/
-        
+        $('#txs_io_table').append(
+          $("<tr></tr>").append($("<td>"+"Total Output"+"</td>"), $("<td></td>").append("")),
+          $("<tr></tr>").append($("<td></td>"), $("<td></td>"))
+          );
+
+        $('#txs_inputs_table').append(
+          $("<tr></tr>").append($("<td></td>").append(unescape(tx.vin)))
+          );
+       
+        $('#txs_outputs_table').append(
+          $("<tr></tr>").append($("<td></td>").append(unescape(tx.vout)))
+          );
       }
     })
     .fail(function() {
@@ -209,9 +229,15 @@ function ShowTransaction(hash)
   
 }
 
-function ShowBlock(hash)
+function ShowBlock(hash, callbackErr)
 {
-    $.getJSON( "/api/v1/getblock?hash="+hash, function(data) {
+  var query = "hash="+hash;
+  if (!isNaN(hash)) //block number
+  {
+    query = "height="+hash;
+  }
+
+    $.getJSON( "/api/v1/getblock?"+query, function(data) {
       if (data.status == 'success' && (data.data instanceof Object))
       {
         HideAll();
@@ -219,10 +245,10 @@ function ShowBlock(hash)
         $('#block_page').empty().append(
           $(Header("Block #"+data.data.height)),
           $("<div class='row-fluid'></div>").append(
-            $(LeftTable(6, "block_table", "Summary", "")),
-            $(LeftTable(6, "block_hashes_table", "Hashes", ""))),
+            $(LeftTable(6, "block_table", "Summary", " ")),
+            $(LeftTable(6, "block_hashes_table", "Hashes", " "))),
           $("<div class='row-fluid'></div>").append(
-            $(LeftTable(12, "block_tx_table", "Transactions", "")))
+            $(LeftTable(12, "block_tx_table", "Transactions", " ")))
           )
           .show();
         
@@ -250,19 +276,24 @@ function ShowBlock(hash)
         {
           $('#block_tx_table').append($("<tr></tr>").append($("<td></td>").append(CreateTxHash(txs[i]))));
         }
-        
+        callbackErr(false);
+      }
+      else
+      {
+        callbackErr(true);
       }
     })
     .fail(function() {
 //      alert( "error" );
+      callbackErr(true);
     });
 }
 
-function Header(str)
+function Header(str, small)
 {
   var ret =
           '<div class="page-header">'+
-            '<h1>'+str + '</h1>' +
+            '<h1>'+str + (small || "") + '</h1>' +
           '</div>';
   return ret;
 }
@@ -271,18 +302,16 @@ function LeftTable()
   var th = "";
   for (var i=2; i<arguments.length; i++)
   {
+    if (!arguments[i].length) 
+      continue;
     th += "<th>"+arguments[i]+"</th>";
   }
+  
+  const tbody = th.length ? $("<tbody></tbody>").append($("<tr></tr>").append($(th))) : $("<tbody></tbody>");
 
-  var ret =
+  const ret =
       $("<div class='col-xs-"+arguments[0]+"'></div>").append(
-        $("<table id='"+arguments[1]+"' class='table table-striped'></table>").append(
-          $("<tbody></tbody>").append(
-            $("<tr></tr>").append(
-              $(th))
-          )
-        )
-      );
+        $("<table id='"+arguments[1]+"' class='table table-striped'></table>").append(tbody));
 
   return ret;
 }

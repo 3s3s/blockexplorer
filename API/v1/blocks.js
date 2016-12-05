@@ -18,12 +18,15 @@ exports.GetBlocks = function(query, res)
 
 exports.GetBlock = function(query, res)
 {
-    if (!query.hash)
+    if (!query.hash && !query.height)
     {
-        res.end( JSON.stringify({'status' : false, 'message' : 'ERROR: bad query (nead ?hash=...)'}) );
+        res.end( JSON.stringify({'status' : false, 'message' : 'ERROR: bad query (nead ?hash=... or ?height=)'}) );
         return;
     }
-    g_constants.dbTables['Blocks'].selectAll("*", "hash='"+escape(query.hash)+"'", "", function(error, rows) {
+    
+    const WHERE = query.hash && isNaN(query.hash) ? "hash='"+escape(query.hash)+"'" : "height="+(escape(query.height) || 0);
+    
+    g_constants.dbTables['Blocks'].selectAll("*", WHERE, "", function(error, rows) {
         if (error || !rows || !rows.length)
         {
             res.end( JSON.stringify({'status' : false, 'message' : error}) );
