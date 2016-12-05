@@ -6,31 +6,38 @@ const g_utils = require('../utils');
 
 exports.Sync = function()
 {
-    g_rpc.getblockcount('', function(rpcRet) {
-        if (rpcRet.status != 'success')
-        {
-            setTimeout(exports.Sync, 10000);
-            return;
-        }
-            
-        var nTxStartSyncFrom = 0;
-        g_constants.dbTables['Transactions'].selectAll("*", "", "ORDER BY blockHeight DESC LIMIT 1", function(error, rows) {
-            if (!error && rows.length && parseInt(rows[0].blockHeight > 1))
-                nTxStartSyncFrom = parseInt(rows[0].blockHeight) - 1; //start sync transactions from max height saved nubmer minus 1
+    try
+    {
+        g_rpc.getblockcount('', function(rpcRet) {
+            if (rpcRet.status != 'success')
+            {
+                setTimeout(exports.Sync, 10000);
+                return;
+            }
                 
-            //array with numbers for sync
-            const aTxNumbers = function() {
-                var ret = [];
-                for (var i=nTxStartSyncFrom; i<rpcRet.data; i++) ret.push(i);
-                return ret;
-            } ();
-                
-            //iterate array
-            g_utils.ForEach(aTxNumbers, SaveTransactions, function() {
-                setTimeout(exports.Sync, 30000); //after end - try again periodicaly
+            var nTxStartSyncFrom = 0;
+            g_constants.dbTables['Transactions'].selectAll("*", "", "ORDER BY blockHeight DESC LIMIT 1", function(error, rows) {
+                if (!error && rows.length && parseInt(rows[0].blockHeight) > 1)
+                    nTxStartSyncFrom = parseInt(rows[0].blockHeight) - 1; //start sync transactions from max height saved nubmer minus 1
+                    
+                //array with numbers for sync
+                const aTxNumbers = function() {
+                    var ret = [];
+                    for (var i=nTxStartSyncFrom; i<rpcRet.data; i++) ret.push(i);
+                    return ret;
+                } ();
+                    
+                //iterate array
+                g_utils.ForEach(aTxNumbers, SaveTransactions, function() {
+                    setTimeout(exports.Sync, 30000); //after end - try again periodicaly
+                });
             });
         });
-    });
+    }
+    catch(e)
+    {
+        setTimeout(exports.Sync, 30000);
+    }
 };
 
 function SaveTransactions(aBlockNumbers, nIndex, callback)
