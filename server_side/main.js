@@ -185,7 +185,7 @@ function ShowTransaction(hash)
         $('#tx_page').empty().append(
           $(Header("Transaction  ", "<small>View information about a bitcoin transaction</small>")),
           $("<div class='row-fluid'></div>").append(
-            $(LeftTable(12, "txs_info_table", "", ""))),
+            $(LeftTable(12, "txs_info_table", CreateTxHash(unescape(tx.txid)), " ", " "))),
           $("<div class='row-fluid'></div>").append(
             $(LeftTable(6, "txs_table", "Summary", " ")),
             $(LeftTable(6, "txs_io_table", "Inputs and Outputs", " "))),
@@ -199,11 +199,8 @@ function ShowTransaction(hash)
         const vin = JSON.parse(unescape(data.data[0].vin));
         const vout = JSON.parse(unescape(data.data[0].vout));
         
-        $('#txs_info_table').append(
-          $("<tr></tr>").append($("<td></td>").append(CreateTxHash(unescape(tx.txid)))),
-          $("<tr></tr>").append("<td></td>")
-          );
-
+        ShowTransactionInfo(tx.txid, vin, vout);
+        
         $('#txs_table').append(
           $("<tr></tr>").append($("<td>"+"Received Time"+"</td>"), $("<td></td>").append(unescape(tx.time))),
           $("<tr></tr>").append($("<td>"+"Included In Blocks"+"</td>"), $("<td></td>").append(tx.blockHeight))
@@ -218,15 +215,57 @@ function ShowTransaction(hash)
           $("<tr></tr>").append($("<td></td>").append(unescape(tx.vin)))
           );
        
-        $('#txs_outputs_table').append(
-          $("<tr></tr>").append($("<td></td>").append(unescape(tx.vout)))
-          );
+        for (var i=0; i<vout.length; i++)
+        {
+          var asm = "";
+          if (vout[i].scriptPubKey && vout[i].scriptPubKey.asm)
+            $("<tr></tr>").append($("<td></td>").append(unescape(vout[i].scriptPubKey.asm)));
+          else
+            $("<tr></tr>").append($("<td></td>").append(tx.vout[i]));
+            
+          $('#txs_outputs_table').append(asm);
+        }
       }
     })
     .fail(function() {
 //      alert( "error" );
     });
-  
+
+  function ShowTransactionInfo(hash, vin, vout)
+  {
+    var td1 = "";    
+    for (var i=0; i<vin.length; i++)
+    {
+      if (vin[i].txid)
+        td1 += vin[i].txid + " (out = "+ vin[i].vout + ")";
+      else if (vin[i].coinbase)
+        td1 += "Coinbase";
+        
+      td1 += "<br><br>";
+    }
+    
+    var td2 = " >> ";
+    
+    var td3 = "";
+    for (var i=0; i<vout.length; i++)
+    {
+      if (vout[i].scriptPubKey && vout[i].scriptPubKey.addresses)
+      {
+        td3 += "[ ";
+        for (var j=0; j<vout[i].scriptPubKey.addresses.length; j++)
+          td3 += vout[i].scriptPubKey.addresses[j];
+        td3 += " ]" + "<span class='pull-right'>" + (vout[i].value || "") + "</span>";
+      }
+      else 
+        td3 += "???" + "<span class='pull-right'>" + (vout[i].value || "") + "</span>";
+        
+      td3 += "<br><br>";
+    }
+    
+    $('#txs_info_table').append(
+      $("<tr></tr>").append("<td>"+td1+"</td>").append("<td>"+td2+"</td>").append("<td>"+td3+"</td>")
+      );
+  }
 }
 
 function ShowBlock(hash, callbackErr)
@@ -276,16 +315,16 @@ function ShowBlock(hash, callbackErr)
         {
           $('#block_tx_table').append($("<tr></tr>").append($("<td></td>").append(CreateTxHash(txs[i]))));
         }
-        callbackErr(false);
+        if (callbackErr) callbackErr(false);
       }
       else
       {
-        callbackErr(true);
+        if (callbackErr) callbackErr(true);
       }
     })
     .fail(function() {
 //      alert( "error" );
-      callbackErr(true);
+      if (callbackErr) callbackErr(true);
     });
 }
 
@@ -299,12 +338,12 @@ function Header(str, small)
 }
 function LeftTable()
 {
-  var th = "";
+  var th = $();
   for (var i=2; i<arguments.length; i++)
   {
     if (!arguments[i].length) 
       continue;
-    th += "<th>"+arguments[i]+"</th>";
+    th += th"<th>"+arguments[i]+"</th>";
   }
   
   const tbody = th.length ? $("<tbody></tbody>").append($("<tr></tr>").append($(th))) : $("<tbody></tbody>");

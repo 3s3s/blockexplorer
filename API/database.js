@@ -4,8 +4,10 @@ var sqlite3 = require('sqlite3').verbose();
 
 const g_constants = require('../constants');
 
+var g_db;
+
 exports.Init = function() {
-    var g_db = new sqlite3.Database(g_constants.dbName);
+    g_db = new sqlite3.Database(g_constants.dbName);
     
     g_db.run("VACUUM");
     
@@ -167,6 +169,31 @@ exports.Init = function() {
         };
             
     });
+};
+
+exports.RunTransactions = function()
+{
+    Begin();
+    
+    function Begin()
+    {
+        g_db.run('BEGIN TRANSACTION', function(err){
+            if (!err)
+                setTimeout(End, 5000);
+            else
+                setTimeout(Begin, 2000);
+        });
+    }
+    
+    function End()
+    {
+        g_db.run('END TRANSACTION', function(err){
+            if (!err)
+                setTimeout(Begin, 10);
+            else
+                setTimeout(End, 2000);
+        });
+    }
 };
 
 

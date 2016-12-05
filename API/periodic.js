@@ -1,5 +1,7 @@
 'use strict';
 
+const g_db = require('./database');
+
 const g_rpc = require('./rpc');
 const g_syncTX = require('./syncTransaction');
 const g_syncBlocks = require("./syncBlocks");
@@ -30,5 +32,7 @@ exports.StartSyncronize = function()
     g_syncTX.Sync();
     g_syncAddr.Sync();
     g_syncAddr2.Sync();
+    
+    g_db.RunTransactions();
 };
 
