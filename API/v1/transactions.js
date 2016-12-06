@@ -43,15 +43,15 @@ exports.GetTransaction = function(query, res)
                 return;
             }
             
-            res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
-            /*var vin = JSON.parse(unescape(rows[0].vin));
+            //res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
+            var vin = JSON.parse(unescape(rows[0].vin));
             if (vin && vin.length)
             {
                 g_utils.ForEach(vin, SaveInput, function() {
                     rows[0].vin = vin;
                     res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
                 });
-            }*/
+            }
         }
         catch(e)
         {
@@ -62,14 +62,24 @@ exports.GetTransaction = function(query, res)
 
 function SaveInput(aVIN, nIndex, callback)
 {
-    if (aVIN[nIndex].coinbase)
+    if (aVIN[nIndex].coinbase || aVIN[nIndex].vout == undefined)
     {
         aVIN[nIndex].addr = [];
         callback(false);
         return;
     }
-    g_constants.dbTables['Address'].selectAll("*", "txout='"+escape(aVIN[nIndex].txid)+"'", "", function(error, rows) {
-        aVIN[nIndex].addr = rows;
+    g_constants.dbTables['Transactions'].selectAll("vout", "txid='"+escape(aVIN[nIndex].txid)+"'", "", function(error, rows) {
+        if (error || !rows.length || !rows[0].vout.length)
+        {
+            callback(false);
+            return;
+        }
+        
+        const vout_o = JSON.parse(unescape(rows[0].vout));
+        if (vout_o.length && aVIN[nIndex].vout < vout_o.length)
+        {
+            aVIN[nIndex].vout_o = vout_o[aVIN[nIndex].vout];
+        }
         callback(false);
     });
 }

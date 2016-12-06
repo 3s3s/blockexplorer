@@ -56,29 +56,38 @@ exports.Init = function() {
     function Insert(tableObject, values)
     {
         try {
-            if (values.length != tableObject.cols.length ) {
-                console.log('Insert failed arguments count: ' + values.length);
+            var callbackERR = values[values.length-1];
+            
+            if (values.length-1 != tableObject.cols.length ) {
+                console.log('Insert failed arguments count: ' + values.length-1);
+                callbackERR(true);
                 return;
             }
             
             var vals = ' (';
-            for (var i=0; i<values.length; i++) {
+            for (var i=0; i<values.length-1; i++) {
                 vals += "'" + escape(values[i]) + "'";
                 
-                if (i != values.length-1)
+                if (i != values.length-2)
                     vals += ', ';
             }
             vals += ')';
             
             console.log('INSERT INTO ' + tableObject.name + ' VALUES ' + vals);
             g_db.run('INSERT INTO ' + tableObject.name + ' VALUES ' + vals, function(err) {
-                if (!err) 
+                if (err) 
+                {
+                    console.log('INSERT error: ' + err.message);
+                    callbackERR(true);
                     return;
-                console.log('INSERT error: ' + err.message);
+                }
+                
+                callbackERR(false);
             });
         }
         catch(e) {
             console.log(e.message);
+            callbackERR(true);
         }
     }
     function SelectAll(cols, table, where, other, callback, param) 

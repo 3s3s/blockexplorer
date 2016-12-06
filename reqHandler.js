@@ -5,6 +5,7 @@ const url = require('url');
 const apiSearchV1 = require('./API/v1/search');
 const apiTransactionsV1 = require('./API/v1/transactions');
 const apiBlocksV1 = require('./API/v1/blocks');
+const apiAddressV1 = require('./API/v1/address');
 
 exports.handle = function(app)
 {
@@ -15,6 +16,7 @@ exports.handle = function(app)
     app.get('/api/v1/getlasttransactions', onV1Transactions);
     app.get('/api/v1/getblock', onV1GetBlock);
     app.get('/api/v1/gettransaction', onV1GetTransaction);
+    app.get('/api/v1/getaddress', onV1GetAddress);
     
     function onV1Search(req, res)
     {
@@ -67,6 +69,17 @@ exports.handle = function(app)
         const query = url.parse(req.url, true).query;
         
         apiTransactionsV1.GetTransaction(query, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+    }
+    function onV1GetAddress(req, res)
+    {
+      try {
+        const query = url.parse(req.url, true).query;
+        
+        apiAddressV1.GetAddress(query, res);
       } 
       catch(e) {
         console.log(e.message);

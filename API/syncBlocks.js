@@ -95,12 +95,21 @@ function SaveBlock(aBlockNumbers, nIndex, callback)
                     rpcRet2.data.previousblockhash || "",
                     rpcRet2.data.nextblockhash || "",
                     rpcRet2.data.ip || "",
-                    JSON.stringify(arrayTX) || "[]"
+                    JSON.stringify(arrayTX) || "[]",
+                    function(err) {
+                        if (err) 
+                        {
+                            callback(true, 10000);
+                            return;
+                        }
+                        callback(false);
+                    }
                 );
                     
                 //we do not known the 'insert' result, so try do same work again for thee case if insert failed
-                callback(true, 100);
-                return;
+               // callback(true, 100);
+                //callback(false);
+              //  return;
             });
         });
     });

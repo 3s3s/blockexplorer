@@ -144,12 +144,21 @@ function SaveTX(aTXs, nTX, cbRet)
                     aTXs[nTX].txid,
                     rpcRet2.data.time || 0,
                     JSON.stringify(rpcRet2.data.vin) || "[]",
-                    JSON.stringify(rpcRet2.data.vout) || "[]"
+                    JSON.stringify(rpcRet2.data.vout) || "[]",
+                    function(err) {
+                        if (err) 
+                        {
+                            cbRet(true, 10000);
+                            return;
+                        }
+                        cbRet(false);
+                    }
                 );
                 
                 //we do not known the 'insert' result, so try do same work again for thee case if insert failed
-                cbRet(true, 100);
-                return;
+                //cbRet(true, 100);
+                //cbRet(false);
+                //return;
             });
          });
     });

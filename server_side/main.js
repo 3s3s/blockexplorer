@@ -7,6 +7,7 @@ function HideAll()
   $('#main_page').hide();
   $('#block_page').hide();
   $('#tx_page').hide();
+  $('#addr_page').hide();
 }
 
 function InitSearch()
@@ -20,6 +21,11 @@ function InitSearch()
             if (!isNaN(inputSearch.val())) //block number
             {
               ShowBlock(inputSearch.val());
+              return;
+            }
+            if (inputSearch.val().length < 50)
+            {
+              ShowAddress(inputSearch.val());
               return;
             }
     
@@ -170,6 +176,74 @@ function CreateTxHash(hash)
   return ret;
 }
 
+function CreateAddrHash(hash)
+{
+  if (!hash || !hash.length)
+    return "";
+    
+  const ret = $('<a hash="'+hash+'" href="#">'+hash+'</a></td>');  
+  ret[0].onclick = function()
+  {
+    ShowAddress($(this).attr('hash'));
+  }
+  return ret;
+}
+
+function ShowAddress(hash)
+{
+    $.getJSON( "/api/v1/getaddress?hash="+hash, function(data) {
+      if (data.status == 'success' && (data.data instanceof Array))
+      {
+        HideAll();
+        
+        if (!data.data.length)
+          return;
+          
+        const addr = data.data[0];
+
+        $('#addr_page').empty().append(
+          $(Header("Address  ", "<small>Addresses are identifiers which you use to send bitcoins to another person</small>")),
+ //         $("<div class='row-fluid'></div>").append(
+ //           $(LeftTable(12, "addr_info_table", CreateAddrHash(unescape(data.data[0].address)), " ", " "))),
+          $("<div class='row-fluid'></div>").append(
+            $(LeftTable(6, "addr_table", "Summary", " ")),
+            $(LeftTable(6, "addr_io_table", "Transactions", " "))),
+          $("<div class='row-fluid'></div>").append(
+             $(LeftTable(12, "addr_inputs_table", "Transactions", "")))
+          )
+          .show();
+       
+        $('#addr_table').append(
+          $("<tr></tr>").append($("<td>"+"Address"+"</td>"), $("<td></td>").append(CreateAddrHash(unescape(data.data[0].address))))
+          );
+          
+        var recieved = 0.0; 
+        var balance = 0.0;
+        for (var i=0; i<data.data.length; i++)
+        {
+          recieved += parseFloat(data.data[i].value);
+          
+          if (data.data[i].txout.length == 1)
+            balance += parseFloat(data.data[i].value);
+        }
+          
+        $('#addr_io_table').append(
+          $("<tr></tr>").append($("<td>"+"No. Transactions"+"</td>"), $("<td></td>").append(data.data.length)),
+          $("<tr></tr>").append($("<td>"+"Total Received"+"</td>"), $("<td></td>").append(recieved)),
+          $("<tr></tr>").append($("<td>"+"Final Balance"+"</td>"), $("<td></td>").append(balance))
+          );
+          
+        for (var i=0; i<data.data.length; i++)
+        {
+          $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(CreateTxHash(unescape(data.data[i].txin)))));
+          if (data.data[i].txout.length > 1)
+            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(CreateTxHash(unescape(data.data[i].txout)))));
+        }
+
+      }
+    });
+}
+
 function ShowTransaction(hash)
 {
     $.getJSON( "/api/v1/gettransaction?hash="+hash, function(data) {
@@ -196,7 +270,7 @@ function ShowTransaction(hash)
           )
           .show();
           
-        const vin = JSON.parse(unescape(data.data[0].vin));
+        const vin = data.data[0].vin;
         const vout = JSON.parse(unescape(data.data[0].vout));
         
         ShowTransactionInfo(tx.txid, vin, vout);
@@ -205,15 +279,7 @@ function ShowTransaction(hash)
           $("<tr></tr>").append($("<td>"+"Received Time"+"</td>"), $("<td></td>").append(unescape(tx.time))),
           $("<tr></tr>").append($("<td>"+"Included In Blocks"+"</td>"), $("<td></td>").append(tx.blockHeight))
           );
-          
-        $('#txs_io_table').append(
-          $("<tr></tr>").append($("<td>"+"Total Output"+"</td>"), $("<td></td>").append("")),
-          $("<tr></tr>").append($("<td></td>"), $("<td></td>"))
-          );
-
-//        $('#txs_inputs_table').append(
-//          $("<tr></tr>").append($("<td></td>").append(unescape(tx.vin)))
-//          );
+        
         for (var i=0; i<vin.length; i++)
         {
           var asm = "";
@@ -225,8 +291,11 @@ function ShowTransaction(hash)
           $('#txs_inputs_table').append(asm);
         }
        
+        var totalOutput = 0.0;
         for (var i=0; i<vout.length; i++)
         {
+          totalOutput += vout[i].value;
+          
           var asm = "";
           if (vout[i].scriptPubKey && vout[i].scriptPubKey.asm)
             asm = $("<tr></tr>").append($("<td></td>").append(unescape(vout[i].scriptPubKey.asm)));
@@ -235,6 +304,11 @@ function ShowTransaction(hash)
             
           $('#txs_outputs_table').append(asm);
         }
+        
+        $('#txs_io_table').append(
+          $("<tr></tr>").append($("<td>"+"Total Output"+"</td>"), $("<td></td>").append(totalOutput)),
+          $("<tr></tr>").append($("<td></td>"), $("<td></td>"))
+          );
       }
     })
     .fail(function() {
@@ -246,7 +320,11 @@ function ShowTransaction(hash)
     var td1 = $("<td></td>");    
     for (var i=0; i<vin.length; i++)
     {
-      if (vin[i].txid)
+      if (vin[i].vout_o && vin[i].vout_o.scriptPubKey && vin[i].vout_o.scriptPubKey.addresses && vin[i].vout_o.scriptPubKey.addresses.length)
+      {
+        td1.append(CreateAddrHash(vin[i].vout_o.scriptPubKey.addresses[0]), " ( "+ (vin[i].vout_o.value || 0) + " )");
+      }
+      else if (vin[i].txid)
         td1.append(CreateTxHash(vin[i].txid), " (out = "+ vin[i].vout + ")");
       else if (vin[i].coinbase)
         td1.append("Coinbase");
@@ -256,24 +334,24 @@ function ShowTransaction(hash)
     
     var td2 = " >> ";
     
-    var td3 = "";
+    var td3 = $("<td></td>");
     for (var i=0; i<vout.length; i++)
     {
       if (vout[i].scriptPubKey && vout[i].scriptPubKey.addresses)
       {
-        td3 += "[ ";
+        td3.append("[ ");
         for (var j=0; j<vout[i].scriptPubKey.addresses.length; j++)
-          td3 += vout[i].scriptPubKey.addresses[j];
-        td3 += " ]" + "<span class='pull-right'>" + (vout[i].value || "") + "</span>";
+          td3.append(CreateAddrHash(vout[i].scriptPubKey.addresses[j]));
+        td3.append(" ]" + "<span class='pull-right'>" + (vout[i].value || "") + "</span>");
       }
       else 
-        td3 += "???" + "<span class='pull-right'>" + (vout[i].value || "") + "</span>";
+        td3.append("???" + "<span class='pull-right'>" + (vout[i].value || "") + "</span>");
         
-      td3 += "<br><br>";
+      td3.append("<br><br>");
     }
     
     $('#txs_info_table').append(
-      $("<tr></tr>").append(td1).append("<td>"+td2+"</td>").append("<td>"+td3+"</td>")
+      $("<tr></tr>").append(td1).append("<td>"+td2+"</td>").append(td3)
       );
   }
 }
