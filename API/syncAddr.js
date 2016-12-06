@@ -32,7 +32,9 @@ exports.Sync = function()
                //     setTimeout(exports.Sync, 30000); //after end - try again periodicaly
                // });
                 g_db.BeginTransaction();
-                    for (var i=0; i<rowsTX.length; i++)
+                    var maxLength = rowsTX.length > 100 ? 100 : rowsTX.length;
+
+                    for (var i=0; i<maxLength; i++)
                         SaveAddresses(rowsTX, i, function(){});
                 g_db.EndTransaction();
                
