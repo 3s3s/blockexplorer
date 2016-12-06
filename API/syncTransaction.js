@@ -86,6 +86,8 @@ function SaveTransactions(aBlockNumbers, nIndex, callback)
             g_utils.ForEach(txInBlock, SaveTX, function() {
                 callback(false);
             });
+            
+
         });
     });
 }

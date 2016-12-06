@@ -196,6 +196,14 @@ exports.RunTransactions = function()
     }
 };
 
+exports.BeginTransaction = function ()
+{
+    g_db.run('BEGIN TRANSACTION');
+};
 
+exports.EndTransaction = function()
+{
+    g_db.run('END TRANSACTION');
+};
 
 
