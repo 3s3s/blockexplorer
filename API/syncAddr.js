@@ -2,8 +2,6 @@
 
 const g_constants = require('../constants');
 const g_utils = require('../utils');
-const g_db = require("./database");
-
 
 exports.Sync = function()
 {
@@ -28,17 +26,10 @@ exports.Sync = function()
                     return;
                 }
                 //iterate array of transactions
-               // g_utils.ForEach(rowsTX, SaveAddresses, function() {
-               //     setTimeout(exports.Sync, 30000); //after end - try again periodicaly
-               // });
-                g_db.BeginTransaction();
-                    var maxLength = rowsTX.length > 100 ? 100 : rowsTX.length;
-
-                    for (var i=0; i<maxLength; i++)
-                        SaveAddresses(rowsTX, i, function(){});
-                g_db.EndTransaction();
-               
-                setTimeout(exports.Sync, 5000);    
+                g_utils.ForEach(rowsTX, SaveAddresses, function() {
+                    setTimeout(exports.Sync, 30000); //after end - try again periodicaly
+                });
+    
             });
         });
     }
@@ -78,13 +69,9 @@ function SaveAddresses(aTXs, nIndex, callback)
             }
         }
     
-        //g_utils.ForEach(aInfoForSave, SaveAddress, function() {
-        //    callback(false);
-       // });        
-        g_db.BeginTransaction();
-            for (var i=0; i<aInfoForSave.length; i++)
-                SaveAddress(aInfoForSave, i, function(){});
-        g_db.EndTransaction();
+        g_utils.ForEach(aInfoForSave, SaveAddress, function() {
+            callback(false);
+        });        
     }
     catch(e)
     {
