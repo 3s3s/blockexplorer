@@ -29,10 +29,10 @@ exports.UpdateTransactions = function()
 exports.StartSyncronize = function()
 {
     g_syncBlocks.Sync();
-    g_syncTX.Sync();
-    g_syncAddr.Sync();
-    g_syncAddr2.Sync();
+    //g_syncTX.Sync();
+    //g_syncAddr.Sync();
+    //g_syncAddr2.Sync();
     
-    g_db.RunTransactions();
+    //g_db.RunTransactions();
 };
 

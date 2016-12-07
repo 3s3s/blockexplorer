@@ -43,7 +43,8 @@ exports.dbTables = [
         ['txin', 'TEXT'],
         ['txout', 'TEXT'],
         ['time', 'TEXT'],
-        ['number', 'INT']
+        ['number', 'INT'],
+        ['height', 'INT']
       ]
     },
     {

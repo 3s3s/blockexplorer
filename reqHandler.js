@@ -21,6 +21,7 @@ exports.handle = function(app)
     function onV1Search(req, res)
     {
       try {
+        res.writeHead(200, {"Content-Type": "application/json"});
         const query = url.parse(req.url, true).query;
         
         apiSearchV1.process(query, res);
@@ -33,6 +34,7 @@ exports.handle = function(app)
     function onV1Mempool(req, res)
     {
       try {
+        res.writeHead(200, {"Content-Type": "application/json"});
         const query = url.parse(req.url, true).query;
         
         apiTransactionsV1.GetMempool(query, res);
@@ -44,6 +46,7 @@ exports.handle = function(app)
     function onV1Blocks(req, res)
     {
       try {
+        res.writeHead(200, {"Content-Type": "application/json"});
         const query = url.parse(req.url, true).query;
         
         apiBlocksV1.GetBlocks(query, res);
@@ -55,6 +58,7 @@ exports.handle = function(app)
     function onV1Transactions(req, res)
     {
       try {
+        res.writeHead(200, {"Content-Type": "application/json"});
         const query = url.parse(req.url, true).query;
         
         apiTransactionsV1.GetLast(query, res);
@@ -66,6 +70,7 @@ exports.handle = function(app)
     function onV1GetTransaction(req, res)
     {
       try {
+        res.writeHead(200, {"Content-Type": "application/json"});
         const query = url.parse(req.url, true).query;
         
         apiTransactionsV1.GetTransaction(query, res);
@@ -77,6 +82,7 @@ exports.handle = function(app)
     function onV1GetAddress(req, res)
     {
       try {
+        res.writeHead(200, {"Content-Type": "application/json"});
         const query = url.parse(req.url, true).query;
         
         apiAddressV1.GetAddress(query, res);
@@ -88,6 +94,7 @@ exports.handle = function(app)
     function onV1GetBlock(req, res)
     {
       try {
+        res.writeHead(200, {"Content-Type": "application/json"});
         const query = url.parse(req.url, true).query;
         
         apiBlocksV1.GetBlock(query, res);

@@ -3,6 +3,7 @@
 const g_rpc = require('./rpc');
 const g_constants = require('../constants');
 const g_utils = require('../utils');
+const g_transactions = require("./syncTransaction");
 
 exports.Sync = function()
 {
@@ -14,22 +15,28 @@ exports.Sync = function()
                 setTimeout(exports.Sync, 10000);
                 return;
             }
+            
+            //find last synced address by height
+            g_constants.dbTables['Address'].selectAll("height", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
+                if (error || !rows)
+                {
+                    //if database error then try again after 10 sec
+                    setTimeout(exports.Sync, 10000);
+                    return;
+                }
                 
-            var nBlockStartSyncFrom = 0;
-            g_constants.dbTables['Blocks'].selectAll("*", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
-                if (!error && rows.length)
-                    nBlockStartSyncFrom = parseInt(rows[0].height); //start sync blocks from max height saved nubmer
-        
+                const heightStart = rows.length ? (rows[0].height) : 0;
+
                 const aBlockNumbers = function() {
                     var ret = [];
-                    for (var i=nBlockStartSyncFrom; i<rpcRet.data; i++) ret.push(i);
-                    //for (var i=nBlockStartSyncFrom; i<500; i++) ret.push(i);
+                    for (var i=heightStart; i<rpcRet.data; i++) ret.push(i);
                     return ret;
                 } ();
                     
                 g_utils.ForEach(aBlockNumbers, SaveBlock, function() {
                     setTimeout(exports.Sync, 30000);
-                });
+                }, g_transactions.SaveFromBlock);
+                    
             });
         });
     }
@@ -106,10 +113,6 @@ function SaveBlock(aBlockNumbers, nIndex, callback)
                     }
                 );
                     
-                //we do not known the 'insert' result, so try do same work again for thee case if insert failed
-               // callback(true, 100);
-                //callback(false);
-              //  return;
             });
         });
     });

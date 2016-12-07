@@ -1,4 +1,4 @@
-'use strict';
+/*'use strict';
 
 const g_constants = require('../constants');
 const g_utils = require('../utils');
@@ -18,7 +18,7 @@ exports.Sync = function()
             
             //find transactions with time >= last sync
             const strWhere = rows.length ? "time>= " + rows : "";
-            g_constants.dbTables['Transactions'].selectAll("*", strWhere, "ORDER BY time ASC", function(err, rowsTX) {
+            g_constants.dbTables['Transactions'].selectAll("*", strWhere, "ORDER BY time ASC LIMIT 100", function(err, rowsTX) {
                 if (err || !rowsTX)
                 {
                     //if database error then try again after 10 sec
@@ -28,7 +28,7 @@ exports.Sync = function()
                 
                 //iterate array of transactions
                 g_utils.ForEach(rowsTX, SaveAddresses, function() {
-                    setTimeout(exports.Sync, 30000); //after end - try again periodicaly
+                    setTimeout(exports.Sync, 1000); //after end - try again periodicaly
                 });
             });
         });
@@ -118,4 +118,4 @@ function SaveAddress(aInfoForSave, nIndex, callback)
 
     });
     
-}
+}*/

@@ -81,7 +81,31 @@ exports.GetBlockTransactions = function(hash, callback)
     });
 };
 
-exports.ForEach = function(array, func, callback)
+exports.GetLastUnSyncAddrTransactions = function(limit, callback)
+{
+    try
+    {
+        //find address with max time
+        g_constants.dbTables['Address'].selectAll("*", "", "ORDER BY time DESC LIMIT 1", function(error, rows) {
+            if (error || !rows)
+            {
+                callback(error, rows);
+                return;
+            }
+            
+            //find transactions with time >= max address time
+            const strWhere = rows.length ? "time >= " + escape(rows[0].time) : "";
+            g_constants.dbTables['Transactions'].selectAll("*", strWhere, "LIMIT "+limit, callback);
+        });
+    }
+    catch(e)
+    {
+        callback({'message' : 'unexpected error in utils GetLastUnSyncAddrTransactions'}, []);
+    }
+    
+}
+
+exports.ForEach = function(array, func, callback, tick)
 {
     if (!array || !array.length)
     {
@@ -94,19 +118,33 @@ exports.ForEach = function(array, func, callback)
     function Run(array, nIndex, func)
     {
         func(array, nIndex, function(bRepeat, nTimeout) {
+            const cTimeout = nTimeout || 10;
             if (bRepeat)
             {
-               setTimeout(Run, nTimeout, array, nIndex, func);
+               setTimeout(Run, cTimeout, array, nIndex, func);
                return;
             }
             
-            if (nIndex+1 >= array.length)
+            if (tick) 
+                tick(array, nIndex, tickCallback);
+            else
+                tickCallback(false, cTimeout);
+               // setTimeout(Run, nTimeout | 10, array, nIndex+1, func);
+                
+            function tickCallback(bRepeatTick, nTimeoutTick)
             {
-                if (callback) callback();
-                return;
+                if (bRepeatTick)
+                {
+                   setTimeout(tick, nTimeoutTick, array, nIndex, tickCallback);
+                   return;
+                }
+                if (nIndex+1 >= array.length)
+                {
+                    if (callback) callback();
+                    return;
+                }
+                setTimeout(Run, nTimeoutTick || cTimeout, array, nIndex+1, func);    
             }
-            
-            setTimeout(Run, nTimeout | 10, array, nIndex+1, func);
         });
     }
 }

@@ -13,7 +13,7 @@ exports.Init = function() {
     
     ///!!!DEBUG
    // g_db.run('DROP TABLE KeyValue');
-  //  g_db.run('DROP TABLE Orders');
+   // g_db.run('DROP TABLE Address');
    // g_db.run('ALTER TABLE Users ADD COLUMN payment_address TEXT');
     
     function CreateTable(tableObject)

@@ -12,7 +12,7 @@ exports.GetMempool = function(query, res)
 
 exports.GetLast = function(query, res)
 {
-    g_constants.dbTables['Transactions'].selectAll("*", "", "ORDER BY blockHeight DESC LIMIT 10", function(error, rows) {
+    g_utils.GetLastUnSyncAddrTransactions(10, function(error, rows) {
         if (error || !rows)
         {
             res.end( JSON.stringify({'status' : false, 'message' : error}) );
@@ -20,6 +20,14 @@ exports.GetLast = function(query, res)
         }
         res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
     });
+    /*g_constants.dbTables['Transactions'].selectAll("*", "", "ORDER BY blockHeight DESC LIMIT 10", function(error, rows) {
+        if (error || !rows)
+        {
+            res.end( JSON.stringify({'status' : false, 'message' : error}) );
+            return;
+        }
+        res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
+    });*/
 };
 
 exports.GetTransaction = function(query, res)
