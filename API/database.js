@@ -94,15 +94,21 @@ exports.Init = function() {
             if (other.length)
                  query += " " + other; 
                  
+            if (!callback) 
+            {
+                console.log("WARNING: SelectAll callback undefined!!!");
+            }
+                 
             g_db.all(query, param, function(err, rows) {
                 if (err)
                     console.log("SELECT ERROR: query="+query+" message=" + err.message);
                 
-                callback(err, rows);
+                if (callback) callback(err, rows);
             });        
         }
         catch (e) {
             console.log(e.message);
+            if (callback) callback(e);
         }
     }
     function Update(tableName, SET, WHERE, callback)
@@ -201,14 +207,25 @@ exports.RunTransactions = function()
     }
 };
 
-exports.BeginTransaction = function ()
+exports.BeginTransaction = function (callback)
 {
-    g_db.run('BEGIN TRANSACTION');
+    g_db.run('BEGIN TRANSACTION', function(err){
+        if (callback) callback(err);
+        if (!err)
+            return;
+        throw ("BeginTransaction error: " + err.message);
+    });
 };
 
-exports.EndTransaction = function()
+exports.EndTransaction = function(callback)
 {
-    g_db.run('END TRANSACTION');
+    g_db.run('END TRANSACTION', function(err){
+        if (callback) callback(err);
+        if (!err)
+            return;
+        throw ("EndTransaction error: " + err.message);
+        
+    });
 };
 
 

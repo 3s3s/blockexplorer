@@ -2,6 +2,7 @@
 
 const g_constants = require('../constants');
 const g_utils = require('../utils');
+const g_db = require("./database")
 
 exports.SaveFromTransaction = function(aTXs, nTX, cbRet)
 {
@@ -67,9 +68,12 @@ function SaveOutputs(aTXs, nIndex, callback)
             }
         }
     
-        g_utils.ForEach(aInfoForSave, SaveAddress, function() {
-            callback(false);
-        });        
+        g_utils.ForEach(aInfoForSave, SaveAddress, function() {callback(false);});
+        /*g_db.BeginTransaction(function(){
+            g_utils.ForEach(aInfoForSave, SaveAddress, function() {
+                g_db.EndTransaction(function(){callback(false);});
+            });   
+        });*/
     }
     catch(e)
     {
@@ -182,9 +186,9 @@ function SaveInputs(aTXs, nIndex, callback)
             if (!r.length)
             {
                 //adress is not synced yet then wait it
-                throw 'UpdateAddress: no input address found!!!';
-                //callback(true, 10000);
-                //return;
+               // throw 'UpdateAddress: no input address found!!!';
+                callback(true, 10000);
+                return;
             }
             //check if addres already processed
             g_constants.dbTables['Address'].selectAll("number", WHERE+" AND txout='"+aInfoForSave[nIndex].parent+"'", "", function(error, rows) {

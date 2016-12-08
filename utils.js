@@ -3,6 +3,7 @@
 const https = require('https');
 const http = require('http');
 const g_constants = require("./constants");
+const g_db = require("./API/database");
 
 
 exports.getJSON = function(query, callback)
@@ -103,8 +104,7 @@ exports.GetLastUnSyncAddrTransactions = function(limit, callback)
         callback({'message' : 'unexpected error in utils GetLastUnSyncAddrTransactions'}, []);
     }
     
-}
-
+};
 exports.ForEach = function(array, func, callback, tick)
 {
     if (!array || !array.length)
@@ -112,39 +112,30 @@ exports.ForEach = function(array, func, callback, tick)
         if (callback) callback();
         return;
     }
-    
-    Run(array, 0, func);
-    
-    function Run(array, nIndex, func)
+    for (var i=0; i<array.length; i++)
     {
-        func(array, nIndex, function(bRepeat, nTimeout) {
-            const cTimeout = nTimeout || 10;
-            if (bRepeat)
+        const nIndex = i;
+        const endCallback = function(bRepeat, nTimeout){
+            if (bRepeat) 
             {
-               setTimeout(Run, cTimeout, array, nIndex, func);
-               return;
+                //throw 'ForEach: unexpected error';
+                setTimeout(func, nTimeout || 1000, array, nIndex, endCallback);
+                return;
             }
-            
             if (tick) 
-                tick(array, nIndex, tickCallback);
+                tick(array, nIndex, function(bRepeatTick, nTimeoutTick) {tickCallback(bRepeatTick, nIndex);});  
             else
-                tickCallback(false, cTimeout);
-               // setTimeout(Run, nTimeout | 10, array, nIndex+1, func);
-                
-            function tickCallback(bRepeatTick, nTimeoutTick)
-            {
-                if (bRepeatTick)
-                {
-                   setTimeout(tick, nTimeoutTick, array, nIndex, tickCallback);
-                   return;
-                }
-                if (nIndex+1 >= array.length)
-                {
-                    if (callback) callback();
-                    return;
-                }
-                setTimeout(Run, nTimeoutTick || cTimeout, array, nIndex+1, func);    
-            }
-        });
+                tickCallback(false, nIndex);
+        };
+        func(array, nIndex, endCallback);
     }
+    
+    function tickCallback(bRepeatTick, nIndex)
+    {
+        if (bRepeatTick) throw 'tickCallback: unexpected error';
+        if (nIndex+1 == array.length)
+            callback();
+    }
+    
+    return;
 }

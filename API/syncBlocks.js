@@ -5,8 +5,9 @@ const g_constants = require('../constants');
 const g_utils = require('../utils');
 const g_transactions = require("./syncTransaction");
 
-exports.Sync = function()
+exports.Sync = function(start)
 {
+    var heightStart = start || 0;
     try
     {
         g_rpc.getblockcount('', function(rpcRet) {
@@ -25,17 +26,43 @@ exports.Sync = function()
                     return;
                 }
                 
-                const heightStart = rows.length ? (rows[0].height) : 0;
+               // const heightStart = 0;//rows.length ? (rows[0].height) : 0;
+                const heightEnd = rpcRet.data; //rpcRet.data - heightStart > 100 ? heightStart+100 : rpcRet.data;
 
                 const aBlockNumbers = function() {
                     var ret = [];
-                    for (var i=heightStart; i<rpcRet.data; i++) ret.push(i);
+                    for (var i=heightStart; i<heightEnd; i++) ret.push(i);
                     return ret;
                 } ();
                     
-                g_utils.ForEach(aBlockNumbers, SaveBlock, function() {
-                    setTimeout(exports.Sync, 30000);
-                }, g_transactions.SaveFromBlock);
+                /*g_utils.ForEach(aBlockNumbers, SaveBlock, function() {
+                    setTimeout(exports.Sync, heightEnd == rpcRet.data ? 10000 : 1);
+                }, g_transactions.SaveFromBlock);*/
+                var nIndex = 0;
+                SaveBlock(aBlockNumbers, nIndex, onEnd);
+                
+                function onEnd(bRepeat, nTimeout)
+                {
+                    if (bRepeat) {
+                        throw 'Sync Block unexpected error!';
+                        //setTimeout(SaveBlock, 10000, nIndex, onEnd);
+                        //return;
+                    }
+                    g_transactions.SaveFromBlock(aBlockNumbers, nIndex, callback);
+                    function callback(bWait, nTime)
+                    {
+                        if (bWait) {
+                            setTimeout(g_transactions.SaveFromBlock, nTime || 10000, aBlockNumbers, nIndex, callback);
+                            return;
+                        }
+                        if (nIndex+1 >= heightEnd) {
+                            setTimeout(exports.Sync, 10000, heightEnd);
+                            return;
+                        }
+                        nIndex++;
+                        SaveBlock(aBlockNumbers, nIndex, onEnd);
+                    }
+                }
                     
             });
         });
@@ -65,6 +92,7 @@ function SaveBlock(aBlockNumbers, nIndex, callback)
         if (rows.length)
         {
             //if block found in database - return for process new block
+            console.log('block #'+aBlockNumbers[nIndex]+' alredy in db')
             callback(false);
             return;
         }

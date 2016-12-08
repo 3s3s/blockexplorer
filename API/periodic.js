@@ -6,7 +6,6 @@ const g_rpc = require('./rpc');
 const g_syncTX = require('./syncTransaction');
 const g_syncBlocks = require("./syncBlocks");
 const g_syncAddr = require("./syncAddr");
-const g_syncAddr2 = require("./syncAddr2");
 
 var g_mempool = [];
 exports.GetMempoolTXs = function() {return g_mempool};
