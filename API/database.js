@@ -75,19 +75,14 @@ exports.Init = function() {
             
             console.log('INSERT INTO ' + tableObject.name + ' VALUES ' + vals);
             g_db.run('INSERT INTO ' + tableObject.name + ' VALUES ' + vals, function(err) {
+                if (callbackERR) callbackERR(err);
                 if (err) 
-                {
                     console.log('INSERT error: ' + err.message);
-                    callbackERR(true);
-                    return;
-                }
-                
-                callbackERR(false);
             });
         }
         catch(e) {
             console.log(e.message);
-            callbackERR(true);
+            if (callbackERR) callbackERR(e);
         }
     }
     function SelectAll(cols, table, where, other, callback, param) 
@@ -110,7 +105,7 @@ exports.Init = function() {
             console.log(e.message);
         }
     }
-    function Update(tableName, SET, WHERE)
+    function Update(tableName, SET, WHERE, callback)
     {
         try {
             let query = 'UPDATE ' + tableName;
@@ -123,13 +118,14 @@ exports.Init = function() {
             
             console.log(query);   
             g_db.run(query, function(err) {
-                if (!err)
-                    return;
-                console.log("UPDATE error: " + err.message);
+                if (callback) callback(err);
+                if (err)
+                    console.log("UPDATE error: " + err.message);
             });
         }
         catch(e) {
             console.log(e.message);
+            if (callback) callback(e);
         }
     }
     
@@ -143,8 +139,8 @@ exports.Init = function() {
             g_constants.dbTables[i]['insert'] = function() {
                 Insert(this, arguments);};
             
-            g_constants.dbTables[i]['update'] = function(SET, WHERE) {
-                Update(this.name, SET, WHERE);};
+            g_constants.dbTables[i]['update'] = function(SET, WHERE, callback) {
+                Update(this.name, SET, WHERE, callback);};
             
             g_constants.dbTables[i]['delete'] = function(WHERE) {
                 Delete(this.name, WHERE);};

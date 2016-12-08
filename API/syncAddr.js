@@ -38,21 +38,28 @@ function SaveOutputs(aTXs, nIndex, callback)
             callback(false);
             return;
         }
+        if (!aTXs[nIndex].txid || !aTXs[nIndex].txid.length)
+        {
+            throw 'SaveOutputs: no txid found!!!';
+        }
 
         const aVout = JSON.parse(unescape(aTXs[nIndex].vout));
         
         var aInfoForSave = [];
         for (var i=0; i<aVout.length; i++)
         {
-            if (!aVout[i].scriptPubKey || !aVout[i].scriptPubKey.addresses)
-                continue;
+            if (!aVout[i].scriptPubKey)
+                aVout[i].scriptPubKey = {'addresses' : ['??? (nonstandart)']};
+            if (!aVout[i].scriptPubKey.addresses)
+                aVout[i].scriptPubKey.addresses = ['??? (nonstandart)'];
+                
             for (var j=0; j<aVout[i].scriptPubKey.addresses.length; j++)
             {
                 aInfoForSave.push({
-                    'addr' : aVout[i].scriptPubKey.addresses[j] || "[]", 
-                    'scriptPubKey' : aVout[i].scriptPubKey || "",
+                    'addr' : aVout[i].scriptPubKey.addresses[j], 
+                    'scriptPubKey' : aVout[i].scriptPubKey,
                     'value' : aVout[i].value || "0",
-                    'txin' : aTXs[nIndex].txid || "",
+                    'txin' : aTXs[nIndex].txid,
                     'time' : aTXs[nIndex].time || "0",
                     'n' : aVout[i].n || "0",
                     'height' : aTXs[nIndex].blockHeight || 0
@@ -89,8 +96,8 @@ function SaveOutputs(aTXs, nIndex, callback)
             }
             
             g_constants.dbTables['Address'].insert(
-                aInfoForSave[nIndex].addr,
-                JSON.stringify(aInfoForSave[nIndex].scriptPubKey) || "[]",
+                aInfoForSave[nIndex].addr || JSON.stringify(['???']),
+                JSON.stringify(aInfoForSave[nIndex].scriptPubKey) || JSON.stringify([]),
                 aInfoForSave[nIndex].value,
                 aInfoForSave[nIndex].txin,
                 "0",
@@ -121,18 +128,25 @@ function SaveInputs(aTXs, nIndex, callback)
             callback(false);
             return;
         }
+        
+        if (!aTXs[nIndex].txid || !aTXs[nIndex].txid.length)
+        {
+            throw 'SaveInputs: no txid found!!!';
+        }
 
         const aVin = JSON.parse(unescape(aTXs[nIndex].vin));
         
         var aInfoForSave = [];
         for (var i=0; i<aVin.length; i++)
         {
-            if (!aVin[i].txid || !aVin[i].vout)
+            if (!aVin[i].txid)
                 continue;
-                
+            //if (!aVin[i].txid || !aVin[i].vout)
+            //    continue;
+
             aInfoForSave.push({
                 'txid' : aVin[i].txid,
-                'vout' : aVin[i].vout,
+                'vout' : aVin[i].vout || 0,
                 'parent' : aTXs[nIndex].txid
             });
         }
@@ -156,7 +170,8 @@ function SaveInputs(aTXs, nIndex, callback)
         }
         
         //check if address present in database
-        g_constants.dbTables['Address'].selectAll("number", "txin='"+aInfoForSave[nIndex].txid+"'", "", function(e, r) {
+        const WHERE = "txin='"+aInfoForSave[nIndex].txid+"' AND number="+aInfoForSave[nIndex].vout;
+        g_constants.dbTables['Address'].selectAll("number", WHERE, "", function(e, r) {
             if (e || !r)
             {
                 //if database error then try again after 10 sec
@@ -167,11 +182,11 @@ function SaveInputs(aTXs, nIndex, callback)
             if (!r.length)
             {
                 //adress is not synced yet then wait it
-                callback(true, 10000);
-                return;
+                throw 'UpdateAddress: no input address found!!!';
+                //callback(true, 10000);
+                //return;
             }
             //check if addres already processed
-            const WHERE = "txin='"+aInfoForSave[nIndex].txid+"' AND number="+aInfoForSave[nIndex].vout;
             g_constants.dbTables['Address'].selectAll("number", WHERE+" AND txout='"+aInfoForSave[nIndex].parent+"'", "", function(error, rows) {
                 if (error || !rows)
                 {
@@ -188,10 +203,18 @@ function SaveInputs(aTXs, nIndex, callback)
                 }
                 
                 const SET = "txout='"+aInfoForSave[nIndex].parent+"'";
-                g_constants.dbTables['Address'].update(SET, WHERE);
+                g_constants.dbTables['Address'].update(SET, WHERE, function(err2) {
+                    if (err2)
+                    {
+                        //if database error then try again after 10 sec
+                        callback(true, 10000);
+                        return;
+                    }
+                    callback(false);
+                });
                 
                 //we do not known the 'update' result, so try do same work again for thee case if iupdate failed
-                callback(true, 100);
+                //callback(true, 100);
             });
         });
     }

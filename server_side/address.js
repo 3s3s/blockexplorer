@@ -41,21 +41,27 @@ exports.ShowAddress = function(hash)
           if (data.data[i].txout.length == 1)
             balance += parseFloat(data.data[i].value);
         }
-          
-        $('#addr_io_table').append(
-          $("<tr></tr>").append($("<td>"+"No. Transactions"+"</td>"), $("<td></td>").append(data.data.length)),
-          $("<tr></tr>").append($("<td>"+"Total Received"+"</td>"), $("<td></td>").append(recieved)),
-          $("<tr></tr>").append($("<td>"+"Final Balance"+"</td>"), $("<td></td>").append(balance))
-          );
-          
+        
+        var nTxCount = 0;  
         for (var i=0; i<data.data.length; i++)
         {
           if (data.data[i].txin.length > 1)
+          {
             $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(data.data[i].txin)))));
+            nTxCount++;
+          }
           if (data.data[i].txout.length > 1)
+          {
             $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(data.data[i].txout)))));
+            nTxCount++;
+          }
         }
 
+        $('#addr_io_table').append(
+          $("<tr></tr>").append($("<td>"+"No. Transactions"+"</td>"), $("<td></td>").append(nTxCount)),
+          $("<tr></tr>").append($("<td>"+"Total Received"+"</td>"), $("<td></td>").append(recieved)),
+          $("<tr></tr>").append($("<td>"+"Final Balance"+"</td>"), $("<td></td>").append(balance))
+          );
       }
     });
 };

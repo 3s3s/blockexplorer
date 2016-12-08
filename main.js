@@ -44,10 +44,10 @@ app.use(express.static('site'));
 
 require('./reqHandler.js').handle(app);
 
-process.on('uncaughtException', function (err) {
+/*process.on('uncaughtException', function (err) {
   console.error(err.stack);
   console.log("Node NOT Exiting...");
-});
+});*/
 
 require("./API/database").Init();
 
