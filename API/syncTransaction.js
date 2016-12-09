@@ -5,11 +5,11 @@ const g_constants = require('../constants');
 const g_utils = require('../utils');
 const g_address = require("./syncAddr");
 
-exports.SaveFromBlock = function(aBlockNumbers, nIndex, callback)
+exports.SaveFromBlock = function(aBlockNumbers, nIndex, cbError)
 {
     if (!aBlockNumbers || !aBlockNumbers.length || aBlockNumbers.length <= nIndex)
     {
-        callback(false);
+        cbError(true);
         return;
     }
         
@@ -17,7 +17,7 @@ exports.SaveFromBlock = function(aBlockNumbers, nIndex, callback)
         if (error || !rowBlocks || !rowBlocks.length)
         {
             //if database error - wait 10 sec and try again
-            callback(true, 10000);
+            cbError(true);
             return;
         }
             
@@ -31,18 +31,40 @@ exports.SaveFromBlock = function(aBlockNumbers, nIndex, callback)
         } (); 
                 
         console.log("try save transactions for block="+aBlockNumbers[nIndex]);
-        g_utils.ForEach(txInBlock, SaveTX, function() {
-            callback(false);
-        }, g_address.SaveFromTransaction);
+        
+        g_utils.ForEachAsync(txInBlock, SaveTX, cbError);
+        /*var nTx = 0;
+        SaveTX(txInBlock, nTx, onEndTransactionSave);
+        
+        function onEndTransactionSave(err, n)
+        {
+            if (n) throw 'SaveTX: unexpected argument n';
+            if (err)
+            {
+                callback(err);
+                return;
+            }
+            
+        }
+        /*for (var i=0; i<txInBlock.length; i++)
+        {
+            SaveTX(txInBlock, i, function(err, n){
+                if (n) throw 'SaveTX: unexpected argument n';
+                if (err) throw 'unexpected error in transaction save';
+            });
+        }*/
+        /*g_utils.ForEach(txInBlock, SaveTX, function(nRepeat, nTimeout) {
+            
+        });*/
     });
 };
 
 
-function SaveTX(aTXs, nTX, cbRet)
+function SaveTX(aTXs, nTX, cbError)
 {
     if (!aTXs || !aTXs.length || aTXs.length <= nTX)
     {
-        cbRet(false);
+        cbError(true);
         return;
     }
                     
@@ -51,14 +73,15 @@ function SaveTX(aTXs, nTX, cbRet)
         if (error)
         {
             //if database error - wait 10 sec and try again
-            cbRet(true, 10000);
+            cbError(true);
             return;
         }
                             
         if (rowTX.length)
         {
             //if transaction found then process new transaction
-            cbRet(false);
+            //cbError(false);
+            g_address.SaveFromTransaction(aTXs, nTX, cbError);
             return;
         }
         
@@ -68,11 +91,11 @@ function SaveTX(aTXs, nTX, cbRet)
                 if (rpcRet.data && rpcRet.data.length)
                 {
                     //if rpc failed but return valid data, then continue process new transaction
-                    cbRet(false);
+                    cbError(false);
                     return;
                 }
                 //if rpc error then wait 10 sec and try again
-                cbRet(true, 10000);
+                cbError(true);
                 return;
             }
 
@@ -80,7 +103,7 @@ function SaveTX(aTXs, nTX, cbRet)
                 if (rpcRet2.status != 'success')
                 {
                     //if rpc error then wait 10 sec and try again
-                    cbRet(true, 10000);
+                    cbError(true);
                     return;
                 }
                 
@@ -94,10 +117,10 @@ function SaveTX(aTXs, nTX, cbRet)
                     function(err) {
                         if (err) 
                         {
-                            cbRet(true, 10000);
+                            cbError(true);
                             return;
                         }
-                        cbRet(false);
+                        g_address.SaveFromTransaction(aTXs, nTX, cbError);
                     }
                 );
             });

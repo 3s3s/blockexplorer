@@ -4,11 +4,11 @@ const g_constants = require('../constants');
 const g_utils = require('../utils');
 const g_db = require("./database")
 
-exports.SaveFromTransaction = function(aTXs, nTX, cbRet)
+exports.SaveFromTransaction = function(aTXs, nTX, cbError)
 {
     if (!aTXs || !aTXs.length || aTXs.length <= nTX)
     {
-        cbRet(false);
+        cbError(true);
         return;
     }
                     
@@ -17,26 +17,37 @@ exports.SaveFromTransaction = function(aTXs, nTX, cbRet)
         if (error)
         {
             //if database error - wait 10 sec and try again
-            cbRet(true, 10000);
+            cbError(true);
             return;
         }
         
         //iterate array of transactions
-        g_utils.ForEach(rowsTx, SaveOutputs, function() {
-            g_utils.ForEach(rowsTx, SaveInputs, function() {
-                cbRet(false);
-            });
+        g_utils.ForEachAsync(rowsTx, SaveOutputs, function(err){
+            if (err)
+            {
+                cbError(true);
+                return;
+            }
+            g_utils.ForEachAsync(rowsTx, SaveInputs, cbError);
         });
+        /*g_utils.ForEach(rowsTx, SaveOutputs, function(bWait, nTimeout) {
+            if (bWait) 
+            {
+                cbRet(bWait, nTimeout);
+                return;
+            }
+            g_utils.ForEach(rowsTx, SaveInputs, cbRet);
+        });*/
     });
 };
 
-function SaveOutputs(aTXs, nIndex, callback)
+function SaveOutputs(aTXs, nIndex, cbError)
 {
     try
     {
         if (!aTXs || !aTXs.length || aTXs.length <= nIndex)
         {
-            callback(false);
+            cbError(true);
             return;
         }
         if (!aTXs[nIndex].txid || !aTXs[nIndex].txid.length)
@@ -68,7 +79,7 @@ function SaveOutputs(aTXs, nIndex, callback)
             }
         }
     
-        g_utils.ForEach(aInfoForSave, SaveAddress, function() {callback(false);});
+        g_utils.ForEachAsync(aInfoForSave, SaveAddress, cbError);
         /*g_db.BeginTransaction(function(){
             g_utils.ForEach(aInfoForSave, SaveAddress, function() {
                 g_db.EndTransaction(function(){callback(false);});
@@ -77,10 +88,10 @@ function SaveOutputs(aTXs, nIndex, callback)
     }
     catch(e)
     {
-        callback(false);
+        cbError(true);
     }
 
-    function SaveAddress(aInfoForSave, nIndex, callback)
+    function SaveAddress(aInfoForSave, nIndex, callbackErr)
     {
         //check - if address already present in database
         const WHERE = "address='"+aInfoForSave[nIndex].addr+"' AND txin='"+aInfoForSave[nIndex].txin+"' AND number="+aInfoForSave[nIndex].n;
@@ -88,14 +99,14 @@ function SaveOutputs(aTXs, nIndex, callback)
             if (error || !rows)
             {
                 //if database error then try again after 10 sec
-                callback(true, 10000);
+                callbackErr(true);
                 return;
             }
             
             if (rows.length)
             {
                 //if address found then process new address
-                callback(false);
+                callbackErr(false);
                 return;
             }
             
@@ -108,14 +119,7 @@ function SaveOutputs(aTXs, nIndex, callback)
                 aInfoForSave[nIndex].time,
                 aInfoForSave[nIndex].n,
                 aInfoForSave[nIndex].height,
-                function(err) {
-                    if (err) 
-                    {
-                        callback(true, 10000);
-                        return;
-                    }
-                    callback(false);
-                }
+                callbackErr
             );
         });
         
@@ -123,13 +127,13 @@ function SaveOutputs(aTXs, nIndex, callback)
     }
 }
 
-function SaveInputs(aTXs, nIndex, callback)
+function SaveInputs(aTXs, nIndex, cbError)
 {
     try
     {
         if (!aTXs || !aTXs.length || aTXs.length <= nIndex)
         {
-            callback(false);
+            cbError(true);
             return;
         }
         
@@ -155,21 +159,18 @@ function SaveInputs(aTXs, nIndex, callback)
             });
         }
      
-        g_utils.ForEach(aInfoForSave, UpdateAddress, function() {
-            //g_constants.dbTables['KeyValue'].set('LastSyncTxTime', aTXs[nIndex].time);
-            callback(false);
-        });
+        g_utils.ForEachAsync(aInfoForSave, UpdateAddress, cbError);
     }
     catch(e)
     {
-        callback(false);
+        cbError(true);
     }   
     
-    function UpdateAddress(aInfoForSave, nIndex, callback)
+    function UpdateAddress(aInfoForSave, nIndex, callbackErr)
     {
         if (!aInfoForSave || aInfoForSave.length <= nIndex)
         {
-            callback(false);
+            callbackErr(true);
             return;
         }
         
@@ -179,7 +180,7 @@ function SaveInputs(aTXs, nIndex, callback)
             if (e || !r)
             {
                 //if database error then try again after 10 sec
-                callback(true, 10000);
+                callbackErr(true);
                 return;
             }
             
@@ -187,7 +188,7 @@ function SaveInputs(aTXs, nIndex, callback)
             {
                 //adress is not synced yet then wait it
                // throw 'UpdateAddress: no input address found!!!';
-                callback(true, 10000);
+                callbackErr(true);
                 return;
             }
             //check if addres already processed
@@ -195,30 +196,20 @@ function SaveInputs(aTXs, nIndex, callback)
                 if (error || !rows)
                 {
                     //if database error then try again after 10 sec
-                    callback(true, 10000);
+                    callbackErr(true);
                     return;
                 }
                 
                 if (rows.length)
                 {
                     //if record found then process next transaction and address
-                    callback(false);
+                    callbackErr(false);
                     return;
                 }
                 
                 const SET = "txout='"+aInfoForSave[nIndex].parent+"'";
-                g_constants.dbTables['Address'].update(SET, WHERE, function(err2) {
-                    if (err2)
-                    {
-                        //if database error then try again after 10 sec
-                        callback(true, 10000);
-                        return;
-                    }
-                    callback(false);
-                });
+                g_constants.dbTables['Address'].update(SET, WHERE, callbackErr);
                 
-                //we do not known the 'update' result, so try do same work again for thee case if iupdate failed
-                //callback(true, 100);
             });
         });
     }

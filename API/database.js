@@ -190,7 +190,7 @@ exports.RunTransactions = function()
     {
         g_db.run('BEGIN TRANSACTION', function(err){
             if (!err)
-                setTimeout(End, 5000);
+                setTimeout(End, 10000);
             else
                 setTimeout(Begin, 2000);
         });
@@ -210,22 +210,17 @@ exports.RunTransactions = function()
 exports.BeginTransaction = function (callback)
 {
     g_db.run('BEGIN TRANSACTION', function(err){
+        if (err) throw ("BeginTransaction error: " + err.message);
         if (callback) callback(err);
-        if (!err)
-            return;
-        throw ("BeginTransaction error: " + err.message);
     });
 };
 
 exports.EndTransaction = function(callback)
 {
     g_db.run('END TRANSACTION', function(err){
+        if (err) throw ("EndTransaction error: " + err.message);
         if (callback) callback(err);
-        if (!err)
-            return;
-        throw ("EndTransaction error: " + err.message);
-        
-    });
+     });
 };
 
 

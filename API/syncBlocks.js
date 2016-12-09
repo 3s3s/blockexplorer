@@ -27,7 +27,7 @@ exports.Sync = function()
                 }
                 
                // const heightStart = 0;// rows.length ? (rows[0].height) : 0;
-                const heightStart = rows.length ? (rows[0].height) : 0;
+                const heightStart = (rows.length && rows[0].height > 1000) ? (rows[0].height-1000) : 0;
                 const heightEnd = rpcRet.data; //rpcRet.data - heightStart > 100 ? heightStart+100 : rpcRet.data;
 
                 const aBlockNumbers = function() {
@@ -35,44 +35,55 @@ exports.Sync = function()
                     for (var i=heightStart; i<heightEnd; i++) ret.push(i);
                     return ret;
                 } ();
-                    
-                /*g_utils.ForEach(aBlockNumbers, SaveBlock, function() {
-                    setTimeout(exports.Sync, heightEnd == rpcRet.data ? 10000 : 1);
-                }, g_transactions.SaveFromBlock);*/
-                var nIndex = 0;
                 
-                g_db.BeginTransaction(function(err) {
-                    if (err) throw 'unexpected error in Block Sync ';
-                    
-                    SaveBlock(aBlockNumbers, nIndex, onEnd);
-                });
-
-                function onEnd(bRepeat, nTimeout)
-                {
-                    if (bRepeat) {
-                        throw 'Sync Block unexpected error!';
-                        //setTimeout(SaveBlock, 10000, nIndex, onEnd);
-                        //return;
+                g_utils.ForEachSync(aBlockNumbers, SaveBlock, function(){
+                    //when all synced (or have error) then try again after 10 sec
+                    setTimeout(exports.Sync, 10000);
+                }, function(err, nIndex, cbError){
+                    //when one function return
+                    if (err) {
+                        cbError(true);
+                        return;
                     }
-                    g_transactions.SaveFromBlock(aBlockNumbers, nIndex, callback);
-                    function callback(bWait, nTime)
+                    g_transactions.SaveFromBlock(aBlockNumbers, nIndex, cbError);
+                });
+                
+                //aBlockNumbers.every(SaveBlock);   
+
+               /* var nIndex = 0;
+                SaveBlock(aBlockNumbers, nIndex, onEndBlockSave);
+
+                function onEndBlockSave(err, nTimeout)
+                {
+                    if (nTimeout) throw 'Block Sync: nead remove nTimeout';
+                    
+                    if (err) {
+                        //if error then try again letter
+                        setTimeout(exports.Sync, 10000);
+                        return;
+                    }
+                    
+                    g_db.BeginTransaction(function(err){
+                        if (err) if (err) throw 'unexpected error in Block Sync 1';
+                        g_transactions.SaveFromBlock(aBlockNumbers, nIndex, onEndTransactionsSave);
+                    });
+                    
+                    function onEndTransactionsSave(error, nTime)
                     {
+                        if (nTime) throw 'Block Sync: nead remove Time';
+                        
                         g_db.EndTransaction(function(err) {
-                            if (err) throw 'unexpected error in Block Sync ';
-                            if (bWait || nIndex+1 >= heightEnd) {
+                            if (err) throw 'unexpected error in Block Sync 2';
+                            if (error || nIndex+1 >= heightEnd) {
                                 setTimeout(exports.Sync, 10000);
                                 return;
                             }
                             
                             nIndex++;
-                            g_db.BeginTransaction(function(err) {
-                                if (err) throw 'unexpected error in Block Sync ';
-                                
-                                SaveBlock(aBlockNumbers, nIndex, onEnd);
-                            });
+                            SaveBlock(aBlockNumbers, nIndex, onEndBlockSave);
                         });
                     }
-                }
+                }*/
                     
             });
         });
@@ -83,11 +94,11 @@ exports.Sync = function()
     }
 };
 
-function SaveBlock(aBlockNumbers, nIndex, callback)
+function SaveBlock(aBlockNumbers, nIndex, cbError)
 {
     if (!aBlockNumbers || !aBlockNumbers.length || aBlockNumbers.length <= nIndex)
     {
-        callback(false);
+        cbError(true);
         return;
     }
         
@@ -95,15 +106,15 @@ function SaveBlock(aBlockNumbers, nIndex, callback)
         if (error)
         {
             //if database error - wait 10 sec and try again
-            callback(true, 10000);
+            cbError(true);
             return;
         }
             
         if (rows.length)
         {
             //if block found in database - return for process new block
-            console.log('block #'+aBlockNumbers[nIndex]+' alredy in db')
-            callback(false);
+            console.log('block #'+aBlockNumbers[nIndex]+' alredy in db');
+            cbError(false);
             return;
         }
             
@@ -112,7 +123,7 @@ function SaveBlock(aBlockNumbers, nIndex, callback)
             if (rpcRet.status != 'success')
             {
                 //if rpc error then wait 10 sec and try again
-                callback(true, 10000);
+                cbError(true);
                 return;
             }
                 
@@ -121,7 +132,7 @@ function SaveBlock(aBlockNumbers, nIndex, callback)
                 if (rpcRet2.status != 'success' || !rpcRet2.data.hash)
                 {
                     //if rpc error then wait 10 sec and try again
-                    callback(true, 10000);
+                    cbError(true);
                     return;
                 }
                     
@@ -141,16 +152,12 @@ function SaveBlock(aBlockNumbers, nIndex, callback)
                     rpcRet2.data.nextblockhash || "",
                     rpcRet2.data.ip || "",
                     JSON.stringify(arrayTX) || "[]",
-                    function(err) {
-                        if (err) 
-                        {
-                            callback(true, 10000);
-                            return;
-                        }
-                        callback(false);
-                    }
+                    cbError
+                    /*function (err)
+                    {
+                        cbError(err ? true : false);
+                    }*/
                 );
-                    
             });
         });
     });

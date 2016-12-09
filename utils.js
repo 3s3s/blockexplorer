@@ -105,37 +105,121 @@ exports.GetLastUnSyncAddrTransactions = function(limit, callback)
     }
     
 };
-exports.ForEach = function(array, func, callback, tick)
+
+exports.ForEachAsync = function(array, func, cbEndAll)
 {
     if (!array || !array.length)
     {
-        if (callback) callback();
+        console.log('success: ForEachAsync (!array || !array.length)');
+        cbEndAll(false);
+        return;
+    }
+    
+    let nEndCounter = 0;
+    
+    for (var i=0; i<array.length; i++)
+    {
+        func(array, i, onEndOne);
+    }
+    
+    function onEndOne(err)
+    {
+        if (err)
+        {
+           //if func return error, then stop and return from 'ForEachSync'
+            console.log('error: ForEachSync_Run_cbEndOne return error');
+            cbEndAll(true);
+            return;
+        }
+        nEndCounter++;
+        if (nEndCounter >= array.length)
+        {
+            console.log('success: ForEachAsync all return ok');
+            cbEndAll(false);
+            return;
+        }
+    }
+};
+
+exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
+{
+    if (!array || !array.length)
+    {
+        console.log('success: ForEachAsync (!array || !array.length)');
+        cbEndAll(false);
+        return;
+    }
+    
+    Run(0);
+    
+    function Run(nIndex)
+    {
+        if (nIndex >= array.length) throw 'error: ForEachSync_Run (nIndex >= array.length)';
+        func(array, nIndex, onEndOne);
+        
+        function onEndOne(err)
+        {
+            if (nIndex+1 >= array.length) {
+                //if all processed then stop and return from 'ForEachSync'
+                console.log('success: ForEachSync_Run_cbEndOne return all ok');
+                cbEndAll(false);
+                return;
+            }
+            
+            cbEndOne(err, nIndex, function(error) {
+                if (error) {
+                    //if func return error, then stop and return from 'ForEachSync'
+                    console.log('error: ForEachSync_Run_cbEndOne return error');
+                    cbEndAll(true);
+                    return;
+                }
+                Run(nIndex+1);
+            });
+        }
+    }
+};
+
+/*exports.ForEach = function(array, func, callback, tick)
+{
+    if (tick) throw 'remove tick';
+    
+    if (!array || !array.length)
+    {
+        if (callback) callback(true);
         return;
     }
     for (var i=0; i<array.length; i++)
     {
         const nIndex = i;
-        const endCallback = function(bRepeat, nTimeout){
-            if (bRepeat) 
+        const endCallback = function(bError, nTimeout){
+            if (nTimeout) throw 'ForEach: nead remove nTimeout';
+            if (bError) 
             {
                 //throw 'ForEach: unexpected error';
-                setTimeout(func, nTimeout || 1000, array, nIndex, endCallback);
+                //setTimeout(func, nTimeout || 1000, array, nIndex, endCallback);
+                if (callback) callback(true);
                 return;
             }
-            if (tick) 
+            /*if (tick) 
                 tick(array, nIndex, function(bRepeatTick, nTimeoutTick) {tickCallback(bRepeatTick, nIndex);});  
             else
-                tickCallback(false, nIndex);
-        };
+                tickCallback(false, nIndex);*/
+/*        };
         func(array, nIndex, endCallback);
     }
     
-    function tickCallback(bRepeatTick, nIndex)
+    /*function tickCallback(bRepeatTick, nIndex)
     {
-        if (bRepeatTick) throw 'tickCallback: unexpected error';
+        if (bRepeatTick) 
+        {
+            //throw 'tickCallback: unexpected error';
+            callback(true, 10);
+            return;
+        }
+        
         if (nIndex+1 == array.length)
-            callback();
-    }
+            callback(false);
+    }*/
     
-    return;
-}
+/*    return;
+}*/
