@@ -4,6 +4,7 @@ const g_rpc = require('./rpc');
 const g_constants = require('../constants');
 const g_utils = require('../utils');
 const g_transactions = require("./syncTransaction");
+const g_db = require("./database");
 
 exports.Sync = function()
 {
@@ -26,7 +27,7 @@ exports.Sync = function()
                 }
                 
                // const heightStart = 0;// rows.length ? (rows[0].height) : 0;
-                const heightStart = rows.length ? (rows[0].height) : 0;;
+                const heightStart = rows.length ? (rows[0].height) : 0;
                 const heightEnd = rpcRet.data; //rpcRet.data - heightStart > 100 ? heightStart+100 : rpcRet.data;
 
                 const aBlockNumbers = function() {
@@ -39,8 +40,13 @@ exports.Sync = function()
                     setTimeout(exports.Sync, heightEnd == rpcRet.data ? 10000 : 1);
                 }, g_transactions.SaveFromBlock);*/
                 var nIndex = 0;
-                SaveBlock(aBlockNumbers, nIndex, onEnd);
                 
+                g_db.BeginTransaction(function(err) {
+                    if (err) throw 'unexpected error in Block Sync ';
+                    
+                    SaveBlock(aBlockNumbers, nIndex, onEnd);
+                });
+
                 function onEnd(bRepeat, nTimeout)
                 {
                     if (bRepeat) {
@@ -51,16 +57,20 @@ exports.Sync = function()
                     g_transactions.SaveFromBlock(aBlockNumbers, nIndex, callback);
                     function callback(bWait, nTime)
                     {
-                        if (bWait) {
-                            setTimeout(g_transactions.SaveFromBlock, nTime || 10000, aBlockNumbers, nIndex, callback);
-                            return;
-                        }
-                        if (nIndex+1 >= heightEnd) {
-                            setTimeout(exports.Sync, 10000);
-                            return;
-                        }
-                        nIndex++;
-                        SaveBlock(aBlockNumbers, nIndex, onEnd);
+                        g_db.EndTransaction(function(err) {
+                            if (err) throw 'unexpected error in Block Sync ';
+                            if (bWait || nIndex+1 >= heightEnd) {
+                                setTimeout(exports.Sync, 10000);
+                                return;
+                            }
+                            
+                            nIndex++;
+                            g_db.BeginTransaction(function(err) {
+                                if (err) throw 'unexpected error in Block Sync ';
+                                
+                                SaveBlock(aBlockNumbers, nIndex, onEnd);
+                            });
+                        });
                     }
                 }
                     
