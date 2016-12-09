@@ -165,6 +165,11 @@ exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
                 cbEndAll(false);
                 return;
             }
+            if (!cbEndOne)
+            {
+                Run(nIndex+1);
+                return;
+            }
             
             cbEndOne(err, nIndex, function(error) {
                 if (error) {

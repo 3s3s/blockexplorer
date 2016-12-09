@@ -55,7 +55,7 @@ exports.GetTransaction = function(query, res)
             var vin = JSON.parse(unescape(rows[0].vin));
             if (vin && vin.length)
             {
-                g_utils.ForEach(vin, SaveInput, function() {
+                g_utils.ForEachSync(vin, SaveInput, function() {
                     rows[0].vin = vin;
                     res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
                 });
