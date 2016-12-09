@@ -5,9 +5,8 @@ const g_constants = require('../constants');
 const g_utils = require('../utils');
 const g_transactions = require("./syncTransaction");
 
-exports.Sync = function(start)
+exports.Sync = function()
 {
-    var heightStart = start || 0;
     try
     {
         g_rpc.getblockcount('', function(rpcRet) {
@@ -17,8 +16,8 @@ exports.Sync = function(start)
                 return;
             }
             
-            //find last synced address by height
-            g_constants.dbTables['Address'].selectAll("height", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
+            //find last synced block by height
+            g_constants.dbTables['Blocks'].selectAll("height", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
                 if (error || !rows)
                 {
                     //if database error then try again after 10 sec
@@ -26,7 +25,8 @@ exports.Sync = function(start)
                     return;
                 }
                 
-               // const heightStart = 0;//rows.length ? (rows[0].height) : 0;
+               // const heightStart = 0;// rows.length ? (rows[0].height) : 0;
+                const heightStart = rows.length ? (rows[0].height) : 0;;
                 const heightEnd = rpcRet.data; //rpcRet.data - heightStart > 100 ? heightStart+100 : rpcRet.data;
 
                 const aBlockNumbers = function() {
@@ -56,7 +56,7 @@ exports.Sync = function(start)
                             return;
                         }
                         if (nIndex+1 >= heightEnd) {
-                            setTimeout(exports.Sync, 10000, heightEnd);
+                            setTimeout(exports.Sync, 10000);
                             return;
                         }
                         nIndex++;
