@@ -43,6 +43,7 @@ exports.Sync = function()
                 }, function(err, nIndex, cbError){
                     //when one function return
                     if (err) {
+                        throw 'Block sync error';
                         cbError(true);
                         return;
                     }
