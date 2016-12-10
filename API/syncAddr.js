@@ -199,8 +199,12 @@ function SaveInputs(aTXs, nIndex, cbError)
             {
                 //adress is not synced yet then wait it
                // throw 'UpdateAddress: no input address found!!!';
-                throw 'adress is not synced';
-                callbackErr(true);
+               // g_utils.GetTxByHash(aInfoForSave[nIndex].txid, function(){
+               //     throw 'adress is not synced WHERE='+WHERE;
+                    callbackErr(true);
+               // });
+                throw 'adress is not synced WHERE='+WHERE;
+              //  callbackErr(true);
                 return;
             }
             //check if addres already processed

@@ -39,7 +39,7 @@ exports.Sync = function()
                 console.log('start from '+heightStart);
                 g_utils.ForEachSync(aBlockNumbers, SaveBlock, function(){
                     //when all synced (or have error) then try again after 10 sec
-                    throw 'Block sync error 1';
+//                    throw 'Block sync error 1';
                     setTimeout(exports.Sync, 10000);
                 }, function(err, nIndex, cbError){
                     //when one function return

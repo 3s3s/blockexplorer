@@ -168,7 +168,7 @@ exports.ForEachAsync = function(array, func, cbEndAll)
 {
     exports.ForEachSync(array, func, cbEndAll);
     return;
-    if (!array || !array.length)
+   /* if (!array || !array.length)
     {
         console.log('success: ForEachAsync (!array || !array.length)');
         cbEndAll(false);
@@ -194,11 +194,11 @@ exports.ForEachAsync = function(array, func, cbEndAll)
         nEndCounter++;
         if (nEndCounter >= array.length)
         {
-            console.log('success: ForEachAsync all return ok');
+           // console.log('success: ForEachAsync all return ok');
             cbEndAll(false);
             return;
         }
-    }
+    }*/
 };
 
 exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
