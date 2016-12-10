@@ -121,9 +121,9 @@ function SaveTX(aTXs, nTX, cbError)
                             cbError(true);
                             return;
                         }
-                        g_constants.dbTables['Transactions'].selectAll("blockHeight", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error2, rowTX2) {
-                            if (error || !rowTX2 || !rowTX2.length) throw 'unexpected insert error!';
-                            g_address.SaveFromTransaction(rowTX, cbError);
+                        g_constants.dbTables['Transactions'].selectAll("*", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error2, rowTX2) {
+                            if (error2 || !rowTX2 || !rowTX2.length) throw 'unexpected insert error!';
+                            g_address.SaveFromTransaction(rowTX2, cbError);
                         });
                         
                     }
