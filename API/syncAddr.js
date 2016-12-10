@@ -43,8 +43,8 @@ exports.SaveFromTransaction = function(aTXs, nTX, cbError)
 
 function SaveOutputs(aTXs, nIndex, cbError)
 {
-    try
-    {
+   // try
+  //  {
         if (!aTXs || !aTXs.length || aTXs.length <= nIndex)
         {
             cbError(true);
@@ -85,11 +85,11 @@ function SaveOutputs(aTXs, nIndex, cbError)
                 g_db.EndTransaction(function(){callback(false);});
             });   
         });*/
-    }
+   /* }
     catch(e)
     {
         cbError(true);
-    }
+    }*/
 
     function SaveAddress(aInfoForSave, nIndex, callbackErr)
     {
@@ -140,8 +140,8 @@ function SaveOutputs(aTXs, nIndex, cbError)
 
 function SaveInputs(aTXs, nIndex, cbError)
 {
-    try
-    {
+   // try
+  //  {
         if (!aTXs || !aTXs.length || aTXs.length <= nIndex)
         {
             cbError(true);
@@ -171,11 +171,11 @@ function SaveInputs(aTXs, nIndex, cbError)
         }
      
         g_utils.ForEachAsync(aInfoForSave, UpdateAddress, cbError);
-    }
+    /*}
     catch(e)
     {
         cbError(true);
-    }   
+    }   */
     
     function UpdateAddress(aInfoForSave, nIndex, callbackErr)
     {

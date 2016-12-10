@@ -8,8 +8,8 @@ const g_db = require("./database");
 
 exports.Sync = function()
 {
-    try
-    {
+    //try
+   // {
         g_rpc.getblockcount('', function(rpcRet) {
             if (rpcRet.status != 'success')
             {
@@ -51,11 +51,11 @@ exports.Sync = function()
                 });
             });
         });
-    }
+   /* }
     catch(e)
     {
         setTimeout(exports.Sync, 30000);
-    }
+    }*/
 };
 
 function SaveBlock(aBlockNumbers, nIndex, cbError)
