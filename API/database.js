@@ -135,7 +135,7 @@ exports.Init = function() {
         }
     }
     
-    g_db.serialize(function(){
+    g_db.parallelize(function(){
         for (var i=0; i<g_constants.dbTables.length; i++)
         {
             CreateTable(g_constants.dbTables[i]);

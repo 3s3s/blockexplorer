@@ -122,7 +122,8 @@ function SaveOutputs(aTXs, nIndex, cbError)
                 aInfoForSave[nIndex].time,
                 aInfoForSave[nIndex].n,
                 aInfoForSave[nIndex].height,
-                function(err) {
+                callbackErr
+                /*function(err) {
                    if (err) 
                     {
                         callbackErr(true);
@@ -133,7 +134,7 @@ function SaveOutputs(aTXs, nIndex, cbError)
                         callbackErr(false);
                     });
                     
-                }
+                }*/
             );
         });
         
