@@ -126,7 +126,7 @@ function SaveOutputs(aTXs, nIndex, cbError)
                         return;
                     }
                     g_constants.dbTables['Address'].selectAll("number", WHERE, "LIMIT 1", function(error, rows) {
-                        if (error || !rows || !rows.length) throw 'unexpected insert error!';
+                        if (error || !rows || !rows.length) throw 'unexpected insert error! WHERE='+WHERE;
                         callbackErr(false);
                     });
                     

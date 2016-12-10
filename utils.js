@@ -221,7 +221,7 @@ exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
         {
             if (nIndex+1 >= array.length) {
                 //if all processed then stop and return from 'ForEachSync'
-                console.log('success: ForEachSync_Run_cbEndOne return all ok');
+                //console.log('success: ForEachSync_Run_cbEndOne return all ok');
                 cbEndAll(false);
                 return;
             }
