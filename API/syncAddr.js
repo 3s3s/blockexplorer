@@ -94,7 +94,7 @@ function SaveOutputs(aTXs, nIndex, cbError)
     function SaveAddress(aInfoForSave, nIndex, callbackErr)
     {
         //check - if address already present in database
-        const WHERE = "address='"+aInfoForSave[nIndex].addr+"' AND txin='"+aInfoForSave[nIndex].txin+"' AND number="+aInfoForSave[nIndex].n;
+        const WHERE = "address='"+escape(aInfoForSave[nIndex].addr)+"' AND txin='"+aInfoForSave[nIndex].txin+"' AND number="+aInfoForSave[nIndex].n;
         g_constants.dbTables['Address'].selectAll("number", WHERE, "LIMIT 1", function(error, rows) {
             if (error || !rows)
             {
