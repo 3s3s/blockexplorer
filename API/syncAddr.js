@@ -4,16 +4,27 @@ const g_constants = require('../constants');
 const g_utils = require('../utils');
 const g_db = require("./database")
 
-exports.SaveFromTransaction = function(aTXs, nTX, cbError)
+exports.SaveFromTransaction = function(rowTX, cbError)
 {
-    if (!aTXs || !aTXs.length || aTXs.length <= nTX)
+    if (!rowTX || rowTX.length != 1) throw 'unexpected argiment in SaveFromTransaction';
+    
+    SaveOutputs(rowTX, 0, function(err) {
+        if (err)
+        {
+            cbError(true);
+            return;
+        }
+        SaveInputs(rowTX, 0, cbError);
+    });
+    
+    /*if (!aTXs || !aTXs.length || aTXs.length <= nTX)
     {
         cbError(true);
         return;
     }
                     
     //find transaction in table
-    g_constants.dbTables['Transactions'].selectAll("*", "txid='"+aTXs[nTX].txid+"'", "", function(error, rowsTx) {
+    g_constants.dbTables['Transactions'].selectAll("*", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error, rowsTx) {
         if (error)
         {
             //if database error - wait 10 sec and try again
@@ -30,15 +41,7 @@ exports.SaveFromTransaction = function(aTXs, nTX, cbError)
             }
             g_utils.ForEachAsync(rowsTx, SaveInputs, cbError);
         });
-        /*g_utils.ForEach(rowsTx, SaveOutputs, function(bWait, nTimeout) {
-            if (bWait) 
-            {
-                cbRet(bWait, nTimeout);
-                return;
-            }
-            g_utils.ForEach(rowsTx, SaveInputs, cbRet);
-        });*/
-    });
+    });*/
 };
 
 function SaveOutputs(aTXs, nIndex, cbError)

@@ -69,7 +69,7 @@ function SaveTX(aTXs, nTX, cbError)
     }
                     
     //find transaction in table
-    g_constants.dbTables['Transactions'].selectAll("blockHeight", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error, rowTX) {
+    g_constants.dbTables['Transactions'].selectAll("*", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error, rowTX) {
         if (error)
         {
             //if database error - wait 10 sec and try again
@@ -82,7 +82,7 @@ function SaveTX(aTXs, nTX, cbError)
             //if transaction found then process new transaction
             //cbError(false);
             console.log('tx already in db n='+nTX+'   ('+aTXs.length+')');
-            g_address.SaveFromTransaction(aTXs, nTX, cbError);
+            g_address.SaveFromTransaction(rowTX, cbError);
             return;
         }
         
@@ -121,9 +121,9 @@ function SaveTX(aTXs, nTX, cbError)
                             cbError(true);
                             return;
                         }
-                        g_constants.dbTables['Transactions'].selectAll("*", "txid='"+aTXs[nTX].txid+"'", "", function(error, rowTX) {
-                            if (error || !rowTX || !rowTX.length) throw 'unexpected insert error!';
-                            g_address.SaveFromTransaction(aTXs, nTX, cbError);
+                        g_constants.dbTables['Transactions'].selectAll("blockHeight", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error2, rowTX2) {
+                            if (error || !rowTX2 || !rowTX2.length) throw 'unexpected insert error!';
+                            g_address.SaveFromTransaction(rowTX, cbError);
                         });
                         
                     }
