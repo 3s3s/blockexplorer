@@ -119,7 +119,18 @@ function SaveOutputs(aTXs, nIndex, cbError)
                 aInfoForSave[nIndex].time,
                 aInfoForSave[nIndex].n,
                 aInfoForSave[nIndex].height,
-                callbackErr
+                function(err) {
+                   if (err) 
+                    {
+                        callbackErr(true);
+                        return;
+                    }
+                    g_constants.dbTables['Address'].selectAll("number", WHERE, "LIMIT 1", function(error, rows) {
+                        if (error || !rows || !rows.length) throw 'unexpected insert error!';
+                        callbackErr(false);
+                    });
+                    
+                }
             );
         });
         

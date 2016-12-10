@@ -120,7 +120,11 @@ function SaveTX(aTXs, nTX, cbError)
                             cbError(true);
                             return;
                         }
-                        g_address.SaveFromTransaction(aTXs, nTX, cbError);
+                        g_constants.dbTables['Transactions'].selectAll("*", "txid='"+aTXs[nTX].txid+"'", "", function(error, rowTX) {
+                            if (error || !rowTX || !rowTX.length) throw 'unexpected insert error!';
+                            g_address.SaveFromTransaction(aTXs, nTX, cbError);
+                        });
+                        
                     }
                 );
             });
