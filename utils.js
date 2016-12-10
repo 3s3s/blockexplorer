@@ -82,6 +82,64 @@ exports.GetBlockTransactions = function(hash, callback)
     });
 };
 
+exports.GetTxByHash = function(hash, callback)
+{
+    g_constants.dbTables['Transactions'].selectAll("*", "txid='"+escape(hash)+"'", "", function(error, rows) {
+        try
+        {
+            if (error || !rows)
+            {
+                callback( {'status' : false, 'message' : error} );
+                return;
+            }
+            if (rows.length != 1)
+            {
+                callback( {'status' : false, 'message' : 'unexpected return from database'} );
+                return;
+            }
+            
+            //res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
+            var vin = JSON.parse(unescape(rows[0].vin));
+            if (vin && vin.length)
+            {
+                exports.ForEachSync(vin, SaveInput, function() {
+                    rows[0].vin = vin;
+                    callback( {'status' : 'success', 'data' : rows} );
+                });
+            }
+        }
+        catch(e)
+        {
+            callback( {'status' : false, 'message' : 'unexpected error'} );
+        }
+    });
+
+    function SaveInput(aVIN, nIndex, callback)
+    {
+        if (aVIN[nIndex].coinbase || aVIN[nIndex].vout == undefined)
+        {
+            aVIN[nIndex].addr = [];
+            callback(false);
+            return;
+        }
+        g_constants.dbTables['Transactions'].selectAll("vout", "txid='"+escape(aVIN[nIndex].txid)+"'", "", function(error, rows) {
+            if (error || !rows.length || !rows[0].vout.length)
+            {
+                callback(false);
+                return;
+            }
+            
+            const vout_o = JSON.parse(unescape(rows[0].vout));
+            if (vout_o.length && aVIN[nIndex].vout < vout_o.length)
+            {
+                aVIN[nIndex].vout_o = vout_o[aVIN[nIndex].vout];
+            }
+            callback(false);
+        });
+    }
+};
+
+
 exports.GetLastUnSyncAddrTransactions = function(limit, callback)
 {
     try
@@ -108,6 +166,8 @@ exports.GetLastUnSyncAddrTransactions = function(limit, callback)
 
 exports.ForEachAsync = function(array, func, cbEndAll)
 {
+    exports.ForEachSync(array, func, cbEndAll);
+    return;
     if (!array || !array.length)
     {
         console.log('success: ForEachAsync (!array || !array.length)');

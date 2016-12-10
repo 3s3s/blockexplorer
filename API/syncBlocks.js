@@ -47,44 +47,6 @@ exports.Sync = function()
                     }
                     g_transactions.SaveFromBlock(aBlockNumbers, nIndex, cbError);
                 });
-                
-                //aBlockNumbers.every(SaveBlock);   
-
-               /* var nIndex = 0;
-                SaveBlock(aBlockNumbers, nIndex, onEndBlockSave);
-
-                function onEndBlockSave(err, nTimeout)
-                {
-                    if (nTimeout) throw 'Block Sync: nead remove nTimeout';
-                    
-                    if (err) {
-                        //if error then try again letter
-                        setTimeout(exports.Sync, 10000);
-                        return;
-                    }
-                    
-                    g_db.BeginTransaction(function(err){
-                        if (err) if (err) throw 'unexpected error in Block Sync 1';
-                        g_transactions.SaveFromBlock(aBlockNumbers, nIndex, onEndTransactionsSave);
-                    });
-                    
-                    function onEndTransactionsSave(error, nTime)
-                    {
-                        if (nTime) throw 'Block Sync: nead remove Time';
-                        
-                        g_db.EndTransaction(function(err) {
-                            if (err) throw 'unexpected error in Block Sync 2';
-                            if (error || nIndex+1 >= heightEnd) {
-                                setTimeout(exports.Sync, 10000);
-                                return;
-                            }
-                            
-                            nIndex++;
-                            SaveBlock(aBlockNumbers, nIndex, onEndBlockSave);
-                        });
-                    }
-                }*/
-                    
             });
         });
     }
@@ -153,10 +115,6 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                     rpcRet2.data.ip || "",
                     JSON.stringify(arrayTX) || "[]",
                     cbError
-                    /*function (err)
-                    {
-                        cbError(err ? true : false);
-                    }*/
                 );
             });
         });

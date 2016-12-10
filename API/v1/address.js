@@ -19,12 +19,46 @@ exports.GetAddress = function(query, res)
                 res.end( JSON.stringify({'status' : false, 'message' : error}) );
                 return;
             }
-
-            res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
+            
+            g_utils.ForEachSync(rows, SaveTransaction, function() {
+                res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
+            });
         }
         catch(e)
         {
             res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
         }
     });
+    
+    function SaveTransaction(aAddress, nIndex, cbErr)
+    {
+        if (!aAddress || !aAddress.length)
+        {
+            cbErr(true);
+            return;
+        }
+        
+        g_utils.GetTxByHash(aAddress[nIndex].txin, function(result) {
+            if (!result.data)
+            {
+                cbErr(true);
+                return;
+            }
+            aAddress[nIndex]['txin_info'] = result.data;
+            if (!aAddress[nIndex].txout)
+            {
+                cbErr(false);
+                return;
+            }
+            g_utils.GetTxByHash(aAddress[nIndex].txout, function(result2) {
+                if (!result2.data)
+                {
+                    cbErr(false);
+                    return;
+                }
+                aAddress[nIndex]['txout_info'] = result2.data;
+                cbErr(false);
+            });
+        });
+    }
 }

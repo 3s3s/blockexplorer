@@ -188,6 +188,7 @@ function SaveInputs(aTXs, nIndex, cbError)
             {
                 //adress is not synced yet then wait it
                // throw 'UpdateAddress: no input address found!!!';
+                throw 'adress is not synced';
                 callbackErr(true);
                 return;
             }
