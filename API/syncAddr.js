@@ -45,7 +45,7 @@ function SaveOutputs(aTXs, nIndex, cbError)
             for (var j=0; j<aVout[i].scriptPubKey.addresses.length; j++)
             {
                 aInfoForSave.push({
-                    'key' : aVout[i].scriptPubKey.addresses[j]+aTXs[nIndex].txid+(aVout[i].n || "0"),
+                    'key' : aTXs[nIndex].txid+(aVout[i].n || "0"),
                     'addr' : aVout[i].scriptPubKey.addresses[j], 
                     'scriptPubKey' : aVout[i].scriptPubKey,
                     'value' : aVout[i].value || "0",
@@ -168,7 +168,7 @@ function SaveInputs(aTXs, nIndex, cbError)
         
         //check if address present in database
         //const WHERE = "txin='"+aInfoForSave[nIndex].txid+"' AND number="+aInfoForSave[nIndex].vout;
-        const WHERE = "key='"+aInfoForSave[nIndex].addr+aInfoForSave[nIndex].txid+(aInfoForSave[nIndex].vout || "0");
+        const WHERE = "key='"+aInfoForSave[nIndex].txid+(aInfoForSave[nIndex].vout || "0")+"'";
         g_constants.dbTables['Address'].selectAll("*", WHERE, "LIMIT 1", function(e, r) {
             if (e || !r)
             {
@@ -183,7 +183,7 @@ function SaveInputs(aTXs, nIndex, cbError)
                // throw 'UpdateAddress: no input address found!!!';
                // g_utils.GetTxByHash(aInfoForSave[nIndex].txid, function(){
                //     throw 'adress is not synced WHERE='+WHERE;
-                    callbackErr(true);
+               //     callbackErr(true);
                // });
                 throw 'adress is not synced WHERE='+WHERE;
               //  callbackErr(true);
