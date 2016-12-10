@@ -27,7 +27,7 @@ exports.Sync = function()
                 }
                 
                // const heightStart = 0;// rows.length ? (rows[0].height) : 0;
-                const heightStart = (rows.length && rows[0].height > 1000) ? (rows[0].height-1000) : 0;
+                const heightStart = (rows.length && rows[0].height > 1) ? (rows[0].height-1) : 0;
                 const heightEnd = rpcRet.data; //rpcRet.data - heightStart > 100 ? heightStart+100 : rpcRet.data;
 
                 const aBlockNumbers = function() {
