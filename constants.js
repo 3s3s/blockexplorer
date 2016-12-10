@@ -37,6 +37,7 @@ exports.dbTables = [
     {
       'name' : 'Address',
       'cols' : [
+        ['key', 'TEXT PRIMARY KEY'],
         ['address', 'TEXT'],
         ['scriptPubKey', 'TEXT'],
         ['value', 'TEXT'],
