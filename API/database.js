@@ -201,8 +201,8 @@ exports.RunTransactions = function()
         g_db.run('END TRANSACTION', function(err){
             if (!err)
             {
-               // g_db.run("VACUUM");
-                setTimeout(Begin, 10);
+                g_db.run("VACUUM");
+                setTimeout(Begin, 1);
             }
             else
                 setTimeout(End, 2000);
