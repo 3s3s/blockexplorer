@@ -61,7 +61,8 @@ exports.Init = function() {
             var callbackERR = values[values.length-1];
             
             if (values.length-1 != tableObject.cols.length ) {
-                console.log('Insert failed arguments count: ' + values.length-1);
+                console.log('ERROR: Insert to table "'+tableObject.name+'" failed arguments count: ' + (values.length-1));
+                
                 callbackERR(true);
                 return;
             }

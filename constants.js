@@ -47,8 +47,7 @@ exports.dbTables = [
         ['txout', 'TEXT'],
         ['time', 'TEXT'],
         ['number', 'INT'],
-        ['height', 'INT'],
-        ['FOREIGN KEY(txin, height)', 'REFERENCES Transactions(txid, blockHeight)']
+        ['height', 'INT']
       ],
       'commands' : 'FOREIGN KEY(txin) REFERENCES Transactions(txid)'
     },
