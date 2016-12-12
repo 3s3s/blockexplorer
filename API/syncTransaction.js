@@ -5,7 +5,24 @@ const g_constants = require('../constants');
 const g_utils = require('../utils');
 const g_address = require("./syncAddr");
 
-exports.SaveFromBlock = function(aBlockNumbers, nIndex, cbError)
+exports.SaveTxFromBlock = function(block, cbError)
+{
+    //Save transactions from table 'Blocks' in array    
+    const txInBlock = function() {
+        var tmp = JSON.parse(unescape(block.tx));
+        var ret = [];
+        for (var i=0; i<tmp.length; i++)
+            ret.push({'txid' : tmp[i], 'blockHash' : block.hash, 'blockHeight' : block.height});
+        return ret;
+    } (); 
+                
+    console.log("try save transactions for block="+block.height);
+        
+    g_utils.ForEachAsync(txInBlock, SaveTX, cbError);
+    
+};
+
+/*exports.SaveFromBlock = function(aBlockNumbers, nIndex, cbError)
 {
     if (!aBlockNumbers || !aBlockNumbers.length || aBlockNumbers.length <= nIndex)
     {
@@ -33,31 +50,8 @@ exports.SaveFromBlock = function(aBlockNumbers, nIndex, cbError)
         console.log("try save transactions for block="+aBlockNumbers[nIndex]);
         
         g_utils.ForEachAsync(txInBlock, SaveTX, cbError);
-        /*var nTx = 0;
-        SaveTX(txInBlock, nTx, onEndTransactionSave);
-        
-        function onEndTransactionSave(err, n)
-        {
-            if (n) throw 'SaveTX: unexpected argument n';
-            if (err)
-            {
-                callback(err);
-                return;
-            }
-            
-        }
-        /*for (var i=0; i<txInBlock.length; i++)
-        {
-            SaveTX(txInBlock, i, function(err, n){
-                if (n) throw 'SaveTX: unexpected argument n';
-                if (err) throw 'unexpected error in transaction save';
-            });
-        }*/
-        /*g_utils.ForEach(txInBlock, SaveTX, function(nRepeat, nTimeout) {
-            
-        });*/
     });
-};
+};*/
 
 
 function SaveTX(aTXs, nTX, cbError)
@@ -108,24 +102,25 @@ function SaveTX(aTXs, nTX, cbError)
                     return;
                 }
                 
-                g_constants.dbTables['Transactions'].insert(
+                aTXs[nTX].time = rpcRet2.data.time || 0;
+                aTXs[nTX].vin = JSON.stringify(rpcRet2.data.vin) || "[]";
+                aTXs[nTX].vout = JSON.stringify(rpcRet2.data.vout) || "[]";
+                
+                g_constants.dbTables['Transactions'].insert2(
                     aTXs[nTX].blockHash,
                     aTXs[nTX].blockHeight,
                     aTXs[nTX].txid,
-                    rpcRet2.data.time || 0,
-                    JSON.stringify(rpcRet2.data.vin) || "[]",
-                    JSON.stringify(rpcRet2.data.vout) || "[]",
+                    aTXs[nTX].time,
+                    aTXs[nTX].vin,
+                    aTXs[nTX].vout,
                     function(err) {
-                        if (err) 
-                        {
-                            cbError(true);
-                            return;
-                        }
-                        g_constants.dbTables['Transactions'].selectAll("rowid, *", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error2, rowTX2) {
+                        if (err) throw 'unexpected insert error to Transactions table'
+                        g_address.SaveFromTransaction([ aTXs[nTX] ], cbError);
+                        /*g_constants.dbTables['Transactions'].selectAll("rowid, *", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error2, rowTX2) {
                             if (error2 || !rowTX2 || !rowTX2.length) throw 'unexpected insert error!';
                             console.log('transaction insert success id='+aTXs[nTX].txid+'  (now try save address)');
                             g_address.SaveFromTransaction(rowTX2, cbError);
-                        });
+                        });*/
                         
                     }
                 );

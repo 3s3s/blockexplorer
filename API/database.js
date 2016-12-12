@@ -57,6 +57,14 @@ exports.Init = function() {
     
     function Insert(tableObject, values)
     {
+        InsertCommon(tableObject, values, false);
+    }
+    function Insert2(tableObject, values)
+    {
+        InsertCommon(tableObject, values, true);
+   }
+    function InsertCommon(tableObject, values, bToMemory)
+    {
         try {
             var callbackERR = values[values.length-1];
             
@@ -77,11 +85,19 @@ exports.Init = function() {
             vals += ')';
             
             console.log('INSERT INTO ' + tableObject.name + ' VALUES ' + vals);
-            g_db.run('INSERT INTO ' + tableObject.name + ' VALUES ' + vals, function(err) {
-                if (callbackERR) callbackERR(err);
-                if (err) 
-                    console.log('INSERT error: ' + err.message);
-            });
+            if (bToMemory)
+            {
+                exports.addMemQuery('INSERT INTO ' + tableObject.name + ' VALUES ' + vals);
+                callbackERR(false);
+            }
+            else
+            {
+                g_db.run('INSERT INTO ' + tableObject.name + ' VALUES ' + vals, function(err) {
+                    if (callbackERR) callbackERR(err);
+                    if (err) 
+                        console.log('INSERT error: ' + err.message);
+                });
+            }
         }
         catch(e) {
             console.log(e.message);
@@ -147,6 +163,8 @@ exports.Init = function() {
            
             g_constants.dbTables[i]['insert'] = function() {
                 Insert(this, arguments);};
+            g_constants.dbTables[i]['insert2'] = function() {
+                Insert2(this, arguments);};
             
             g_constants.dbTables[i]['update'] = function(SET, WHERE, callback) {
                 Update(this.name, SET, WHERE, callback);};
@@ -193,7 +211,7 @@ exports.RunTransactions = function()
     {
         g_db.run('BEGIN TRANSACTION', function(err){
             if (!err)
-                setTimeout(End, 10000);
+                setTimeout(End, 1000000);
             else
                 setTimeout(Begin, 2000);
         });
@@ -229,4 +247,29 @@ exports.EndTransaction = function(callback)
      });
 };
 
+var g_memQueries = [];
+exports.addMemQuery = function(strQuery) 
+{
+    if (!strQuery || !strQuery.length) throw 'invlid SQL query';
+    
+    g_memQueries.push(strQuery);
+};
+exports.RunMemQueries = function(callback)
+{
+    if (!g_memQueries.length)
+    {
+        callback(false);
+        return;
+    }
+    exports.BeginTransaction(function() {
+        g_memQueries.forEach(function(val, index, array){
+             g_db.run(val, function(error) {
+                 if (error) throw 'RunMemQueries unexpected error for query='+val;
+             });
+        });
+        g_memQueries = [];
+        exports.EndTransaction(callback);
+    });
+    
+}
 

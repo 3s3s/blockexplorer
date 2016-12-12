@@ -41,14 +41,22 @@ exports.Sync = function()
                     //when all synced (or have error) then try again after 10 sec
 //                    throw 'Block sync error 1';
                     setTimeout(exports.Sync, 10000);
-                }, function(err, nIndex, cbError){
+                }, function(err, params, cbError){
                     //when one function return
                     if (err) {
                         throw 'Block sync error 2';
-                        cbError(true);
-                        return;
+                        //cbError(true);
+                        //return;
                     }
-                    g_transactions.SaveFromBlock(aBlockNumbers, nIndex, cbError);
+                    g_transactions.SaveTxFromBlock(params, function (err) {
+                        if (err) throw 'unexpected SaveTxFromBlock( error';
+                        g_db.RunMemQueries(cbError);
+                    });
+                    /*g_transactions.SaveFromBlock(aBlockNumbers, params.nIndex, function(err) {
+                        if (err) throw 'unexpected SaveFromBlock error';
+                        
+                        g_db.RunMemQueries(cbError);
+                    });*/
                 });
             });
         });
@@ -68,7 +76,7 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
         return;
     }
         
-    g_constants.dbTables['Blocks'].selectAll("height", "height="+aBlockNumbers[nIndex], "", function(error, rows) {
+    g_constants.dbTables['Blocks'].selectAll("*", "height="+aBlockNumbers[nIndex], "", function(error, rows) {
         if (error)
         {
             //if database error - wait 10 sec and try again
@@ -80,7 +88,7 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
         {
             //if block found in database - return for process new block
             console.log('block #'+aBlockNumbers[nIndex]+' alredy in db');
-            cbError(false);
+            cbError(false, rows[0]);
             return;
         }
             
@@ -103,8 +111,10 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                 }
                     
                 const arrayTX = (typeof rpcRet2.data.tx === 'string') ? [].push(rpcRet2.data.tx) : rpcRet2.data.tx;
+                
+                rpcRet2.data.tx = JSON.stringify(arrayTX) || "[]";
                         
-                g_constants.dbTables['Blocks'].insert(
+                g_constants.dbTables['Blocks'].insert2(
                     rpcRet2.data.hash,
                     rpcRet2.data.size,
                     rpcRet2.data.height,
@@ -117,8 +127,11 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                     rpcRet2.data.previousblockhash || "",
                     rpcRet2.data.nextblockhash || "",
                     rpcRet2.data.ip || "",
-                    JSON.stringify(arrayTX) || "[]",
-                    cbError
+                    rpcRet2.data.tx,
+                    function(err) {
+                        if (err) throw 'unexpected block insert error';
+                        cbError(false, rpcRet2.data);
+                    }
                 );
             });
         });

@@ -218,7 +218,7 @@ exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
         if (nIndex >= array.length) throw 'error: ForEachSync_Run (nIndex >= array.length)';
         func(array, nIndex, onEndOne);
         
-        function onEndOne(err)
+        function onEndOne(err, params)
         {
             if (nIndex+1 >= array.length) {
                 //if all processed then stop and return from 'ForEachSync'
@@ -232,7 +232,11 @@ exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
                 return;
             }
             
-            cbEndOne(err, nIndex, function(error) {
+            if (!params) params = {};
+            
+            params.nIndex = nIndex;
+            
+            cbEndOne(err, params, function(error) {
                 if (error) {
                     //if func return error, then stop and return from 'ForEachSync'
                     console.log('error: ForEachSync_Run_cbEndOne return error');

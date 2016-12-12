@@ -32,6 +32,6 @@ exports.StartSyncronize = function()
     //g_syncAddr.Sync();
     //g_syncAddr2.Sync();
     
-    g_db.RunTransactions();
+    //g_db.RunTransactions();
 };
 

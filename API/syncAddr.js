@@ -90,7 +90,7 @@ function SaveOutputs(aTXs, nIndex, cbError)
                 return;
             }
             
-            g_constants.dbTables['Address'].insert(
+            g_constants.dbTables['Address'].insert2(
                 aInfoForSave[nIndex].key,
                 aInfoForSave[nIndex].addr || JSON.stringify(['???']),
                 JSON.stringify(aInfoForSave[nIndex].scriptPubKey) || JSON.stringify([]),
@@ -100,8 +100,8 @@ function SaveOutputs(aTXs, nIndex, cbError)
                 aInfoForSave[nIndex].time,
                 aInfoForSave[nIndex].n,
                 aInfoForSave[nIndex].height,
-                //callbackErr
-                function(err) {
+                callbackErr
+               /* function(err) {
                    if (err) throw 'unexpected insert error';
                     const WHERE = "key='"+aInfoForSave[nIndex].txid+(aInfoForSave[nIndex].vout || "0")+"'";
                     g_constants.dbTables['Address'].selectAll("*", WHERE, "LIMIT 1", function(e, r) {
@@ -110,7 +110,7 @@ function SaveOutputs(aTXs, nIndex, cbError)
                        callbackErr(false);
                     });
                     
-                }
+                }*/
             );
         });
         
@@ -150,7 +150,10 @@ function SaveInputs(aTXs, nIndex, cbError)
             });
         }
      
-        g_utils.ForEachAsync(aInfoForSave, UpdateAddress, cbError);
+        g_db.RunMemQueries(function(err) {
+            if (err) throw 'unexpected error in address RunMemQueries';
+            g_utils.ForEachAsync(aInfoForSave, UpdateAddress, cbError);
+        });
     /*}
     catch(e)
     {
@@ -178,15 +181,7 @@ function SaveInputs(aTXs, nIndex, cbError)
             
             if (!r.length)
             {
-                //adress is not synced yet then wait it
-               // throw 'UpdateAddress: no input address found!!!';
-               // g_utils.GetTxByHash(aInfoForSave[nIndex].txid, function(){
-               //     throw 'adress is not synced WHERE='+WHERE;
-               //     callbackErr(true);
-               // });
                 throw 'adress is not synced WHERE='+WHERE;
-              //  callbackErr(true);
-              //  return;
             }
             
             //check if addres already processed
@@ -200,25 +195,6 @@ function SaveInputs(aTXs, nIndex, cbError)
             
             const SET = "txout='"+aInfoForSave[nIndex].parent+"'";
             g_constants.dbTables['Address'].update(SET, WHERE, callbackErr);
-            /*g_constants.dbTables['Address'].selectAll("number", WHERE+" AND txout='"+aInfoForSave[nIndex].parent+"'", "", function(error, rows) {
-                if (error || !rows)
-                {
-                    //if database error then try again after 10 sec
-                    callbackErr(true);
-                    return;
-                }
-                
-                if (rows.length)
-                {
-                    //if record found then process next transaction and address
-                    callbackErr(false);
-                    return;
-                }
-                
-                const SET = "txout='"+aInfoForSave[nIndex].parent+"'";
-                g_constants.dbTables['Address'].update(SET, WHERE, callbackErr);
-                
-            });*/
         });
     }
 }
