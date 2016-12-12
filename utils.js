@@ -145,7 +145,7 @@ exports.GetLastUnSyncAddrTransactions = function(limit, callback)
     try
     {
         //find address with max time
-        g_constants.dbTables['Address'].selectAll("*", "", "ORDER BY time DESC LIMIT 1", function(error, rows) {
+        /*/g_constants.dbTables['Address'].selectAll("*", "", "ORDER BY time DESC LIMIT 1", function(error, rows) {
             if (error || !rows)
             {
                 callback(error, rows);
@@ -153,9 +153,10 @@ exports.GetLastUnSyncAddrTransactions = function(limit, callback)
             }
             
             //find transactions with time >= max address time
-            const strWhere = rows.length ? "time >= " + escape(rows[0].time) : "";
-            g_constants.dbTables['Transactions'].selectAll("*", strWhere, "LIMIT "+limit, callback);
-        });
+            const strWhere = rows.length ? "time >= " + escape(rows[0].time) : "";*/
+            //g_constants.dbTables['Transactions'].selectAll("*", strWhere, "LIMIT "+limit, callback);
+            g_constants.dbTables['Transactions'].selectAll("*", "", "ORDER BY time DESC LIMIT "+limit, callback);
+        //});
     }
     catch(e)
     {

@@ -8,7 +8,7 @@ exports.dbTables = [
     {
       'name' : 'Blocks',
       'cols' : [
-        ['hash', 'TEXT PRIMARY KEY'], 
+        ['hash', 'TEXT'], 
         ['size', 'INT'], 
         ['height', 'INT'],
         ['version', 'INT'],
@@ -21,7 +21,8 @@ exports.dbTables = [
         ['nextblockhash', 'TEXT'],
         ['ip', 'TEXT'],
         ['tx', 'TEXT']
-      ]
+      ],
+      'commands' : 'PRIMARY KEY (hash, height, time)'
     },
     {
       'name' : 'Transactions',
@@ -32,7 +33,8 @@ exports.dbTables = [
         ['time', 'INT'],
         ['vin', 'TEXT'],
         ['vout', 'TEXT']
-      ]
+      ],
+      'commands' : 'FOREIGN KEY(blockHash, blockHeight, time) REFERENCES Blocks(hash, height, time)'
     },
     {
       'name' : 'Address',
@@ -45,8 +47,10 @@ exports.dbTables = [
         ['txout', 'TEXT'],
         ['time', 'TEXT'],
         ['number', 'INT'],
-        ['height', 'INT']
-      ]
+        ['height', 'INT'],
+        ['FOREIGN KEY(txin, height)', 'REFERENCES Transactions(txid, blockHeight)']
+      ],
+      'commands' : 'FOREIGN KEY(txin) REFERENCES Transactions(txid)'
     },
     {
       'name' : 'KeyValue',

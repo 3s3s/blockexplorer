@@ -121,8 +121,9 @@ function SaveTX(aTXs, nTX, cbError)
                             cbError(true);
                             return;
                         }
-                        g_constants.dbTables['Transactions'].selectAll("*", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error2, rowTX2) {
+                        g_constants.dbTables['Transactions'].selectAll("rowid, *", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error2, rowTX2) {
                             if (error2 || !rowTX2 || !rowTX2.length) throw 'unexpected insert error!';
+                            console.log('transaction insert success id='+aTXs[nTX].txid+'  (now try save address)');
                             g_address.SaveFromTransaction(rowTX2, cbError);
                         });
                         

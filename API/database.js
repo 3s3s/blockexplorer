@@ -25,6 +25,8 @@ exports.Init = function() {
             if (i != tableObject.cols.length-1)
                 cols += ', ';
         }
+        
+        if (tableObject.commands) cols += ", "+tableObject.commands;
     
          cols += ')';
          
@@ -201,7 +203,7 @@ exports.RunTransactions = function()
         g_db.run('END TRANSACTION', function(err){
             if (!err)
             {
-                g_db.run("VACUUM");
+               // g_db.run("VACUUM");
                 setTimeout(Begin, 1);
             }
             else

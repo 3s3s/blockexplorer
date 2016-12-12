@@ -14,6 +14,7 @@ exports.SaveFromTransaction = function(rowTX, cbError)
             cbError(true);
             return;
         }
+        console.log('outputs saved, try save inputs');
         SaveInputs(rowTX, 0, cbError);
     });
 };
