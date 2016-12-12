@@ -103,7 +103,13 @@ function SaveOutputs(aTXs, nIndex, cbError)
                 //callbackErr
                 function(err) {
                    if (err) throw 'unexpected insert error';
-                    callbackErr(false);
+                    const WHERE = "key='"+aInfoForSave[nIndex].txid+(aInfoForSave[nIndex].vout || "0")+"'";
+                    g_constants.dbTables['Address'].selectAll("*", WHERE, "LIMIT 1", function(e, r) {
+                       if (e) throw 'ERROR: unexpected insrt address error';
+                       
+                       callbackErr(false);
+                    });
+                    
                 }
             );
         });
