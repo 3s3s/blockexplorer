@@ -5,6 +5,7 @@ const g_constants = require('../constants');
 const g_utils = require('../utils');
 const g_address = require("./syncAddr");
 
+var g_Transactions = [];
 exports.SaveTxFromBlock = function(block, cbError)
 {
     //Save transactions from table 'Blocks' in array    
@@ -16,43 +17,14 @@ exports.SaveTxFromBlock = function(block, cbError)
         return ret;
     } (); 
                 
+    g_Transactions = [];
     console.log("try save transactions for block="+block.height);
         
-    g_utils.ForEachAsync(txInBlock, SaveTX, cbError);
-    
-};
-
-/*exports.SaveFromBlock = function(aBlockNumbers, nIndex, cbError)
-{
-    if (!aBlockNumbers || !aBlockNumbers.length || aBlockNumbers.length <= nIndex)
-    {
-        cbError(true);
-        return;
-    }
-        
-    g_constants.dbTables['Blocks'].selectAll("*", "height="+aBlockNumbers[nIndex], "", function(error, rowBlocks) {
-        if (error || !rowBlocks || !rowBlocks.length)
-        {
-            //if database error - wait 10 sec and try again
-            cbError(true);
-            return;
-        }
-            
-        //Save transactions from table 'Blocks' in array    
-        const txInBlock = function() {
-            var tmp = JSON.parse(unescape(rowBlocks[0].tx));
-            var ret = [];
-            for (var i=0; i<tmp.length; i++)
-                ret.push({'txid' : tmp[i], 'blockHash' : rowBlocks[0].hash, 'blockHeight' : rowBlocks[0].height});
-            return ret;
-        } (); 
-                
-        console.log("try save transactions for block="+aBlockNumbers[nIndex]);
-        
-        g_utils.ForEachAsync(txInBlock, SaveTX, cbError);
+    g_utils.ForEachAsync(txInBlock, SaveTX, function(err) {
+        if (err) throw 'unexpected error in SaveTxFromBlock';
+        g_address.SaveFromTransaction(g_Transactions, cbError);  
     });
-};*/
-
+};
 
 function SaveTX(aTXs, nTX, cbError)
 {
@@ -115,13 +87,9 @@ function SaveTX(aTXs, nTX, cbError)
                     aTXs[nTX].vout,
                     function(err) {
                         if (err) throw 'unexpected insert error to Transactions table'
-                        g_address.SaveFromTransaction([ aTXs[nTX] ], cbError);
-                        /*g_constants.dbTables['Transactions'].selectAll("rowid, *", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error2, rowTX2) {
-                            if (error2 || !rowTX2 || !rowTX2.length) throw 'unexpected insert error!';
-                            console.log('transaction insert success id='+aTXs[nTX].txid+'  (now try save address)');
-                            g_address.SaveFromTransaction(rowTX2, cbError);
-                        });*/
-                        
+                        //g_address.SaveOutputsFromTransaction([ aTXs[nTX] ], cbError);
+                        g_Transactions.push( aTXs[nTX] );
+                        cbError(false);
                     }
                 );
             });

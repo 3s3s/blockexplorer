@@ -2,22 +2,29 @@
 
 const g_constants = require('../constants');
 const g_utils = require('../utils');
-const g_db = require("./database")
+const g_db = require("./database");
 
-exports.SaveFromTransaction = function(rowTX, cbError)
+exports.SaveFromTransaction = function(aTXs, cbError)
+{
+    g_utils.ForEachSync(aTXs, SaveOutputs, function(err){
+        if (err) throw 'unexpectd SaveFromTransaction  error';
+        g_utils.ForEachSync(aTXs, SaveInputs, cbError);
+    });
+};
+
+/*exports.SaveInputsFromTransaction = function(rowTX, cbError)
 {
     if (!rowTX || rowTX.length != 1) throw 'unexpected argiment in SaveFromTransaction';
     
-    SaveOutputs(rowTX, 0, function(err) {
-        if (err)
-        {
-            cbError(true);
-            return;
-        }
-        console.log('outputs saved, try save inputs');
-        SaveInputs(rowTX, 0, cbError);
-    });
+    SaveInputs(rowTX, 0, cbError);
 };
+
+exports.SaveOutputsFromTransaction = function(rowTX, cbError)
+{
+    if (!rowTX || rowTX.length != 1) throw 'unexpected argiment in SaveFromTransaction';
+    
+    SaveOutputs(rowTX, 0, cbError);
+};*/
 
 function SaveOutputs(aTXs, nIndex, cbError)
 {

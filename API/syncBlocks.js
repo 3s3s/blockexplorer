@@ -43,20 +43,12 @@ exports.Sync = function()
                     setTimeout(exports.Sync, 10000);
                 }, function(err, params, cbError){
                     //when one function return
-                    if (err) {
-                        throw 'Block sync error 2';
-                        //cbError(true);
-                        //return;
-                    }
+                    if (err)  throw 'Block sync error 2';
+
                     g_transactions.SaveTxFromBlock(params, function (err) {
                         if (err) throw 'unexpected SaveTxFromBlock( error';
                         g_db.RunMemQueries(cbError);
                     });
-                    /*g_transactions.SaveFromBlock(aBlockNumbers, params.nIndex, function(err) {
-                        if (err) throw 'unexpected SaveFromBlock error';
-                        
-                        g_db.RunMemQueries(cbError);
-                    });*/
                 });
             });
         });
@@ -76,7 +68,7 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
         return;
     }
         
-    g_constants.dbTables['Blocks'].selectAll("*", "height="+aBlockNumbers[nIndex], "", function(error, rows) {
+    g_constants.dbTables['Blocks'].selectAll("*", "height="+aBlockNumbers[nIndex], "LIMIT 1", function(error, rows) {
         if (error)
         {
             //if database error - wait 10 sec and try again
