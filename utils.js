@@ -155,7 +155,7 @@ exports.GetLastUnSyncAddrTransactions = function(limit, callback)
             //find transactions with time >= max address time
             const strWhere = rows.length ? "time >= " + escape(rows[0].time) : "";*/
             //g_constants.dbTables['Transactions'].selectAll("*", strWhere, "LIMIT "+limit, callback);
-            g_constants.dbTables['Transactions'].selectAll("*", "", "ORDER BY time DESC LIMIT "+limit, callback);
+            g_constants.dbTables['Transactions'].selectAll("*", "", "ORDER BY ROWID DESC LIMIT "+limit, callback);
         //});
     }
     catch(e)
@@ -248,48 +248,3 @@ exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
         }
     }
 };
-
-/*exports.ForEach = function(array, func, callback, tick)
-{
-    if (tick) throw 'remove tick';
-    
-    if (!array || !array.length)
-    {
-        if (callback) callback(true);
-        return;
-    }
-    for (var i=0; i<array.length; i++)
-    {
-        const nIndex = i;
-        const endCallback = function(bError, nTimeout){
-            if (nTimeout) throw 'ForEach: nead remove nTimeout';
-            if (bError) 
-            {
-                //throw 'ForEach: unexpected error';
-                //setTimeout(func, nTimeout || 1000, array, nIndex, endCallback);
-                if (callback) callback(true);
-                return;
-            }
-            /*if (tick) 
-                tick(array, nIndex, function(bRepeatTick, nTimeoutTick) {tickCallback(bRepeatTick, nIndex);});  
-            else
-                tickCallback(false, nIndex);*/
-/*        };
-        func(array, nIndex, endCallback);
-    }
-    
-    /*function tickCallback(bRepeatTick, nIndex)
-    {
-        if (bRepeatTick) 
-        {
-            //throw 'tickCallback: unexpected error';
-            callback(true, 10);
-            return;
-        }
-        
-        if (nIndex+1 == array.length)
-            callback(false);
-    }*/
-    
-/*    return;
-}*/
