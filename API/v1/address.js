@@ -11,6 +11,7 @@ exports.GetAddress = function(query, res)
         res.end( JSON.stringify({'status' : false, 'message' : 'ERROR: bad query (nead ?hash=...)'}) );
         return;
     }
+    
     g_constants.dbTables['Address'].selectAll("*", "address='"+escape(query.hash)+"'", "ORDER BY time", function(error, rows) {
         try
         {

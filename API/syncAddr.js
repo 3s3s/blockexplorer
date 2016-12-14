@@ -12,20 +12,6 @@ exports.SaveFromTransaction = function(aTXs, cbError)
     });
 };
 
-/*exports.SaveInputsFromTransaction = function(rowTX, cbError)
-{
-    if (!rowTX || rowTX.length != 1) throw 'unexpected argiment in SaveFromTransaction';
-    
-    SaveInputs(rowTX, 0, cbError);
-};
-
-exports.SaveOutputsFromTransaction = function(rowTX, cbError)
-{
-    if (!rowTX || rowTX.length != 1) throw 'unexpected argiment in SaveFromTransaction';
-    
-    SaveOutputs(rowTX, 0, cbError);
-};*/
-
 function SaveOutputs(aTXs, nIndex, cbError)
 {
    // try
@@ -66,11 +52,6 @@ function SaveOutputs(aTXs, nIndex, cbError)
         }
     
         g_utils.ForEachAsync(aInfoForSave, SaveAddress, cbError);
-        /*g_db.BeginTransaction(function(){
-            g_utils.ForEach(aInfoForSave, SaveAddress, function() {
-                g_db.EndTransaction(function(){callback(false);});
-            });   
-        });*/
    /* }
     catch(e)
     {
@@ -108,16 +89,6 @@ function SaveOutputs(aTXs, nIndex, cbError)
                 aInfoForSave[nIndex].n,
                 aInfoForSave[nIndex].height,
                 callbackErr
-               /* function(err) {
-                   if (err) throw 'unexpected insert error';
-                    const WHERE = "key='"+aInfoForSave[nIndex].txid+(aInfoForSave[nIndex].vout || "0")+"'";
-                    g_constants.dbTables['Address'].selectAll("*", WHERE, "LIMIT 1", function(e, r) {
-                       if (e) throw 'ERROR: unexpected insrt address error';
-                       
-                       callbackErr(false);
-                    });
-                    
-                }*/
             );
         });
         
@@ -199,7 +170,6 @@ function SaveInputs(aTXs, nIndex, cbError)
                 return;
                 
             }
-            
             const SET = "txout='"+aInfoForSave[nIndex].parent+"'";
             g_constants.dbTables['Address'].update(SET, WHERE, callbackErr);
         });
