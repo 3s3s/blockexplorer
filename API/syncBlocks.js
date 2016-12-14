@@ -6,6 +6,7 @@ const g_utils = require('../utils');
 const g_transactions = require("./syncTransaction");
 const g_db = require("./database");
 
+//var g_tmp = 16361;
 exports.Sync = function()
 {
   //  try
@@ -17,7 +18,7 @@ exports.Sync = function()
                 return;
             }
             
-            //rpcRet.data = 16354;
+            //rpcRet.data = g_tmp++;
             //find last synced block by height
             g_constants.dbTables['Blocks'].selectAll("height", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
                 if (error || !rows)
@@ -75,8 +76,9 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
         cbError(true);
         return;
     }
-        
-    g_constants.dbTables['Blocks'].selectAll("*", "height="+aBlockNumbers[nIndex], "LIMIT 1", function(error, rows) {
+    
+    const WHERE = "height="+aBlockNumbers[nIndex];    
+    g_constants.dbTables['Blocks'].selectAll("*", WHERE, "LIMIT 1", function(error, rows) {
         if (error)
         {
             //if database error - wait 10 sec and try again
@@ -84,7 +86,7 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
             return;
         }
             
-        if (rows.length)
+        if (rows.length && rows[0].nextblockhash.length)
         {
             //if block found in database - return for process new block
             console.log('block #'+aBlockNumbers[nIndex]+' alredy in db');
@@ -113,26 +115,37 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                 const arrayTX = (typeof rpcRet2.data.tx === 'string') ? [].push(rpcRet2.data.tx) : rpcRet2.data.tx;
                 
                 rpcRet2.data.tx = JSON.stringify(arrayTX) || "[]";
-                        
-                g_constants.dbTables['Blocks'].insert2(
-                    rpcRet2.data.hash,
-                    rpcRet2.data.size,
-                    rpcRet2.data.height,
-                    rpcRet2.data.version,
-                    rpcRet2.data.merkleroot,
-                    rpcRet2.data.time,
-                    rpcRet2.data.nonce,
-                    rpcRet2.data.bits,
-                    rpcRet2.data.difficulty,
-                    rpcRet2.data.previousblockhash || "",
-                    rpcRet2.data.nextblockhash || "",
-                    rpcRet2.data.ip || "",
-                    rpcRet2.data.tx,
-                    function(err) {
-                        if (err) throw 'unexpected block insert error';
-                        cbError(false, rpcRet2.data);
-                    }
-                );
+               
+                if (!rows.length)   
+                {
+                    g_constants.dbTables['Blocks'].insert2(
+                        rpcRet2.data.hash,
+                        rpcRet2.data.size,
+                        rpcRet2.data.height,
+                        rpcRet2.data.version,
+                        rpcRet2.data.merkleroot,
+                        rpcRet2.data.time,
+                        rpcRet2.data.nonce,
+                        rpcRet2.data.bits,
+                        rpcRet2.data.difficulty,
+                        rpcRet2.data.previousblockhash || "",
+                        rpcRet2.data.nextblockhash || "",
+                        rpcRet2.data.ip || "",
+                        rpcRet2.data.tx,
+                        function(err) {
+                            if (err) throw 'unexpected block insert error';
+                            cbError(false, rpcRet2.data);
+                        }
+                    );
+                }
+                else
+                {
+                    const SET = "nextblockhash='"+rpcRet2.data.nextblockhash+"'";
+                    g_constants.dbTables['Blocks'].update(SET, WHERE, function(err) {
+                        if (err) throw 'unexpected block update error';
+                        cbError(false, rpcRet2.data); 
+                    });
+                }
             });
         });
     });
