@@ -17,7 +17,7 @@ exports.Sync = function()
                 return;
             }
             
-            rpcRet.data = 16350;
+            //rpcRet.data = 16354;
             //find last synced block by height
             g_constants.dbTables['Blocks'].selectAll("height", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
                 if (error || !rows)

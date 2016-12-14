@@ -200,15 +200,18 @@ exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
         
         function onEndOne(err, params)
         {
-            if (nIndex+1 >= array.length) {
+            /*if (nIndex+1 >= array.length) {
                 //if all processed then stop and return from 'ForEachSync'
                 //console.log('success: ForEachSync_Run_cbEndOne return all ok');
                 cbEndAll(false);
                 return;
-            }
+            }*/
             if (!cbEndOne)
             {
-                Run(nIndex+1);
+                if (nIndex+1 < array.length)
+                    Run(nIndex+1);
+                else
+                    cbEndAll(false); //if all processed then stop and return from 'ForEachSync'
                 return;
             }
             
@@ -223,7 +226,10 @@ exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
                     cbEndAll(true);
                     return;
                 }
-                Run(nIndex+1);
+                if (nIndex+1 < array.length)
+                    Run(nIndex+1);
+                else
+                    cbEndAll(false); //if all processed then stop and return from 'ForEachSync'
             });
         }
     }
