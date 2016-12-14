@@ -17,11 +17,19 @@ exports.Sync = function()
                 return;
             }
             
+            rpcRet.data = 16350;
             //find last synced block by height
             g_constants.dbTables['Blocks'].selectAll("height", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
                 if (error || !rows)
                 {
                     //if database error then try again after 10 sec
+                    setTimeout(exports.Sync, 10000);
+                    return;
+                }
+                
+                if (rows.length && rows[0].height == rpcRet.data)
+                {
+                    //if all synced then try again after 10 sec
                     setTimeout(exports.Sync, 10000);
                     return;
                 }
@@ -32,7 +40,7 @@ exports.Sync = function()
 
                 const aBlockNumbers = function() {
                     var ret = [];
-                    for (var i=heightStart; i<heightEnd; i++) ret.push(i);
+                    for (var i=heightStart; i<=heightEnd; i++) ret.push(i);
                     return ret;
                 } ();
                 
