@@ -1,6 +1,7 @@
 'use strict';
 
 const $ = require('jquery');
+//const g_addr = require("./address");
 
 exports.HideAll = function()
 {
@@ -10,14 +11,17 @@ exports.HideAll = function()
   $('#addr_page').hide();
 };
 
-exports.Header = function(str, small)
+exports.Header = function(str, small, h)
 {
+  const height = h || 'h1';
+  
   var ret =
           '<div class="page-header">'+
-            '<h1>'+str + (small || "") + '</h1>' +
+            '<'+height+'>'+str + (small || "") + '</'+height+'>' +
           '</div>';
   return ret;
-}
+};
+
 exports.LeftTable = function()
 {
   var th = $("<tr></tr>");
@@ -37,4 +41,5 @@ exports.LeftTable = function()
         $("<table id='"+arguments[1]+"' class='table table-striped'></table>").append(tbody));
 
   return ret;
-}
+};
+

@@ -23,8 +23,9 @@ exports.ShowAddress = function(hash)
           $("<div class='row-fluid'></div>").append(
             $(g_utils.LeftTable(6, "addr_table", "Summary", " ")),
             $(g_utils.LeftTable(6, "addr_io_table", "Transactions", " "))),
+          $(g_utils.Header("Transactions  ", "", 'h2')),
           $("<div class='row-fluid'></div>").append(
-             $(g_utils.LeftTable(12, "addr_inputs_table", "Transactions", "")))
+             $(g_utils.LeftTable(12, "addr_inputs_table")))
           )
           .show();
        
@@ -47,14 +48,26 @@ exports.ShowAddress = function(hash)
         {
           if (data.data[i].txin.length > 1)
           {
-            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(data.data[i].txin)))));
+            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(data.data[i].txin))), $("<td></td><td></td>")));
+            if (data.data[i].txin_info && data.data[i].txin_info.length)
+            {
+              const vout = JSON.parse(unescape(data.data[i].txin_info[0].vout));
+              g_txs.ShowTransactionInfo(data.data[i].txin, data.data[i].txin_info[0].vin, vout, '#addr_inputs_table');
+            }
             nTxCount++;
           }
           if (data.data[i].txout.length > 1)
           {
-            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(data.data[i].txout)))));
+            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(data.data[i].txout))), $("<td></td><td></td>")));
+            if (data.data[i].txout_info && data.data[i].txout_info.length)
+            {
+              const vout = JSON.parse(unescape(data.data[i].txout_info[0].vout));
+              g_txs.ShowTransactionInfo(data.data[i].txin, data.data[i].txout_info[0].vin, vout, '#addr_inputs_table');
+            }
             nTxCount++;
           }
+          
+          //g_utils.ShowTransactionInfo(tx.txid, vin, vout, 'txs_info_table');
         }
 
         $('#addr_io_table').append(

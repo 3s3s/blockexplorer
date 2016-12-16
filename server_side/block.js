@@ -19,16 +19,23 @@ exports.ShowBlock = function(hash, callbackErr)
         
         $('#block_page').empty().append(
           $(g_utils.Header("Block #"+data.data.height)),
-          $("<div class='row-fluid'></div>").append(
+          $("<div class='row'></div>").append(
             $(g_utils.LeftTable(6, "block_table", "Summary", " ")),
             $(g_utils.LeftTable(6, "block_hashes_table", "Hashes", " "))),
+          $(g_utils.Header("Transactions  ", "", 'h2')),
           $("<div class='row-fluid'></div>").append(
-            $(g_utils.LeftTable(12, "block_tx_table", "Transactions", " ")))
-          )
-          .show();
+            $(g_utils.LeftTable(12, "block_tx_table")))
+          ).show();
+//          $("<div class='row-fluid'></div>").append(
+//            $(g_utils.LeftTable(12, "block_tx_table", "Transactions", " ")))
+          //$(g_utils.Header("Transactions  ", "", 'h2'))//,
+          /*$("<div class='row-fluid'></div>").append(
+               $(g_utils.LeftTable(12, "block_tx_table"))*/
+          //)
+         //.show();
         
         $('#block_table').append(
-          $("<tr></tr>").append("<td>"+"Number Of Transactions"+"</td>"+"<td>"+JSON.parse(unescape(data.data.tx)).length+"</td>"),
+          $("<tr></tr>").append("<td>"+"Number Of Transactions"+"</td>"+"<td>"+data.data.tx.length+"</td>"),
           $("<tr></tr>").append("<td>"+"Height"+"</td>"+"<td>"+data.data.height+"</td>"),
           $("<tr></tr>").append("<td>"+"Timestamp"+"</td>"+"<td>"+unescape(data.data.time)+"</td>"),
           $("<tr></tr>").append("<td>"+"Difficulty"+"</td>"+"<td>"+data.data.difficulty+"</td>"),
@@ -45,12 +52,18 @@ exports.ShowBlock = function(hash, callbackErr)
           $("<tr></tr>").append("<td>"+"Merkle Root"+"</td>"+"<td>"+data.data.merkleroot+"</td>")
           );
           
-        var txs = JSON.parse(unescape(data.data.tx));
+        const txs = data.data.tx;
         
         for (var i=0; i<txs.length; i++)
         {
-          $('#block_tx_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(txs[i]))));
+          var table = $('#block_tx_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(txs[i].txid)), $("<td></td><td></td>")));
+          if (txs[i].tx_info && txs[i].tx_info.length > 0)
+          {
+            const vout = JSON.parse(unescape(txs[i].tx_info[0].vout));
+            g_txs.ShowTransactionInfo(txs[i].txid, txs[i].tx_info[0].vin, vout, '#block_tx_table');
+          }
         }
+        
         if (callbackErr) callbackErr(false);
       }
       else

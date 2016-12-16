@@ -33,7 +33,7 @@ exports.ShowTransaction = function(hash)
         const vin = data.data[0].vin;
         const vout = JSON.parse(unescape(data.data[0].vout));
         
-        const totalInput = ShowTransactionInfo(tx.txid, vin, vout);
+        const totalInput = exports.ShowTransactionInfo(tx.txid, vin, vout, '#txs_info_table');
         
         $('#txs_table').append(
           $("<tr></tr>").append($("<td>"+"Received Time"+"</td>"), $("<td></td>").append(unescape(tx.time))),
@@ -76,50 +76,6 @@ exports.ShowTransaction = function(hash)
 //      alert( "error" );
     });
 
-  function ShowTransactionInfo(hash, vin, vout)
-  {
-    var totalInput = 0.0;
-    var td1 = $("<td></td>");    
-    for (var i=0; i<vin.length; i++)
-    {
-      if (vin[i].vout_o && vin[i].vout_o.scriptPubKey && vin[i].vout_o.scriptPubKey.addresses && vin[i].vout_o.scriptPubKey.addresses.length)
-      {
-        const outValue = parseFloat(vin[i].vout_o.value || 0);
-        totalInput += outValue;
-        td1.append(g_addr.CreateAddrHash(vin[i].vout_o.scriptPubKey.addresses[0]), " ( "+ outValue + " )");
-      }
-      else if (vin[i].txid)
-        td1.append(exports.CreateTxHash(vin[i].txid), " (out = "+ vin[i].vout + ")");
-      else if (vin[i].coinbase)
-        td1.append("Coinbase");
-        
-      td1.append("<br><br>");
-    }
-    
-    var td2 = " >> ";
-    
-    var td3 = $("<td></td>");
-    for (var i=0; i<vout.length; i++)
-    {
-      if (vout[i].scriptPubKey && vout[i].scriptPubKey.addresses)
-      {
-        td3.append("[ ");
-        for (var j=0; j<vout[i].scriptPubKey.addresses.length; j++)
-          td3.append(g_addr.CreateAddrHash(vout[i].scriptPubKey.addresses[j]));
-        td3.append(" ]" + "<span class='pull-right'>" + (vout[i].value || "") + "</span>");
-      }
-      else 
-        td3.append("???" + "<span class='pull-right'>" + (vout[i].value || "") + "</span>");
-        
-      td3.append("<br><br>");
-    }
-    
-    $('#txs_info_table').append(
-      $("<tr></tr>").append(td1).append("<td>"+td2+"</td>").append(td3)
-      );
-      
-    return totalInput;
-  }
 };
 
 exports.GetLastTransactions = function(mempoolTXs, lengthPool)
@@ -161,4 +117,49 @@ exports.CreateTxHash = function(hash)
     exports.ShowTransaction($(this).attr('hash'));
   };
   return ret;
+};
+
+exports.ShowTransactionInfo = function(hash, vin, vout, table)
+{
+  var totalInput = 0.0;
+  var td1 = $("<td></td>");    
+  for (var i=0; i<vin.length; i++)
+  {
+    if (vin[i].vout_o && vin[i].vout_o.scriptPubKey && vin[i].vout_o.scriptPubKey.addresses && vin[i].vout_o.scriptPubKey.addresses.length)
+    {
+      const outValue = parseFloat(vin[i].vout_o.value || 0);
+      totalInput += outValue;
+      td1.append(g_addr.CreateAddrHash(vin[i].vout_o.scriptPubKey.addresses[0]), " ( "+ outValue + " )");
+    }
+    else if (vin[i].txid)
+      td1.append(exports.CreateTxHash(vin[i].txid), " (out = "+ vin[i].vout + ")");
+    else if (vin[i].coinbase)
+      td1.append("Coinbase");
+        
+    td1.append("<br><br>");
+  }
+    
+  var td2 = " >> ";
+    
+  var td3 = $("<td></td>");
+  for (var i=0; i<vout.length; i++)
+  {
+    if (vout[i].scriptPubKey && vout[i].scriptPubKey.addresses)
+    {
+      td3.append("[ ");
+      for (var j=0; j<vout[i].scriptPubKey.addresses.length; j++)
+        td3.append(g_addr.CreateAddrHash(vout[i].scriptPubKey.addresses[j]));
+      td3.append(" ]" + "<span class='pull-right'>" + (vout[i].value || "") + "</span>");
+    }
+    else 
+      td3.append("???" + "<span class='pull-right'>" + (vout[i].value || "") + "</span>");
+      
+    td3.append("<br><br>");
+  }
+    
+  $(table).append(
+    $("<tr></tr>").append(td1).append("<td>"+td2+"</td>").append(td3)
+  );
+      
+  return totalInput;
 };

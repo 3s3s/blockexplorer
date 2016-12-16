@@ -1,6 +1,7 @@
 'use strict';
 
 const g_constants = require('../../constants');
+const g_utils = require('../../utils');
 
 
 exports.GetBlocks = function(query, res)
@@ -33,6 +34,33 @@ exports.GetBlock = function(query, res)
             return;
         }
         
-        res.end( JSON.stringify({'status' : 'success', 'data' : rows[0]}) );
+        var txs = JSON.parse(unescape(rows[0].tx));
+        let ret = rows[0];
+       // rows[0].tx = JSON.parse(unescape(rows[0].tx));
+        
+        g_utils.ForEachSync(txs, SaveTransaction, function() {
+            ret.tx = txs;
+            res.end( JSON.stringify({'status' : 'success', 'data' : ret}) )});
+//        res.end( JSON.stringify({'status' : 'success', 'data' : rows[0]}) );
     });
+    
+    function SaveTransaction(tx, nIndex, cbErr)
+    {
+        if (!tx || !tx.length)
+        {
+            cbErr(true);
+            return;
+        }
+        
+        g_utils.GetTxByHash(tx[nIndex], function(result) {
+            if (!result.data)
+            {
+                cbErr(true);
+                return;
+            }
+            tx[nIndex]={'txid' : tx[nIndex], 'tx_info' : result.data};//['tx_info'] = result.data;
+            cbErr(false);
+        });
+        
+    }
 }

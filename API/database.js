@@ -9,7 +9,7 @@ var g_db;
 exports.Init = function() {
     g_db = new sqlite3.Database(g_constants.dbName);
     
-    g_db.run("VACUUM");
+    //g_db.run("VACUUM");
     g_db.run("CREATE INDEX IF NOT EXISTS addr ON Address (address)", function(err){
         if (err) throw err.message;
     });
