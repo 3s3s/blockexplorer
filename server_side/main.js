@@ -4,6 +4,7 @@ const $ = require('jquery');
 const g_txs = require('./transactions');
 const g_addr = require("./address");
 const g_blk = require("./block");
+const g_utils = require("./utils");
 
 function InitSearch()
 {
@@ -105,14 +106,40 @@ function InitBlocksTimer()
 }
 
 $(function() {
-    $('#block_page').hide();
+    //$('#block_page').hide();
+    g_utils.HideAll();
     
     InitSearch();
+
+    const nBlock = window.location.href.indexOf('/block/');
+    const nTX = window.location.href.indexOf('/transaction/');
+    const nAddr = window.location.href.indexOf('/address/');
+    
+    if (nBlock != -1)
+    {
+      g_blk.ShowBlock(window.location.href.substr(nBlock+7), function(err) {
+        if (err) alert('error');
+      });
+      return;
+    }
+    
+    if (nTX != -1)
+    {
+      g_txs.ShowTransaction(window.location.href.substr(nTX+13));
+      return;
+    }
+    
+    if (nAddr != -1)
+    {
+      g_addr.ShowAddress(window.location.href.substr(nAddr+9));
+      return;
+    }
+    
+    $('#main_page').show();
     
     InitMempoolTimer();
     InitBlocksTimer();
     
-    $('main_page').show();
 });
 
 

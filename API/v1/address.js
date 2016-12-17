@@ -12,7 +12,7 @@ exports.GetAddress = function(query, res)
         return;
     }
     
-    g_constants.dbTables['Address'].selectAll("*", "address='"+escape(query.hash)+"'", "ORDER BY time", function(error, rows) {
+    g_constants.dbTables['Address'].selectAll("*", "address='"+escape(query.hash)+"'", "ORDER BY time DESC LIMIT 100", function(error, rows) {
         try
         {
             if (error || !rows)

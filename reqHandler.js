@@ -15,6 +15,10 @@ exports.handle = function(app)
     app.get('/api/v1/getlastblocks', onV1Blocks);
     app.get('/api/v1/getlasttransactions', onV1Transactions);
     app.get('/api/v1/getblock', onV1GetBlock);
+    app.get('/block/*', function (req, res) {
+      res.sendFile(__dirname + '/site/index.html');});
+    app.get('/transaction/*', function (req, res) {res.sendFile(__dirname + '/site/index.html');});
+    app.get('/address/*', function (req, res) {res.sendFile(__dirname + '/site/index.html');});
     app.get('/api/v1/gettransaction', onV1GetTransaction);
     app.get('/api/v1/getaddress', onV1GetAddress);
     
@@ -103,4 +107,16 @@ exports.handle = function(app)
         console.log(e.message);
       }
     }
-}
+    /*function onBlock(req, res)
+    {
+      try {
+        //res.writeHead(200, {"Content-Type": "application/json"});
+        const path = url.parse(req.url, true).path;
+        
+        apiBlocksV1.GetBlockPage(path, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+    }*/
+};

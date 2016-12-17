@@ -7,12 +7,15 @@ const g_txs = require("./transactions");
 exports.ShowBlock = function(hash, callbackErr)
 {
   var query = "hash="+hash;
+  //var path = "hash/"+hash;
   if (!isNaN(hash)) //block number
   {
     query = "height="+hash;
+    //path = "height/"+hash;
   }
 
     $.getJSON( "/api/v1/getblock?"+query, function(data) {
+    //$.getJSON( "/block"+path, function(data) {
       if (data.status == 'success' && (data.data instanceof Object))
       {
         g_utils.HideAll();
@@ -82,10 +85,10 @@ exports.CreateBlockHash = function(hash)
   if (!hash || !hash.length)
     return "";
     
-  const ret = $('<a hash="'+hash+'" href="#">'+hash+'</a></td>');  
-  ret[0].onclick = function()
+  const ret = $('<a hash="'+hash+'" href="/block/'+hash+'">'+hash+'</a></td>');  
+  /*ret[0].onclick = function()
   {
     exports.ShowBlock($(this).attr('hash'));
-  };
+  };*/
   return ret;
 };

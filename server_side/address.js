@@ -23,7 +23,7 @@ exports.ShowAddress = function(hash)
           $("<div class='row-fluid'></div>").append(
             $(g_utils.LeftTable(6, "addr_table", "Summary", " ")),
             $(g_utils.LeftTable(6, "addr_io_table", "Transactions", " "))),
-          $(g_utils.Header("Transactions  ", "", 'h2')),
+          $(g_utils.Header("Transactions  ", "<small>(newest first)</small>", 'h2')),
           $("<div class='row-fluid'></div>").append(
              $(g_utils.LeftTable(12, "addr_inputs_table")))
           )
@@ -84,10 +84,10 @@ exports.CreateAddrHash = function(hash)
   if (!hash || !hash.length)
     return "";
     
-  const ret = $('<a hash="'+hash+'" href="#">'+hash+'</a></td>');  
-  ret[0].onclick = function()
+  const ret = $('<a hash="'+hash+'" href="/address/'+hash+'">'+hash+'</a></td>');  
+  /*ret[0].onclick = function()
   {
     exports.ShowAddress($(this).attr('hash'));
-  };
+  };*/
   return ret;
 };
