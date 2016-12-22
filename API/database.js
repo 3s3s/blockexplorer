@@ -3,6 +3,7 @@
 var sqlite3 = require('sqlite3').verbose();
 
 const g_constants = require('../constants');
+const g_utils = require('../utils');
 
 var g_db;
 
@@ -10,7 +11,7 @@ exports.Init = function() {
     g_db = new sqlite3.Database(g_constants.dbName);
     
     //g_db.run("VACUUM");
-    g_db.run("CREATE INDEX IF NOT EXISTS addr ON Address (address)", function(err){
+    /*g_db.run("CREATE INDEX IF NOT EXISTS addr ON Address (address)", function(err){
         if (err) throw err.message;
     });
     g_db.run("CREATE INDEX IF NOT EXISTS txHash ON Transactions (txid)", function(err){
@@ -18,32 +19,43 @@ exports.Init = function() {
     });
     g_db.run("CREATE INDEX IF NOT EXISTS blk ON Blocks (hash, height, time)", function(err){
         if (err) throw err.message;
-    });
+    });*/
     
     ///!!!DEBUG
    // g_db.run('DROP TABLE KeyValue');
    // g_db.run('DROP TABLE Address');
    // g_db.run('ALTER TABLE Users ADD COLUMN payment_address TEXT');
+   
+    function CreateIndex(indexObject)
+    {
+        g_db.run("CREATE INDEX IF NOT EXISTS "+indexObject.name+" ON "+indexObject.table+" ("+indexObject.fields+")", function(err){
+            if (err) throw err.message;
+        });
+    }
     
-    function CreateTable(tableObject)
+    function CreateTable(dbTables, nIndex, cbError)
     {
         var cols = ' (';
-        for (var i=0; i<tableObject.cols.length; i++) {
-            cols += tableObject.cols[i][0] + ' ' + tableObject.cols[i][1];
+        for (var i=0; i<dbTables[nIndex].cols.length; i++) {
+            cols += dbTables[nIndex].cols[i][0] + ' ' + dbTables[nIndex].cols[i][1];
             
-            if (i != tableObject.cols.length-1)
+            if (i != dbTables[nIndex].cols.length-1)
                 cols += ', ';
         }
         
-        if (tableObject.commands) cols += ", "+tableObject.commands;
+        if (dbTables[nIndex].commands) cols += ", "+dbTables[nIndex].commands;
     
          cols += ')';
          
-         g_db.run('CREATE TABLE IF NOT EXISTS ' + tableObject.name + cols, function(err) {
-             if (!err)
+         g_db.run('CREATE TABLE IF NOT EXISTS ' + dbTables[nIndex].name + cols, function(err) {
+            if (!err)
+            {
+                cbError(false);
                 return;
+            }
                 
-             console.log(err.message);
+            console.log(err.message);
+            cbError(true);
          });
     }
     
@@ -164,7 +176,58 @@ exports.Init = function() {
     }
     
     g_db.parallelize(function(){
-        for (var i=0; i<g_constants.dbTables.length; i++)
+        
+       // g_constants.dbTables['selectAll'] = function(name, cols, where, other, callback, param) {
+       //         SelectAll(cols, name, where, other, callback, param);};
+                
+        g_utils.ForEachSync(g_constants.dbTables, CreateTable, function(err) {
+            if (err) throw 'unexpected init db error 2';
+            
+            for (var i=0; i<g_constants.dbIndexes.length; i++)
+                CreateIndex(g_constants.dbIndexes[i]);
+                
+            g_constants.dbTables['KeyValue']['get'] = function(key, callback) {
+                SelectAll("value", this.name, "key='"+escape(key)+"'", "", function(error, rows) {
+                    if (rows && rows.length && rows[0].value) 
+                        callback(error, unescape(rows[0].value));
+                    else
+                        callback(error, "");
+                });
+            };
+            g_constants.dbTables['KeyValue']['set'] = function(key, value, callback) {
+                this.get(key, function(error, rows) {
+                    if (error || (!rows.length))
+                        g_constants.dbTables['KeyValue'].insert(key, value);
+                    if (!error && rows.length)
+                        g_constants.dbTables['KeyValue'].update("value = '"+escape(value)+"'", "key='"+escape(key)+"'");
+                        
+                    if (callback) callback();
+                });
+            };
+        }, function(err, params, cbError){
+            if (err) throw 'unexpected init db error 1';
+            
+            const i = params.nIndex;
+            
+            g_constants.dbTables[g_constants.dbTables[i]['name']] = g_constants.dbTables[i];
+           
+            g_constants.dbTables[i]['insert'] = function() {
+                Insert(this, arguments);};
+            g_constants.dbTables[i]['insert2'] = function() {
+                Insert2(this, arguments);};
+            
+            g_constants.dbTables[i]['update'] = function(SET, WHERE, callback) {
+                Update(this.name, SET, WHERE, callback);};
+            
+            g_constants.dbTables[i]['delete'] = function(WHERE) {
+                Delete(this.name, WHERE);};
+            
+            g_constants.dbTables[i]['selectAll'] = function(cols, where, other, callback, param) {
+                SelectAll(cols, this.name, where, other, callback, param);};
+            
+            cbError(false);
+        });
+        /*for (var i=0; i<g_constants.dbTables.length; i++)
         {
             CreateTable(g_constants.dbTables[i]);
             
@@ -186,7 +249,10 @@ exports.Init = function() {
                 
         }
         
-        g_constants.dbTables['selectAll'] = function(name, cols, where, other, callback, param) {
+        for (var i=0; i<g_constants.dbIndexes.length; i++)
+            CreateIndex(g_constants.dbIndexes[i]);*/
+
+        /*g_constants.dbTables['selectAll'] = function(name, cols, where, other, callback, param) {
                 SelectAll(cols, name, where, other, callback, param);};
                 
         g_constants.dbTables['KeyValue']['get'] = function(key, callback) {
@@ -207,7 +273,7 @@ exports.Init = function() {
                     
                 if (callback) callback();
             });
-        };
+        };*/
             
     });
 };

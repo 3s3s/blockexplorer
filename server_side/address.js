@@ -52,7 +52,7 @@ exports.ShowAddress = function(hash)
             if (data.data[i].txin_info && data.data[i].txin_info.length)
             {
               const vout = JSON.parse(unescape(data.data[i].txin_info[0].vout));
-              g_txs.ShowTransactionInfo(data.data[i].txin, data.data[i].txin_info[0].vin, vout, '#addr_inputs_table');
+              g_txs.ShowTransactionInfo(data.data[i].txin, data.data[i].txin_info[0].vin, vout, '#addr_inputs_table', 'success');
             }
             nTxCount++;
           }
@@ -62,7 +62,7 @@ exports.ShowAddress = function(hash)
             if (data.data[i].txout_info && data.data[i].txout_info.length)
             {
               const vout = JSON.parse(unescape(data.data[i].txout_info[0].vout));
-              g_txs.ShowTransactionInfo(data.data[i].txin, data.data[i].txout_info[0].vin, vout, '#addr_inputs_table');
+              g_txs.ShowTransactionInfo(data.data[i].txin, data.data[i].txout_info[0].vin, vout, '#addr_inputs_table', "danger");
             }
             nTxCount++;
           }

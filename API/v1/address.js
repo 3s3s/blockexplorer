@@ -12,7 +12,7 @@ exports.GetAddress = function(query, res)
         return;
     }
     
-    g_constants.dbTables['Address'].selectAll("*", "address='"+escape(query.hash)+"'", "ORDER BY time DESC LIMIT 100", function(error, rows) {
+    g_constants.dbTables['Address'].selectAll("*", "address='"+escape(query.hash)+"'", "ORDER BY time DESC", function(error, rows) {
         try
         {
             if (error || !rows)
@@ -23,7 +23,14 @@ exports.GetAddress = function(query, res)
             
             g_utils.ForEachSync(rows, SaveTransaction, function() {
                 res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
-            });
+            }/*, function(err, params, cbError){
+                if (err || !params || params.nIndex >= 100)
+                {
+                    cbError(true);
+                    return;
+                }
+                cbError(false);
+            }*/);
         }
         catch(e)
         {
@@ -36,6 +43,14 @@ exports.GetAddress = function(query, res)
         if (!aAddress || !aAddress.length)
         {
             cbErr(true);
+            return;
+        }
+        
+        if (nIndex > 100)
+        {
+            aAddress[nIndex]['txin_info'] = [];
+            aAddress[nIndex]['txout_info'] = [];
+            cbErr(false);
             return;
         }
         

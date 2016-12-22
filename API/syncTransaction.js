@@ -18,7 +18,7 @@ exports.SaveTxFromBlock = function(block, cbError)
     } (); 
                 
     g_Transactions = [];
-    console.log("try save transactions for block="+block.height);
+    console.log("syncTransactions: try save transactions for block="+block.height);
         
     g_utils.ForEachAsync(txInBlock, SaveTX, function(err) {
         if (err) throw 'unexpected error in SaveTxFromBlock';

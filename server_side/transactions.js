@@ -33,7 +33,7 @@ exports.ShowTransaction = function(hash)
         const vin = data.data[0].vin;
         const vout = JSON.parse(unescape(data.data[0].vout));
         
-        const totalInput = exports.ShowTransactionInfo(tx.txid, vin, vout, '#txs_info_table');
+        const totalInput = exports.ShowTransactionInfo(tx.txid, vin, vout, '#txs_info_table', 'success');
         
         $('#txs_table').append(
           $("<tr></tr>").append($("<td>"+"Received Time"+"</td>"), $("<td></td>").append(unescape(tx.time))),
@@ -119,7 +119,7 @@ exports.CreateTxHash = function(hash)
   return ret;
 };
 
-exports.ShowTransactionInfo = function(hash, vin, vout, table)
+exports.ShowTransactionInfo = function(hash, vin, vout, table, cls)
 {
   var totalInput = 0.0;
   var td1 = $("<td></td>");    
@@ -129,7 +129,7 @@ exports.ShowTransactionInfo = function(hash, vin, vout, table)
     {
       const outValue = parseFloat(vin[i].vout_o.value || 0);
       totalInput += outValue;
-      td1.append(g_addr.CreateAddrHash(vin[i].vout_o.scriptPubKey.addresses[0]), " ( "+ outValue + " )");
+      td1.append(g_addr.CreateAddrHash(vin[i].vout_o.scriptPubKey.addresses[0]), "<span class='"+(cls || "active")+"'> ( "+ outValue + " )</span>");
     }
     else if (vin[i].txid)
       td1.append(exports.CreateTxHash(vin[i].txid), " (out = "+ vin[i].vout + ")");
@@ -158,7 +158,7 @@ exports.ShowTransactionInfo = function(hash, vin, vout, table)
   }
     
   $(table).append(
-    $("<tr></tr>").append(td1).append("<td>"+td2+"</td>").append(td3)
+    $("<tr></tr>").append(td1).append("<td class='"+(cls || "active")+"'>"+td2+"</td>").append(td3)
   );
       
   return totalInput;

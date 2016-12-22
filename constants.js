@@ -3,7 +3,15 @@
 exports.my_port = process.env.PORT; //8088; //http port
 exports.my_portSSL = 9443; //https port
 
-exports.dbName = 'blockchain.db';
+exports.dbName = './e51/blockchain.db';
+exports.rpcHost = '198.54.121.57';
+exports.rpcPort = '4443';
+exports.rpcProtocol = 'https';
+exports.rpcUser = 'blablablaUser';
+exports.rpcPassword = 'blablablaPassword';
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 exports.dbTables = [
     {
       'name' : 'Blocks',
@@ -60,14 +68,32 @@ exports.dbTables = [
     }
 ];
 
+exports.dbIndexes = [
+  {
+    'name' : 'addr',
+    'table' : 'Address',
+    'fields' : 'address'
+  },
+  {
+    'name' : 'txHash',
+    'table' : 'Transactions',
+    'fields' : 'txid'
+  },
+  {
+    'name' : 'blk',
+    'table' : 'Blocks',
+    'fields' : 'hash, height, time'
+  }
+];
 
-exports.rpcHost = 'multicoins.org';
+
+/*exports.rpcHost = 'multicoins.org';
 exports.rpcPort = '9902';
 exports.rpcUser = 'kzv';
-exports.rpcPassword = 'q2210';
+exports.rpcPassword = 'q2210';*/
 
-exports.intervals = {
+/*xports.intervals = {
     'mempool_tx' : 10000,
     'block' : 60000*5,
     'synchronization' : 1000
-}
+}*/

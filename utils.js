@@ -29,13 +29,13 @@ exports.postString = function(host, port, path, headers, strBody, callback)
 {
     const options = { 
         hostname: host, 
-        port: port, 
+        port: port.nPort, 
         path: path, 
         method: 'POST', 
         headers: headers
     }; 
     
-    var proto = (port == 443) ? https : http;
+    var proto = (port.nPort == 443 || port.name == 'https') ? https : http;
         
     var req = proto.request(options, function(res) { 
         console.log('Status: ' + res.statusCode); 

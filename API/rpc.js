@@ -10,7 +10,7 @@ const headers = {
 
 function rpcPostJSON(strJSON, callback)
 {
-    utils.postString(constants.rpcHost, constants.rpcPort, "/", headers, strJSON, function(result)
+    utils.postString(constants.rpcHost, {'nPort' : constants.rpcPort, 'name' : constants.rpcProtocol}, "/", headers, strJSON, function(result)
     {
         if (result.data) {
             try {

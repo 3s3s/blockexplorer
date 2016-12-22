@@ -64,7 +64,9 @@ require('./reqHandler.js').handle(app);
 
 require("./API/database").Init();
 
-periodic.UpdateTransactions();  setInterval(periodic.UpdateTransactions, g_constants.intervals.mempool_tx);
+periodic.UpdateTransactions();  
+
+setInterval(periodic.UpdateTransactions, 10000);
 
 periodic.StartSyncronize();
 /*
