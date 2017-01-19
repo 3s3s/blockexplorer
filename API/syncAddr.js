@@ -159,7 +159,7 @@ function SaveInputs(aTXs, nIndex, cbError)
             
             if (!r.length)
             {
-                throw 'adress is not synced WHERE='+WHERE;
+                throw 'ERROR UpdateAddress(): adress is not synced WHERE='+WHERE;
             }
             
             //check if addres already processed

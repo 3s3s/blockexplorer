@@ -55,6 +55,7 @@ function SaveTX(aTXs, nTX, cbError)
          g_rpc.getrawtransaction({'txid' : aTXs[nTX].txid}, function (rpcRet) {
             if (rpcRet.status != 'success')
             {
+                console.log('RPC ERROR getrawtransaction: txid='+aTXs[nTX].txid);
                 if (rpcRet.data && rpcRet.data.length)
                 {
                     //if rpc failed but return valid data, then continue process new transaction
@@ -70,6 +71,7 @@ function SaveTX(aTXs, nTX, cbError)
                 if (rpcRet2.status != 'success')
                 {
                     //if rpc error then wait 10 sec and try again
+                    console.log('RPC ERROR decoderawtransaction: txid='+aTXs[nTX].txid);
                     cbError(true);
                     return;
                 }
@@ -88,6 +90,7 @@ function SaveTX(aTXs, nTX, cbError)
                     function(err) {
                         if (err) throw 'unexpected insert error to Transactions table'
                         //g_address.SaveOutputsFromTransaction([ aTXs[nTX] ], cbError);
+                        console.log('success inserted transaction txid='+aTXs[nTX].txid);
                         g_Transactions.push( aTXs[nTX] );
                         cbError(false);
                     }
