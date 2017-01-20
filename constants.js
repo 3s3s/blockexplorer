@@ -3,9 +3,9 @@
 exports.my_port = process.env.PORT; //8088; //http port
 exports.my_portSSL = 9443; //https port
 
-exports.dbName = './e51/blockchain.db';
-exports.rpcHost = '198.54.121.57';
-exports.rpcPort = '4443';
+exports.dbName = './SmailCoinDB/blockchain.db';
+exports.rpcHost = '193.107.236.167';
+exports.rpcPort = '5553';
 exports.rpcProtocol = 'https';
 exports.rpcUser = 'blablablaUser';
 exports.rpcPassword = 'blablablaPassword';
