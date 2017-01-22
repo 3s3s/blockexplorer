@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <meta name="description" content="">
+    <meta name="author" content="">
+    <!--link rel="icon" href="../../favicon.ico"-->
+
+    <title>Blockexplorer</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <!-- Custom styles for this template -->
+    <link href="/css/index.css" rel="stylesheet">
+    
+    <script src='/js/main.js'></script>
+
+  </head>
+
+  <body>
+    <nav class="navbar navbar-default navbar-fixed-top">
+          <div class="container">
+            <div class="navbar-header">
+              <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+              </button>
+              <a class="navbar-brand" href="#">Blockexplorer</a>
+            </div>
+            <div id="navbar" class="collapse navbar-collapse">
+              <ul class="nav navbar-nav">
+                <li><a href="/">Home</a></li>
+                <li class="active"><a href="api.html">API</a></li>
+                <li><a href="contact.html">Contact</a></li>
+              </ul>
+              
+              <form id="main_search_form" class="navbar-form navbar-right">
+              </form>
+            </div><!--/.nav-collapse -->
+          </div>
+    </nav>
+    <!-- Fixed navbar -->
+    <div class='container-fluid main-content'>
+      <div>
+        <article class='row'>
+          <div class="col-sm-3 text-right">
+            <h2>General</h2>
+          </div>
+          <div class="col-sm-8">
+            <p>Almost all API calls can handle multiple parameters. 
+               For instance, if you request information about a couple of blocks, you can 
+               send one API call for all of them. Parameter delimiter is a comma (,)</p>
+
+            <div class="code">So instead of doing three separate API calls:
+              <div>
+                <p>http://btc.blockr.io/api/v1/block/info/1</p>
+                <p>http://btc.blockr.io/api/v1/block/info/2</p>
+                <p>http://btc.blockr.io/api/v1/block/info/3</p>
+              </div>
+            </div>
+
+            <div class="code">You can do just one:
+              <div>
+                <p>http://btc.blockr.io/api/v1/block/info/1,2,3</p>
+              </div>
+            </div>
+
+          </div>
+        </article>
+        
+        <article class='row'>
+          <div class="col-sm-3 text-right">
+            <h2>Tx api</h2>
+          </div>
+          <div class="col-sm-8">
+            <h3>Push (publish)</h3>
+            <p>Push (or publish) API transfers your transaction to the network. If transaction is proper and signed transaction hash is returned. 
+              If there was an error decoding this transaction a 'fail' error is returned.</p>
+            <div class="code">To publish a transaction make a POST (!) request with your transaction hex to the push API. 
+              <div>
+                <p>http://btc.blockr.io/api/v1/tx/push </p>
+              </div>
+              Using curl this would be like (shell example):
+              <div>
+                <p>curl -d '{"hex":"TX_HASH"}' http://btc.blockr.io/api/v1/tx/push </p>
+              </div>
+            </div>
+          </div>
+        </article>
+        
+        <article class='row'>
+          <div class="col-sm-3 text-right">
+            <h2>Address api</h2>
+          </div>
+          <div class="col-sm-8">
+            <h3>Address balance</h3>
+            <div class="code">This api call can be used to fast request only the address balance. You can add multiple addresses to api call.
+              <div>
+                <p>http://btc.blockr.io/api/v1/address/balance/198aMn6ZYAczwrE5NvNTUMyJ5qkfy4g3Hi,1L8meqhMTRpxasdGt8DHSJfscxgHHzvPgk </p>
+              </div>
+            </div>
+
+            <h3>Address transactions</h3>
+            
+            <div class="code">Returns transactions for given address. Only the most recent 200 transactions are shown. 
+                              If you need more, contact us. You can add multiple addresses to api call.
+              <div>
+                <p>http://btc.blockr.io/api/v1/address/txs/198aMn6ZYAczwrE5NvNTUMyJ5qkfy4g3Hi,1L8meqhMTRpxasdGt8DHSJfscxgHHzvPgk </p>
+              </div>
+            </div>
+
+          </div>
+        </article>
+      </div>
+    </div>
+
+ 
+      
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  </body>
+</html>

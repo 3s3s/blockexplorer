@@ -6,7 +6,25 @@
 .page-header {
   margin-top: 60px;
 }
-
+.main-content {
+  margin-top: 60px;
+}
+.code {
+  border-radius: 4px 4px 0px 0px;
+  border-color: #DDD;
+  border-width: 1px;
+  border-style: solid;
+  padding: 10px;
+  margin-bottom: 20px;
+}
+.code > div {
+  padding: 10px;
+  background-color: #E8E8E8;
+  color: #636363;
+  font-family: "Lucida Console",Monaco,monospace;
+  border-radius: 5px;
+  overflow: auto;
+}
 body {
   font-size: 13px;
 }
