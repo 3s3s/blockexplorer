@@ -13,7 +13,7 @@ exports.SaveTxFromBlock = function(block, cbError)
         var tmp = JSON.parse(unescape(block.tx));
         var ret = [];
         for (var i=0; i<tmp.length; i++)
-            ret.push({'txid' : tmp[i], 'blockHash' : block.hash, 'blockHeight' : block.height});
+            ret.push({'txid' : tmp[i], 'blockHash' : block.hash, 'blockHeight' : block.height, 'blockTime' : block.time});
         return ret;
     } (); 
                 
@@ -76,7 +76,7 @@ function SaveTX(aTXs, nTX, cbError)
                     return;
                 }
                 
-                aTXs[nTX].time = rpcRet2.data.time || 0;
+                aTXs[nTX].time = rpcRet2.data.time || aTXs[nTX].blockTime;
                 aTXs[nTX].vin = JSON.stringify(rpcRet2.data.vin) || "[]";
                 aTXs[nTX].vout = JSON.stringify(rpcRet2.data.vout) || "[]";
                 

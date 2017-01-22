@@ -1,6 +1,6 @@
 'use strict';
 
-const periodic = require("../periodic");
+const g_rpc = require("../rpc");
 const g_constants = require('../../constants');
 const g_utils = require('../../utils');
 
@@ -77,4 +77,119 @@ exports.GetAddress = function(query, res)
             });
         });
     }
-}
+};
+
+exports.GetAddressBalance = function(query, res)
+{
+    const aAddr = query.split(',');
+    
+    var mapAddrToBalance = {};
+    
+    var strQueryAddr = "address='";
+    for (var i=0; i<aAddr.length; i++)
+    {
+        strQueryAddr += escape(aAddr[i]) + "'";
+        if (i < aAddr.length -1 && i<= 400)
+            strQueryAddr += " OR address='";
+            
+        mapAddrToBalance[aAddr[i]] = 0;
+        
+        if (i > 400)
+            break;
+    }
+
+    g_constants.dbTables['Address'].selectAll("*", strQueryAddr, "ORDER BY address", function(error, rows) {
+        try
+        {
+            if (error || !rows)
+            {
+                res.end( JSON.stringify({'status' : false, 'message' : error}) );
+                return;
+            }
+            
+            for (var i=0; i<rows.length; i++)
+            {
+                if (rows[i].txout == '0')
+                    mapAddrToBalance[rows[i].address] = parseFloat(mapAddrToBalance[rows[i].address] || 0) + parseFloat(rows[i].value);
+            }
+            
+            var retArray = [];
+            for(var address in mapAddrToBalance)
+                retArray.push({"address" : address, "balance" : mapAddrToBalance[address]});
+
+            res.end( JSON.stringify({'status' : 'success', 'data' : retArray.length == 1 ? retArray[0] : retArray}) );
+        }
+        catch(e)
+        {
+            res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
+        }
+        
+    });
+};
+
+exports.GetTransactionsByAddress = function(query, res)
+{
+    const aAddr = query.split(',');
+    
+    var mapAddrToTransactions = {};
+    
+    var strQueryAddr = "address='";
+    for (var i=0; i<aAddr.length; i++)
+    {
+        strQueryAddr += escape(aAddr[i]) + "'";
+        if (i < aAddr.length -1 && i<= 400)
+            strQueryAddr += " OR address='";
+            
+        mapAddrToTransactions[aAddr[i]] = {'address' : aAddr[i], 'nb_txs' : 0, 'txs' : []};
+            
+        if (i > 400)
+            break;
+    }
+
+    g_rpc.getblockcount("", function(result) {
+        if (result.status != 'success')
+        {
+            res.end( JSON.stringify({'status' : false, 'message' : 'rpc getblockcount failed'}) );
+            return;
+        }
+        
+        const nBlockCount = parseInt(result.data);
+
+        g_constants.dbTables['Address'].selectAll("*", strQueryAddr, "ORDER BY address", function(error, rows) {
+            try
+            {
+                if (error || !rows)
+                {
+                    res.end( JSON.stringify({'status' : false, 'message' : error}) );
+                    return;
+                }
+                
+                for (var i=0; i<rows.length; i++)
+                {
+                    mapAddrToTransactions[rows[i].address].nb_txs++;
+                    mapAddrToTransactions[rows[i].address].txs.push(
+                        {'tx' : rows[i].txin, 'time_utc' : rows[i].time, 'confirmations' : parseInt(nBlockCount)-rows[i].height, 'amount' : rows[i].value});
+                    
+                    if (rows[i].txout.length > 2)
+                    {
+                        mapAddrToTransactions[rows[i].address].txs.push(
+                            {'tx' : rows[i].txout, 'time_utc' : rows[i].time, 'confirmations' : parseInt(nBlockCount)-rows[i].height, 'amount' : '-'+rows[i].value});
+                    }
+                }
+                
+                var retArray = [];
+                for(var data in mapAddrToTransactions)
+                    retArray.push(mapAddrToTransactions[data]);
+    
+                res.end( JSON.stringify({'status' : 'success', 'data' : retArray.length == 1 ? retArray[0] : retArray}) );
+            }
+            catch(e)
+            {
+                res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
+            }
+            
+        });
+    });
+    
+
+};
