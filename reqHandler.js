@@ -22,6 +22,9 @@ exports.handle = function(app)
     app.get('/api/v1/gettransaction', onV1GetTransaction);
     app.get('/api/v1/getaddress', onV1GetAddress);
     
+    app.get('/api/v1/address/balance/*', onV1GetAddressBalance);
+    app.get('/api/v1/address/txs/*', onV1GetTransactionsByAddress);
+  
     function onV1Search(req, res)
     {
       try {
@@ -107,16 +110,31 @@ exports.handle = function(app)
         console.log(e.message);
       }
     }
-    /*function onBlock(req, res)
+    function onV1GetAddressBalance(req, res)
     {
       try {
-        //res.writeHead(200, {"Content-Type": "application/json"});
+        res.writeHead(200, {"Content-Type": "application/json"});
         const path = url.parse(req.url, true).path;
+        const query = path.substr(path.lastIndexOf('/')+1);
         
-        apiBlocksV1.GetBlockPage(path, res);
+        apiAddressV1.GetAddressBalance(query, res);
       } 
       catch(e) {
         console.log(e.message);
       }
-    }*/
+    }
+    
+    function onV1GetTransactionsByAddress(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "application/json"});
+        const path = url.parse(req.url, true).path;
+        const query = path.substr(path.lastIndexOf('/')+1);
+        
+        apiAddressV1.GetTransactionsByAddress(query, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+    }
 };
