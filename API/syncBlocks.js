@@ -11,7 +11,7 @@ exports.Sync = function()
 {
   //  try
  //   {
-    /*    g_rpc.getblockcount('', function(rpcRet) {
+        g_rpc.getblockcount('', function(rpcRet) {
             if (rpcRet.status != 'success')
             {
                 setTimeout(exports.Sync, 10000);
@@ -61,7 +61,7 @@ exports.Sync = function()
                 });
             });
         });
-   /* }
+/*    }
     catch(e)
     {
         throw 'unexpected Block Sync error';
