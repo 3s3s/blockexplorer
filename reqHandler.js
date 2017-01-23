@@ -116,8 +116,9 @@ exports.handle = function(app)
         res.writeHead(200, {"Content-Type": "application/json"});
         const path = url.parse(req.url, true).path;
         const query = path.substr(path.lastIndexOf('/')+1);
+        const addrOnly = query.substr(0, (query.indexOf('?') == -1) ? query.length : query.indexOf('?'));
         
-        apiAddressV1.GetAddressBalance(query, res);
+        apiAddressV1.GetAddressBalance(addrOnly, res);
       } 
       catch(e) {
         console.log(e.message);
@@ -130,8 +131,9 @@ exports.handle = function(app)
         res.writeHead(200, {"Content-Type": "application/json"});
         const path = url.parse(req.url, true).path;
         const query = path.substr(path.lastIndexOf('/')+1);
+        const addrOnly = query.substr(0, (query.indexOf('?') == -1) ? query.length : query.indexOf('?'));
         
-        apiAddressV1.GetTransactionsByAddress(query, res);
+        apiAddressV1.GetTransactionsByAddress(addrOnly, res);
       } 
       catch(e) {
         console.log(e.message);
