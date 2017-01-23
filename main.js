@@ -1,6 +1,14 @@
 'use strict';
 
+const fs = require("fs");
+
+const options = {
+    key: fs.readFileSync(__dirname + "/server.key"),
+    cert: fs.readFileSync(__dirname + "/server.crt")
+};
+
 const http = require('http');
+const https = require('https');
 const periodic = require('./API/periodic');
 
 const g_constants = require('./constants');
@@ -15,7 +23,6 @@ app.use(bodyParser.urlencoded({     // to support URL-encoded bodies
   extended: true
 })); 
 
-var fs = require('fs');
 var util = require('util');
 var log_file = fs.createWriteStream(__dirname + '/debug.log', {flags : 'w'});
 var log_stdout = process.stdout;
@@ -49,8 +56,12 @@ app.use(function (req, res, next) {
 // your express configuration here
 
 var httpServer = http.createServer(app);
+var httpsServer = https.createServer(options, app);
 
 httpServer.listen(g_constants.my_port);
+httpsServer.listen(g_constants.my_portSSL, function(){
+    console.log("SSL Proxy listening on port "+g_constants.my_portSSL);
+});
 
 app.use(express.static('site'));
 
@@ -69,7 +80,4 @@ periodic.UpdateTransactions();
 setInterval(periodic.UpdateTransactions, 10000);
 
 periodic.StartSyncronize();
-/*
-periodic.UpdateBlocks();        setInterval(periodic.UpdateBlocks, g_constants.intervals.block);
-periodic.Syncronize();          setInterval(periodic.Syncronize, g_constants.intervals.synchronization);*/
 

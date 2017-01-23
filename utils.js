@@ -149,37 +149,6 @@ exports.ForEachAsync = function(array, func, cbEndAll)
 {
     exports.ForEachSync(array, func, cbEndAll);
     return;
-   /* if (!array || !array.length)
-    {
-        console.log('success: ForEachAsync (!array || !array.length)');
-        cbEndAll(false);
-        return;
-    }
-    
-    let nEndCounter = 0;
-    
-    for (var i=0; i<array.length; i++)
-    {
-        func(array, i, onEndOne);
-    }
-    
-    function onEndOne(err)
-    {
-        if (err)
-        {
-           //if func return error, then stop and return from 'ForEachSync'
-            console.log('error: ForEachSync_Run_cbEndOne return error');
-            cbEndAll(true);
-            return;
-        }
-        nEndCounter++;
-        if (nEndCounter >= array.length)
-        {
-           // console.log('success: ForEachAsync all return ok');
-            cbEndAll(false);
-            return;
-        }
-    }*/
 };
 
 exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)

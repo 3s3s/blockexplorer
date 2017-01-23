@@ -85,15 +85,3 @@ exports.dbIndexes = [
     'fields' : 'hash, height, time'
   }
 ];
-
-
-/*exports.rpcHost = 'multicoins.org';
-exports.rpcPort = '9902';
-exports.rpcUser = 'kzv';
-exports.rpcPassword = 'q2210';*/
-
-/*xports.intervals = {
-    'mempool_tx' : 10000,
-    'block' : 60000*5,
-    'synchronization' : 1000
-}*/
