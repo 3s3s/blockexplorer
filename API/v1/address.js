@@ -3,6 +3,7 @@
 const g_rpc = require("../rpc");
 const g_constants = require('../../constants');
 const g_utils = require('../../utils');
+const periodic = require("../periodic");
 
 exports.GetAddress = function(query, res)
 {
@@ -168,12 +169,12 @@ exports.GetTransactionsByAddress = function(query, res)
                 {
                     mapAddrToTransactions[rows[i].address].nb_txs++;
                     mapAddrToTransactions[rows[i].address].txs.push(
-                        {'tx' : rows[i].txin, 'time_utc' : rows[i].time, 'confirmations' : parseInt(nBlockCount)-rows[i].height, 'amount' : rows[i].value});
+                        {'tx' : rows[i].txin, 'time_utc' : rows[i].time, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : rows[i].value});
                     
                     if (rows[i].txout.length > 2)
                     {
                         mapAddrToTransactions[rows[i].address].txs.push(
-                            {'tx' : rows[i].txout, 'time_utc' : rows[i].time, 'confirmations' : parseInt(nBlockCount)-rows[i].height, 'amount' : '-'+rows[i].value});
+                            {'tx' : rows[i].txout, 'time_utc' : rows[i].time, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : '-'+rows[i].value});
                     }
                 }
                 
@@ -190,6 +191,66 @@ exports.GetTransactionsByAddress = function(query, res)
             
         });
     });
-    
+};
 
+exports.GetUnconfirmedTransactionsByAddress = function(query, res)
+{
+    const aAddr = query.split(',');
+    
+    var mapAddrToTransactions = {};
+    
+    var strQueryAddr = "address='";
+    for (var i=0; i<aAddr.length; i++)
+    {
+        strQueryAddr += escape(aAddr[i]) + "'";
+        if (i < aAddr.length -1 && i<= 400)
+            strQueryAddr += " OR address='";
+            
+        mapAddrToTransactions[aAddr[i]] = {'address' : aAddr[i], 'unconfirmed' : []};
+            
+        if (i > 400)
+            break;
+    }
+
+    const mempool = periodic.GetMempoolTXs();
+    for (var i=0; i<mempool.length; i++)
+    {
+        const aVout = JSON.parse(unescape(mempool[i].vout));
+        for (var j=0; j<aVout[i].scriptPubKey.addresses.length; j++)
+        {
+            if (mapAddrToTransactions[aVout[i].scriptPubKey.addresses[j]] == undefined) 
+                continue;
+            
+            mapAddrToTransactions[aVout[i].scriptPubKey.addresses[j]].unconfirmed.push({
+                'tx' : mempool[i].txid, 
+                'amount' : aVout[i].value,
+                'n' : aVout[i].n
+            });
+        }
+        
+        const aVin = JSON.parse(unescape(mempool[i].vin));
+        for (var j=0; j<aVin[i].length; j++)
+        {
+            if (aVin[i].txid == undefined || aVin[i].vout == undefined)
+                continue;
+            
+            const n = aVin[i].vout;    
+            g_utils.GetTxByHash(aVin[i].txid, function(result) {
+                if (result.status == false || result.data[0] == undefined || result.data[0].scriptPubKey == undefined || result.data[0].scriptPubKey.addresses == undefined)
+                    return;
+                    
+                if (result.data[0].scriptPubKey.addresses[n] == undefined)
+                    return;
+                    
+                if (mapAddrToTransactions[result.data[0].scriptPubKey.addresses[n]] == undefined) 
+                    return;
+                    
+                mapAddrToTransactions[aVout[i].scriptPubKey.addresses[j]].unconfirmed.push({
+                    'tx' : aVin[i].txid, 
+                    'amount' : '-' + aVin[i].value,
+                    'n' : n
+                })
+            });
+        }
+    }
 };
