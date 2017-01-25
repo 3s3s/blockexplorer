@@ -252,8 +252,13 @@ exports.GetUnconfirmedTransactionsByAddress = function(query, res)
                 strQueryTx += escape(aVin[j].txid) + "'";
             }
         }
+        if (strQueryTx.length == 0)
+        {
+            ReturnSuccess();
+            return;
+        }
         
-        const strWHERE = "(" + strQueryAddr + ")" + (strQueryTx.length == 0 ? "" : " AND (" + strQueryTx + ")");
+        const strWHERE = "(" + strQueryAddr + ")" + " AND (" + strQueryTx + ")";
         g_constants.dbTables['Address'].selectAll("*", strWHERE, "ORDER BY address", function(error, rows) {
             try
             {
