@@ -199,58 +199,100 @@ exports.GetUnconfirmedTransactionsByAddress = function(query, res)
     
     var mapAddrToTransactions = {};
     
-    var strQueryAddr = "address='";
-    for (var i=0; i<aAddr.length; i++)
+    try
     {
-        strQueryAddr += escape(aAddr[i]) + "'";
-        if (i < aAddr.length -1 && i<= 400)
-            strQueryAddr += " OR address='";
-            
-        mapAddrToTransactions[aAddr[i]] = {'address' : aAddr[i], 'unconfirmed' : []};
-            
-        if (i > 400)
-            break;
-    }
-
-    const mempool = periodic.GetMempoolTXs();
-    for (var i=0; i<mempool.length; i++)
-    {
-        const aVout = JSON.parse(unescape(mempool[i].vout));
-        for (var j=0; j<aVout[i].scriptPubKey.addresses.length; j++)
+        var strQueryAddr = "address='";
+        var strQueryTx = "";
+        for (var i=0; i<aAddr.length; i++)
         {
-            if (mapAddrToTransactions[aVout[i].scriptPubKey.addresses[j]] == undefined) 
-                continue;
+            mapAddrToTransactions[aAddr[i]] = {'address' : aAddr[i], 'unconfirmed' : []};
             
-            mapAddrToTransactions[aVout[i].scriptPubKey.addresses[j]].unconfirmed.push({
-                'tx' : mempool[i].txid, 
-                'amount' : aVout[i].value,
-                'n' : aVout[i].n
-            });
+            strQueryAddr += (escape(aAddr[i])+"'");
+                
+            if (i < aAddr.length -1 && i<= 400)
+                strQueryAddr += " OR address='";
+                
+            if (i > 400)
+                break;
+        }
+    
+        const mempool = periodic.GetMempoolTXs();
+        
+        for (var i=0; i<mempool.length; i++)
+        {
+            //Get unconfirmed txs with '+' value for given address
+            const aVout = mempool[i].vout;
+            for (var k=0; k<aVout.length; k++)
+            {
+                for (var j=0; j<aVout[k].scriptPubKey.addresses.length; j++)
+                {
+                    if (mapAddrToTransactions[aVout[k].scriptPubKey.addresses[j]] == undefined) 
+                        continue;
+                    
+                    mapAddrToTransactions[aVout[k].scriptPubKey.addresses[j]].unconfirmed.push({
+                        'tx' : mempool[i].txid, 
+                        'amount' : aVout[k].value,
+                        'n' : aVout[k].n
+                    });
+                }
+            }
+
+            //Get unconfirmed txs with '-' value for given address (from prev transaction)
+            const aVin = mempool[i].vin;
+            for (var j=0; j<aVin.length; j++)
+            {
+                if (aVin[j].txid == undefined || aVin[j].vout == undefined)
+                    continue;
+                    
+                if (strQueryTx.length == 0)
+                    strQueryTx = "txin='";
+                else
+                    strQueryTx += " OR txin='";
+                    
+                strQueryTx += escape(aVin[j].txid) + "'";
+            }
         }
         
-        const aVin = JSON.parse(unescape(mempool[i].vin));
-        for (var j=0; j<aVin[i].length; j++)
-        {
-            if (aVin[i].txid == undefined || aVin[i].vout == undefined)
-                continue;
+        const strWHERE = "(" + strQueryAddr + ")" + (strQueryTx.length == 0 ? "" : " AND (" + strQueryTx + ")");
+        g_constants.dbTables['Address'].selectAll("*", strWHERE, "ORDER BY address", function(error, rows) {
+            try
+            {
+                if (error || !rows)
+                {
+                    ReturnSuccess();
+                    return;
+                }
+                
+                for (var i=0; i<rows.length; i++)
+                {
+                    if (rows[i].txout == undefined) 
+                        continue;
+                        
+                    mapAddrToTransactions[rows[i].address].unconfirmed.push({
+                        'tx' : rows[i].txout, 
+                        'amount' : '-' + rows[i].value,
+                        'n' : rows[i].number
+                    });
+                }
+                
+                ReturnSuccess();
+            }
+            catch(e) {
+                res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
+            }
             
-            const n = aVin[i].vout;    
-            g_utils.GetTxByHash(aVin[i].txid, function(result) {
-                if (result.status == false || result.data[0] == undefined || result.data[0].scriptPubKey == undefined || result.data[0].scriptPubKey.addresses == undefined)
-                    return;
-                    
-                if (result.data[0].scriptPubKey.addresses[n] == undefined)
-                    return;
-                    
-                if (mapAddrToTransactions[result.data[0].scriptPubKey.addresses[n]] == undefined) 
-                    return;
-                    
-                mapAddrToTransactions[aVout[i].scriptPubKey.addresses[j]].unconfirmed.push({
-                    'tx' : aVin[i].txid, 
-                    'amount' : '-' + aVin[i].value,
-                    'n' : n
-                })
-            });
-        }
+        });
+    }
+    catch(e) {
+        res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
+    }
+    
+    function ReturnSuccess()
+    {
+        var retArray = [];
+        for(var data in mapAddrToTransactions)
+            retArray.push(mapAddrToTransactions[data]);
+    
+        res.end( JSON.stringify({'status' : 'success', 'data' : retArray.length == 1 ? retArray[0] : retArray}) );
     }
 };

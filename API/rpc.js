@@ -80,6 +80,12 @@ exports.getrawtransaction = function(query, callback)
     
     rpcPostJSON(strJSON, callback);
 };
+exports.gettransaction = function(query, callback)
+{
+    const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "gettransaction", "params": ["'+query.txid+'"] }';
+    
+    rpcPostJSON(strJSON, callback);
+};
 
 exports.decoderawtransaction = function(query, callback)
 {
