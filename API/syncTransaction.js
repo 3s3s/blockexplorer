@@ -28,11 +28,11 @@ exports.SaveTxFromBlock = function(block, cbError)
 
 function SaveTX(aTXs, nTX, cbError)
 {
-   // if (!aTXs || !aTXs.length || aTXs.length <= nTX)
-  //  {
+    if (!aTXs || !aTXs.length || aTXs.length <= nTX)
+    {
         cbError(true);
         return;
-   // }
+    }
                     
     //find transaction in table
     g_constants.dbTables['Transactions'].selectAll("*", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error, rowTX) {
