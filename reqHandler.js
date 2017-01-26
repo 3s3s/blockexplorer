@@ -24,6 +24,9 @@ exports.handle = function(app)
     
     app.get('/api/v1/address/balance/*', onV1GetAddressBalance);
     app.get('/api/v1/address/txs/*', onV1GetTransactionsByAddress);
+    app.get('/api/v1/address/unconfirmed/*', onV1GetUnconfirmedTransactionsByAddress);
+    app.get('/api/v1/address/unspent/*', onV1GetUnspentTransactionsByAddress);
+    app.post('/api/v1/tx/push', onV1PushTransaction);
   
     function onV1Search(req, res)
     {
@@ -116,8 +119,9 @@ exports.handle = function(app)
         res.writeHead(200, {"Content-Type": "application/json"});
         const path = url.parse(req.url, true).path;
         const query = path.substr(path.lastIndexOf('/')+1);
+        const addrOnly = query.substr(0, (query.indexOf('?') == -1) ? query.length : query.indexOf('?'));
         
-        apiAddressV1.GetAddressBalance(query, res);
+        apiAddressV1.GetAddressBalance(addrOnly, res);
       } 
       catch(e) {
         console.log(e.message);
@@ -130,11 +134,54 @@ exports.handle = function(app)
         res.writeHead(200, {"Content-Type": "application/json"});
         const path = url.parse(req.url, true).path;
         const query = path.substr(path.lastIndexOf('/')+1);
+        const addrOnly = query.substr(0, (query.indexOf('?') == -1) ? query.length : query.indexOf('?'));
         
-        apiAddressV1.GetTransactionsByAddress(query, res);
+        apiAddressV1.GetTransactionsByAddress(addrOnly, res);
       } 
       catch(e) {
         console.log(e.message);
       }
     }
+    function onV1GetUnconfirmedTransactionsByAddress(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "application/json"});
+        const path = url.parse(req.url, true).path;
+        const query = path.substr(path.lastIndexOf('/')+1);
+        const addrOnly = query.substr(0, (query.indexOf('?') == -1) ? query.length : query.indexOf('?'));
+        
+        apiAddressV1.GetUnconfirmedTransactionsByAddress(addrOnly, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+    }
+    
+    function onV1GetUnspentTransactionsByAddress(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "application/json"});
+        const path = url.parse(req.url, true).path;
+        const query = path.substr(path.lastIndexOf('/')+1);
+        const addrOnly = query.substr(0, (query.indexOf('?') == -1) ? query.length : query.indexOf('?'));
+        
+        apiAddressV1.GetUnspentTransactionsByAddress(addrOnly, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+    }
+
+    function onV1PushTransaction(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "application/json"});
+
+        apiTransactionsV1.PushTransaction(req.body, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+    }
+
 };

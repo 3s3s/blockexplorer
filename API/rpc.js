@@ -80,10 +80,23 @@ exports.getrawtransaction = function(query, callback)
     
     rpcPostJSON(strJSON, callback);
 };
+exports.gettransaction = function(query, callback)
+{
+    const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "gettransaction", "params": ["'+query.txid+'"] }';
+    
+    rpcPostJSON(strJSON, callback);
+};
 
 exports.decoderawtransaction = function(query, callback)
 {
     const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "decoderawtransaction", "params": ["'+query.tx+'"] }';
+    
+    rpcPostJSON(strJSON, callback);
+};
+
+exports.sendrawtransaction = function(query, callback)
+{
+    const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "sendrawtransaction", "params": ["'+query.tx+'"] }';
     
     rpcPostJSON(strJSON, callback);
 };

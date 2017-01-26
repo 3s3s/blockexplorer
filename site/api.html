@@ -114,6 +114,23 @@
               </div>
             </div>
 
+            <h3>Unconfirmed address transaction info</h3>
+            
+            <div class="code">Returns unconfirmed transaction data filtered by address. Unconfirmed transactions are not a part of the blockchain and should not be trusted! 
+              <div>
+                <p><a href='api/v1/address/unconfirmed/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM'>http://btc.blockr.io/api/v1/address/unconfirmed/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM </a></p>
+              </div>
+            </div>
+
+            <h3>Unspent transactions</h3>
+            
+            <div class="code">Returns unspent transactions for a given address. Unspent transactions are transactions that still have value. Value of these transactions hasn't been spent yet. You can add multiple addresses to api call. 
+                              Be carefull when using outputs with low number of confirmations (if transaction has more then 6 confirmations then it's usually safe to include it). 
+              <div>
+                <p><a href='api/v1/address/unspent/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM'>http://btc.blockr.io/api/v1/address/unspent/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM</a></p>
+              </div>
+            </div>
+
           </div>
         </article>
       </div>
