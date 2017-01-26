@@ -14,7 +14,6 @@ const periodic = require('./API/periodic');
 const g_constants = require('./constants');
 
 var express = require('express');
-var path = require('path');
 var app = express();
 
 var bodyParser = require('body-parser');

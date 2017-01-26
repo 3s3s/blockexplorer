@@ -93,3 +93,10 @@ exports.decoderawtransaction = function(query, callback)
     
     rpcPostJSON(strJSON, callback);
 };
+
+exports.sendrawtransaction = function(query, callback)
+{
+    const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "sendrawtransaction", "params": ["'+query.tx+'"] }';
+    
+    rpcPostJSON(strJSON, callback);
+};

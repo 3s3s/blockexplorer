@@ -1,5 +1,6 @@
 'use strict';
 
+const g_rpc = require("../rpc");
 const periodic = require("../periodic");
 const g_constants = require('../../constants');
 const g_utils = require('../../utils');
@@ -34,4 +35,17 @@ exports.GetTransaction = function(query, res)
         res.end( JSON.stringify(result) );
     });
 
+};
+
+exports.PushTransaction = function(body, res)
+{
+    if (!body || !body.hex)
+    {
+        res.end( JSON.stringify({'status' : false, 'message' : 'ERROR: bad query (nead {"hex" : "TX_HASH"})'}) );
+        return;
+    }
+    
+    g_rpc.sendrawtransaction({'tx' : body.hex}, function (rpcRet) {
+        res.end( JSON.stringify(rpcRet) );
+    });
 };
