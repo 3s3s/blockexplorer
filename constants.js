@@ -4,13 +4,13 @@ exports.my_port = process.env.PORT; //8088; //http port
 exports.my_portSSL = 9443; //https port
 
 exports.dbName = './SmailCoinDB/blockchain.db';
-exports.rpcHost = '193.107.236.167';
+exports.rpcHost = 'smailblock.info';
 exports.rpcPort = '5553';
 exports.rpcProtocol = 'https';
 exports.rpcUser = 'blablablaUser';
 exports.rpcPassword = 'blablablaPassword';
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+//process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 exports.dbTables = [
     {
