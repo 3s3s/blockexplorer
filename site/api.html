@@ -58,15 +58,14 @@
 
             <div class="code">So instead of doing three separate API calls:
               <div>
-                <p><a href='api/v1/block/info/1'>http://btc.blockr.io/api/v1/block/info/1</a></p>
-                <p><a href='api/v1/block/info/2'>http://btc.blockr.io/api/v1/block/info/2</a></p>
-                <p><a href='api/v1/block/info/3'>http://btc.blockr.io/api/v1/block/info/3</a></p>
+                <p><a href='api/v1/address/txs/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd'>http://cryptobank.uk/api/v1/address/txs/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd</a></p>
+                <p><a href='api/v1/address/txs/e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM'>http://cryptobank.uk/api/v1/address/txs/e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM</a></p>
               </div>
             </div>
 
             <div class="code">You can do just one:
               <div>
-                <p><a href='api/v1/block/info/1,2,3'>http://btc.blockr.io/api/v1/block/info/1,2,3</a></p>
+                <p><a href='api/v1/address/txs/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM'>http://cryptobank.uk/api/v1/address/txs/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM</a></p>
               </div>
             </div>
 
@@ -101,7 +100,7 @@
             <h3>Address balance</h3>
             <div class="code">This api call can be used to fast request only the address balance. You can add multiple addresses to api call.
               <div>
-                <p><a href='api/v1/address/balance/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM'>http://btc.blockr.io/api/v1/address/balance/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM </a></p>
+                <p><a href='api/v1/address/balance/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM'>http://cryptobank.uk/api/v1/address/balance/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM </a></p>
               </div>
             </div>
 
@@ -110,7 +109,7 @@
             <div class="code">Returns transactions for given address. Only the most recent 200 transactions are shown. 
                               If you need more, contact us. You can add multiple addresses to api call.
               <div>
-                <p><a href='api/v1/address/txs/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM'>http://btc.blockr.io/api/v1/address/txs/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM </a></p>
+                <p><a href='api/v1/address/txs/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM'>http://cryptobank.uk/api/v1/address/txs/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM </a></p>
               </div>
             </div>
 
@@ -118,7 +117,7 @@
             
             <div class="code">Returns unconfirmed transaction data filtered by address. Unconfirmed transactions are not a part of the blockchain and should not be trusted! 
               <div>
-                <p><a href='api/v1/address/unconfirmed/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM'>http://btc.blockr.io/api/v1/address/unconfirmed/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM </a></p>
+                <p><a href='api/v1/address/unconfirmed/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM'>http://cryptobank.uk/api/v1/address/unconfirmed/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM </a></p>
               </div>
             </div>
 
@@ -127,7 +126,7 @@
             <div class="code">Returns unspent transactions for a given address. Unspent transactions are transactions that still have value. Value of these transactions hasn't been spent yet. You can add multiple addresses to api call. 
                               Be carefull when using outputs with low number of confirmations (if transaction has more then 6 confirmations then it's usually safe to include it). 
               <div>
-                <p><a href='api/v1/address/unspent/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM'>http://btc.blockr.io/api/v1/address/unspent/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM</a></p>
+                <p><a href='api/v1/address/unspent/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM'>http://cryptobank.uk/api/v1/address/unspent/eFvz7EnJBvEmxeVBCh1tEmkpAghaArmgtd,e7R5i3ZCrtc94UZFnHAUCCLPKVkVxhPKVM</a></p>
               </div>
             </div>
 
