@@ -16,11 +16,11 @@ function SaveOutputs(aTXs, nIndex, cbError)
 {
    // try
   //  {
-        //if (!aTXs || !aTXs.length || aTXs.length <= nIndex)
-       // {
+        if (!aTXs || !aTXs.length || aTXs.length <= nIndex)
+        {
             cbError(true);
             return;
-        //}
+        }
         if (!aTXs[nIndex].txid || !aTXs[nIndex].txid.length)
         {
             throw 'SaveOutputs: no txid found!!!';
