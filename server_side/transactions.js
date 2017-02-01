@@ -36,7 +36,7 @@ exports.ShowTransaction = function(hash)
         const totalInput = exports.ShowTransactionInfo(tx.txid, vin, vout, '#txs_info_table', 'success');
         
         $('#txs_table').append(
-          $("<tr></tr>").append($("<td>"+"Received Time"+"</td>"), $("<td></td>").append(unescape(tx.time))),
+          $("<tr></tr>").append($("<td>"+"Received Time"+"</td>"), $("<td></td>").append((new Date(unescape(tx.time)*1000)).toUTCString())),
           $("<tr></tr>").append($("<td>"+"Included In Blocks"+"</td>"), $("<td></td>").append(tx.blockHeight))
           );
         
