@@ -36,7 +36,7 @@ exports.ShowTransaction = function(hash)
         const totalInput = exports.ShowTransactionInfo(tx.txid, vin, vout, '#txs_info_table', 'success');
         
         $('#txs_table').append(
-          $("<tr></tr>").append($("<td>"+"Received Time"+"</td>"), $("<td></td>").append((new Date(unescape(tx.time)*1000).toUTCString()))),
+          $("<tr></tr>").append($("<td>"+"Received Time"+"</td>"), $("<td></td>").append(g_utils.UTC(tx.time))),
           $("<tr></tr>").append($("<td>"+"Included In Blocks"+"</td>"), $("<td></td>").append(tx.blockHeight))
           );
         
@@ -129,6 +129,7 @@ exports.ShowTransactionInfo = function(hash, vin, vout, table, cls)
     {
       const outValue = parseFloat(vin[i].vout_o.value || 0);
       totalInput += outValue;
+      
       td1.append(g_addr.CreateAddrHash(vin[i].vout_o.scriptPubKey.addresses[0]), "<span class='"+(cls || "active")+"'> ( "+ outValue + " )</span>");
     }
     else if (vin[i].txid)

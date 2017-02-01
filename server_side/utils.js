@@ -43,3 +43,8 @@ exports.LeftTable = function()
   return ret;
 };
 
+exports.UTC = function(unixtime)
+{
+  return (new Date(unescape(unixtime)*1000)).toUTCString();
+}
+

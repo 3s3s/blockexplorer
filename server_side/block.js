@@ -40,7 +40,7 @@ exports.ShowBlock = function(hash, callbackErr)
         $('#block_table').append(
           $("<tr></tr>").append("<td>"+"Number Of Transactions"+"</td>"+"<td>"+data.data.tx.length+"</td>"),
           $("<tr></tr>").append("<td>"+"Height"+"</td>"+"<td>"+data.data.height+"</td>"),
-          $("<tr></tr>").append("<td>"+"Timestamp"+"</td>"+"<td>"+(new Date(unescape(data.data.time)*1000)).toUTCString()+"</td>"),
+          $("<tr></tr>").append("<td>"+"Timestamp"+"</td>"+"<td>"+g_utils.UTC(data.data.time)+"</td>"),
           $("<tr></tr>").append("<td>"+"Difficulty"+"</td>"+"<td>"+data.data.difficulty+"</td>"),
           $("<tr></tr>").append("<td>"+"Bits"+"</td>"+"<td>"+data.data.bits+"</td>"),
           $("<tr></tr>").append("<td>"+"Size"+"</td>"+"<td>"+data.data.size+"</td>"),

@@ -14,8 +14,6 @@ exports.ShowAddress = function(hash)
         if (!data.data.length)
           return;
           
-        const addr = data.data[0];
-
         $('#addr_page').empty().append(
           $(g_utils.Header("Address  ", "<small>Addresses are identifiers which you use to send bitcoins to another person</small>")),
  //         $("<div class='row-fluid'></div>").append(
@@ -46,23 +44,25 @@ exports.ShowAddress = function(hash)
         var nTxCount = 0;  
         for (var i=0; i<data.data.length; i++)
         {
+          const td3 = "<td><b><span class='pull-right'>"+g_utils.UTC(data.data[i].time)+"</span></b></td>";
           if (data.data[i].txin.length > 1)
           {
-            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(data.data[i].txin))), $("<td></td><td></td>")));
+            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(data.data[i].txin)))).append($("<td></td>")).append($(td3)));//, $("<td></td><td></td>")));
             if (data.data[i].txin_info && data.data[i].txin_info.length)
             {
-              const vout = JSON.parse(unescape(data.data[i].txin_info[0].vout));
+              const vout = FilterOut(JSON.parse(unescape(data.data[i].txin_info[0].vout)), unescape(data.data[0].address));
               g_txs.ShowTransactionInfo(data.data[i].txin, data.data[i].txin_info[0].vin, vout, '#addr_inputs_table', 'success');
             }
             nTxCount++;
           }
           if (data.data[i].txout.length > 1)
           {
-            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(data.data[i].txout))), $("<td></td><td></td>")));
+            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(data.data[i].txout)))).append($("<td></td>")).append($(td3)));///, $("<td></td><td></td>")));
             if (data.data[i].txout_info && data.data[i].txout_info.length)
             {
               const vout = JSON.parse(unescape(data.data[i].txout_info[0].vout));
-              g_txs.ShowTransactionInfo(data.data[i].txin, data.data[i].txout_info[0].vin, vout, '#addr_inputs_table', "danger");
+              const vin = FilterIn(data.data[i].txout_info[0].vin, unescape(data.data[0].address));
+              g_txs.ShowTransactionInfo(data.data[i].txin, vin, vout, '#addr_inputs_table', "danger");
             }
             nTxCount++;
           }
@@ -78,6 +78,45 @@ exports.ShowAddress = function(hash)
       }
     });
 };
+
+function FilterOut(vout, address)
+{
+  var ret = [];
+  if (!vout.length)
+    return ret;
+    
+  for (var i=0; i<vout.length; i++)
+  {
+    if (!vout[i].scriptPubKey || !vout[i].scriptPubKey.addresses || !vout[i].scriptPubKey.addresses.length) 
+      continue;
+      
+    for (var j=0; j<vout[i].scriptPubKey.addresses.length; j++)
+    {
+      if (vout[i].scriptPubKey.addresses[j] == address)
+        ret.push(vout[i]);
+    }
+  }
+  return ret;
+}
+function FilterIn(vin, address)
+{
+  var ret = [];
+  if (!vin.length)
+    return ret;
+  
+  for (var i=0; i<vin.length; i++)
+  {
+    if (!vin[i].vout_o || !vin[i].vout_o.scriptPubKey || !vin[i].vout_o.scriptPubKey.addresses || !vin[i].vout_o.scriptPubKey.addresses.length)
+      continue;
+      
+    for (var j=0; j<vin[i].vout_o.scriptPubKey.addresses.length; j++)
+    {
+      if (vin[i].vout_o.scriptPubKey.addresses[j] == address)
+        ret.push(vin[i]);
+    }
+  }
+  return ret;
+}
 
 exports.CreateAddrHash = function(hash)
 {
