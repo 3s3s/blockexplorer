@@ -17,7 +17,18 @@ exports.UpdateTransactions = function()
 //        rpcRet.data = ["55cc1c283a2b27b48fa73470ab2ed7b473953c2cc4b98e7a51eebb6951333b81"];
         if (!rpcRet || rpcRet.status != 'success' || !rpcRet.data)
             return;
-        
+            
+        var tmpPool = [];
+        for (var i=0; i<rpcRet.data.length; i++)
+        {
+            for (var j=0; j<g_mempool.length; j++)
+            {
+                if (g_mempool[j].txid == rpcRet.data[i])
+                    tmpPool.push(g_mempool[j]);
+            }
+        }
+        g_mempool = tmpPool;
+
         g_utils.ForEachSync(rpcRet.data, SaveMemPool, function(){});
     });
     

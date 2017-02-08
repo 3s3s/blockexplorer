@@ -36,8 +36,8 @@ exports.ShowTransaction = function(hash)
         const totalInput = exports.ShowTransactionInfo(tx.txid, vin, vout, '#txs_info_table', 'success');
         
         $('#txs_table').append(
-          $("<tr></tr>").append($("<td>"+"Received Time"+"</td>"), $("<td></td>").append(g_utils.UTC(tx.time))),
-          $("<tr></tr>").append($("<td>"+"Included In Blocks"+"</td>"), $("<td></td>").append(tx.blockHeight))
+          $("<tr></tr>").append($("<td>"+"Received Time"+"</td>"), $("<td></td>").append(tx.time ? g_utils.UTC(tx.time) : "unconfirmed")),
+          $("<tr></tr>").append($("<td>"+"Included In Blocks"+"</td>"), $("<td></td>").append(tx.blockHeight ? tx.blockHeight : "unconfirmed"))
           );
         
         for (var i=0; i<vin.length; i++)
@@ -102,7 +102,18 @@ exports.UpdateTxTable = function(mempoolTXs)
     $('#table_mempool').find("tr:gt(0)").remove();
     for (var i=0; i<mempoolTXs.length; i++)
     {
-      $('#table_mempool').append($('<tr></tr>').append($('<td></td>').append(exports.CreateTxHash(mempoolTXs[i].txid))));
+      $('#table_mempool')
+        .append($('<tr></tr>')
+          .append($('<td></td>').append(exports.CreateTxHash(mempoolTXs[i].txid)))
+          .append($('<td></td>').append(Sum(mempoolTXs[i].vout))));
+    }
+    
+    function Sum(outs)
+    {
+      var ret = 0;
+      for (var i=0; i<outs.length; i++)
+        ret += outs[i].value ? (parseFloat(outs[i].value) || 0) : 0;
+      return ret;
     }
 };
 
