@@ -169,7 +169,7 @@ exports.GetTransactionsByAddress = function(query, res)
                             mapAddrToTransactions[rows[i].address].txs.push(
                                 {'tx' : rows[i].txin, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : rows[i].value});
                             
-                            const n = parseInt(rows[i].number) - 1;
+                            const n = parseInt(rows[i].number); // - 1;
                             if (n >= 0 && rows[i].txout_info && rows[i].txout_info.length > n && rows[i].txout == rows[i].txout_info[n].txid)
                             {
                                 const isoTime = (rows[i].txout_info[n].time+'').indexOf('-') == -1 ? new Date(rows[i].txout_info[n].time*1000).toISOString() : rows[i].txout_info[n].time;
