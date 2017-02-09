@@ -62,7 +62,7 @@ exports.GetAddress = function(query, res)
         return;
     }
     
-    g_constants.dbTables['Address'].selectAll("*", "address='"+escape(query.hash)+"'", "ORDER BY time DESC LIMIT 400", function(error, rows) {
+    g_constants.dbTables['Address'].selectAll("*", "address='"+escape(query.hash)+"'", "ORDER BY height DESC LIMIT 400", function(error, rows) {
         try
         {
             if (error || !rows)
@@ -162,8 +162,8 @@ exports.GetTransactionsByAddress = function(query, res)
                 g_utils.ForEachSync(rows, SaveTransaction, function() {
                     for (var i=0; i<rows.length; i++)
                     {
-                        for (var i=0; i<rows.length; i++)
-                        {
+                       // for (var i=0; i<rows.length; i++)
+                       // {
                             const isoTime = (rows[i].time+'').indexOf('-') == -1 ? new Date(rows[i].time*1000).toISOString() : rows[i].time;
                             mapAddrToTransactions[rows[i].address].nb_txs++;
                             mapAddrToTransactions[rows[i].address].txs.push(
@@ -177,10 +177,11 @@ exports.GetTransactionsByAddress = function(query, res)
                                 mapAddrToTransactions[rows[i].address].txs.push(
                                     {'tx' : rows[i].txout, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].txout_info[n].blockHeight, 'amount' : '-'+rows[i].value});
                             }
-                        }
+                       // }
                         
-                        ReturnSuccess(mapAddrToTransactions, res);
+                       // ReturnSuccess(mapAddrToTransactions, res);
                     }
+                    ReturnSuccess(mapAddrToTransactions, res);
                 });
             }
             catch(e)
