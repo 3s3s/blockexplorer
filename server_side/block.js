@@ -59,7 +59,13 @@ exports.ShowBlock = function(hash, callbackErr)
         
         for (var i=0; i<txs.length; i++)
         {
-          var table = $('#block_tx_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(txs[i].txid)), $("<td></td><td></td>")));
+          var time = 0;
+          if (txs[i].tx_info && txs[i].tx_info.length > 0)
+            time = txs[i].tx_info[0].time;
+            
+          const td3 = "<td><b><span class='pull-right'>"+g_utils.UTC(time)+"</span></b></td>";
+          var table = $('#block_tx_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(txs[i].txid)))).append($("<td></td>")).append($(td3)));
+
           if (txs[i].tx_info && txs[i].tx_info.length > 0)
           {
             const vout = JSON.parse(unescape(txs[i].tx_info[0].vout));

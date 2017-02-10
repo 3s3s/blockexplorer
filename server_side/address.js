@@ -47,9 +47,9 @@ exports.ShowAddress = function(hash)
         for (var i=0; i<data.data.length; i++)
         {
           if (data.data[i].txin.length > 1 && data.data[i].txin_info && data.data[i].txin_info.length)
-            txs.push({'tx' : data.data[i].txin, 'info' : data.data[i].txin_info, 'vout' : data.data[i].txin_info[0].vout, 'status' : 'success'});
+            txs.push({'tx' : data.data[i].txin, 'info' : data.data[i].txin_info, 'vout' : data.data[i].txin_info[0].vout, 'time' : data.data[i].time, 'status' : 'success'});
           if (data.data[i].txout.length > 1 && data.data[i].txout_info && data.data[i].txout_info.length)
-            txs.push({'tx' : data.data[i].txout, 'info' : data.data[i].txout_info, 'vout' : data.data[i].txout_info[0].vout, 'status' : 'danger'});
+            txs.push({'tx' : data.data[i].txout, 'info' : data.data[i].txout_info, 'vout' : data.data[i].txout_info[0].vout, 'time' : data.data[i].time, 'status' : 'danger'});
         }
         
         txs.sort(function(tx1, tx2) {
@@ -58,7 +58,8 @@ exports.ShowAddress = function(hash)
         
         for (var i=0; i<txs.length; i++)
         {
-            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(txs[i].tx))), $("<td></td><td></td>")));
+            const td3 = "<td><b><span class='pull-right'>"+g_utils.UTC(txs[i].time)+"</span></b></td>";
+            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(txs[i].tx)))).append($("<td></td>")).append($(td3)));
             
             const vout = JSON.parse(unescape(txs[i].vout));
             g_txs.ShowTransactionInfo(txs[i].tx, txs[i].info[0].vin, vout, '#addr_inputs_table', txs[i].status);
