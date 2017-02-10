@@ -40,7 +40,7 @@ exports.ShowBlock = function(hash, callbackErr)
         $('#block_table').append(
           $("<tr></tr>").append("<td>"+"Number Of Transactions"+"</td>"+"<td>"+data.data.tx.length+"</td>"),
           $("<tr></tr>").append("<td>"+"Height"+"</td>"+"<td>"+data.data.height+"</td>"),
-          $("<tr></tr>").append("<td>"+"Timestamp"+"</td>"+"<td>"+(new Date(unescape(data.data.time)*1000)).toUTCString()+"</td>"),
+          $("<tr></tr>").append("<td>"+"Timestamp"+"</td>"+"<td>"+g_utils.UTC(data.data.time)+"</td>"),
           $("<tr></tr>").append("<td>"+"Difficulty"+"</td>"+"<td>"+data.data.difficulty+"</td>"),
           $("<tr></tr>").append("<td>"+"Bits"+"</td>"+"<td>"+data.data.bits+"</td>"),
           $("<tr></tr>").append("<td>"+"Size"+"</td>"+"<td>"+data.data.size+"</td>"),
@@ -59,7 +59,13 @@ exports.ShowBlock = function(hash, callbackErr)
         
         for (var i=0; i<txs.length; i++)
         {
-          var table = $('#block_tx_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(txs[i].txid)), $("<td></td><td></td>")));
+          var time = 0;
+          if (txs[i].tx_info && txs[i].tx_info.length > 0)
+            time = txs[i].tx_info[0].time;
+            
+          const td3 = "<td><b><span class='pull-right'>"+g_utils.UTC(time)+"</span></b></td>";
+          var table = $('#block_tx_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(txs[i].txid)))).append($("<td></td>")).append($(td3)));
+
           if (txs[i].tx_info && txs[i].tx_info.length > 0)
           {
             const vout = JSON.parse(unescape(txs[i].tx_info[0].vout));

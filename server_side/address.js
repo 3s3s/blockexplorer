@@ -47,22 +47,9 @@ exports.ShowAddress = function(hash)
         for (var i=0; i<data.data.length; i++)
         {
           if (data.data[i].txin.length > 1 && data.data[i].txin_info && data.data[i].txin_info.length)
-            txs.push({'tx' : data.data[i].txin, 'info' : data.data[i].txin_info, 'vout' : data.data[i].txin_info[0].vout, 'status' : 'success'});
+            txs.push({'tx' : data.data[i].txin, 'info' : data.data[i].txin_info, 'vout' : data.data[i].txin_info[0].vout, 'time' : data.data[i].time, 'status' : 'success'});
           if (data.data[i].txout.length > 1 && data.data[i].txout_info && data.data[i].txout_info.length)
-          {
-           /* var bFound = false;
-            for (var j=0; j<txs.length; j++)
-            {
-              if (data.data[i].txout == txs[j].tx)
-              {
-                txs[j].status = 'danger';
-                bFound = true;
-                break;
-              }
-            }
-            if (!bFound)*/
-              txs.push({'tx' : data.data[i].txout, 'info' : data.data[i].txout_info, 'vout' : data.data[i].txout_info[0].vout, 'status' : 'danger'});
-          }
+            txs.push({'tx' : data.data[i].txout, 'info' : data.data[i].txout_info, 'vout' : data.data[i].txout_info[0].vout, 'time' : data.data[i].time, 'status' : 'danger'});
         }
         
         txs.sort(function(tx1, tx2) {
@@ -71,38 +58,13 @@ exports.ShowAddress = function(hash)
         
         for (var i=0; i<txs.length; i++)
         {
-            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(txs[i].tx))), $("<td></td><td></td>")));
+            const td3 = "<td><b><span class='pull-right'>"+g_utils.UTC(txs[i].time)+"</span></b></td>";
+            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(txs[i].tx)))).append($("<td></td>")).append($(td3)));
             
             const vout = JSON.parse(unescape(txs[i].vout));
             g_txs.ShowTransactionInfo(txs[i].tx, txs[i].info[0].vin, vout, '#addr_inputs_table', txs[i].status);
         }
         
-       /* for (var i=0; i<data.data.length; i++)
-        {
-          if (data.data[i].txin.length > 1)
-          {
-            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(data.data[i].txin))), $("<td></td><td></td>")));
-            if (data.data[i].txin_info && data.data[i].txin_info.length)
-            {
-              const vout = JSON.parse(unescape(data.data[i].txin_info[0].vout));
-              g_txs.ShowTransactionInfo(data.data[i].txin, data.data[i].txin_info[0].vin, vout, '#addr_inputs_table', 'success');
-            }
-            nTxCount++;
-          }
-          if (data.data[i].txout.length > 1)
-          {
-            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(data.data[i].txout))), $("<td></td><td></td>")));
-            if (data.data[i].txout_info && data.data[i].txout_info.length)
-            {
-              const vout = JSON.parse(unescape(data.data[i].txout_info[0].vout));
-              g_txs.ShowTransactionInfo(data.data[i].txin, data.data[i].txout_info[0].vin, vout, '#addr_inputs_table', "danger");
-            }
-            nTxCount++;
-          }
-          
-          //g_utils.ShowTransactionInfo(tx.txid, vin, vout, 'txs_info_table');
-        }*/
-
         $('#addr_io_table').append(
           $("<tr></tr>").append($("<td>"+"No. Transactions"+"</td>"), $("<td></td>").append(txs.length)),
           $("<tr></tr>").append($("<td>"+"Total Received"+"</td>"), $("<td></td>").append(recieved)),

@@ -90,7 +90,7 @@ function InitBlocksTimer()
           
           $('#table_blocks').append($("<tr></tr>").append(
               "<td>"+g_Blocks[i].height+"</td>" + 
-              "<td>"+(new Date(unescape(g_Blocks[i].time)*1000)).toUTCString()+"</td>" + 
+              "<td>"+g_utils.UTC(g_Blocks[i].time)+"</td>" + 
               "<td>"+JSON.parse(unescape(g_Blocks[i].tx)).length+"</td>",
               $("<td></td>").append(hashBlock),
               "<td>"+(parseInt(g_Blocks[i].size)*1.0/1024).toFixed(3)+"</td>")
