@@ -9,6 +9,7 @@ const g_db = require("./database");
 //var g_tmp = 16361;
 exports.Sync = function()
 {
+    console.log('syncBlocks started');
   //  try
  //   {
         g_rpc.getblockcount('', function(rpcRet) {
@@ -61,7 +62,7 @@ exports.Sync = function()
                 });
             });
         });
-/*    }
+   /* }
     catch(e)
     {
         throw 'unexpected Block Sync error';
