@@ -162,25 +162,20 @@ exports.GetTransactionsByAddress = function(query, res)
                 g_utils.ForEachSync(rows, SaveTransaction, function() {
                     for (var i=0; i<rows.length; i++)
                     {
-                        for (var i=0; i<rows.length; i++)
+                        const isoTime = (rows[i].time+'').indexOf('-') == -1 ? new Date(rows[i].time*1000).toISOString() : rows[i].time;
+                        mapAddrToTransactions[rows[i].address].nb_txs++;
+                        mapAddrToTransactions[rows[i].address].txs.push(
+                            {'tx' : rows[i].txin, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : rows[i].value});
+                            
+                        if (rows[i].txout_info && rows[i].txout_info.length && rows[i].txout == rows[i].txout_info[0].txid)
                         {
-                            const isoTime = (rows[i].time+'').indexOf('-') == -1 ? new Date(rows[i].time*1000).toISOString() : rows[i].time;
+                            const isoTime = (rows[i].txout_info[0].time+'').indexOf('-') == -1 ? new Date(rows[i].txout_info[0].time*1000).toISOString() : rows[i].txout_info[0].time;
                             mapAddrToTransactions[rows[i].address].nb_txs++;
                             mapAddrToTransactions[rows[i].address].txs.push(
-                                {'tx' : rows[i].txin, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : rows[i].value});
-                            
-                            const n = parseInt(rows[i].number);// - 1;
-                            if (n >= 0 && rows[i].txout_info && rows[i].txout_info.length > n && rows[i].txout == rows[i].txout_info[n].txid)
-                            {
-                                const isoTime = (rows[i].txout_info[n].time+'').indexOf('-') == -1 ? new Date(rows[i].txout_info[n].time*1000).toISOString() : rows[i].txout_info[n].time;
-                                mapAddrToTransactions[rows[i].address].nb_txs++;
-                                mapAddrToTransactions[rows[i].address].txs.push(
-                                    {'tx' : rows[i].txout, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].txout_info[n].blockHeight, 'amount' : '-'+rows[i].value});
-                            }
+                                {'tx' : rows[i].txout, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].txout_info[0].blockHeight, 'amount' : '-'+rows[i].value});
                         }
-                        
-                        ReturnSuccess(mapAddrToTransactions, res);
                     }
+                    ReturnSuccess(mapAddrToTransactions, res);
                 });
             }
             catch(e)
