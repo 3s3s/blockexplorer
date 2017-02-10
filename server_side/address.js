@@ -49,7 +49,20 @@ exports.ShowAddress = function(hash)
           if (data.data[i].txin.length > 1 && data.data[i].txin_info && data.data[i].txin_info.length)
             txs.push({'tx' : data.data[i].txin, 'info' : data.data[i].txin_info, 'vout' : data.data[i].txin_info[0].vout, 'status' : 'success'});
           if (data.data[i].txout.length > 1 && data.data[i].txout_info && data.data[i].txout_info.length)
-            txs.push({'tx' : data.data[i].txout, 'info' : data.data[i].txout_info, 'vout' : data.data[i].txout_info[0].vout, 'status' : 'danger'});
+          {
+           /* var bFound = false;
+            for (var j=0; j<txs.length; j++)
+            {
+              if (data.data[i].txout == txs[j].tx)
+              {
+                txs[j].status = 'danger';
+                bFound = true;
+                break;
+              }
+            }
+            if (!bFound)*/
+              txs.push({'tx' : data.data[i].txout, 'info' : data.data[i].txout_info, 'vout' : data.data[i].txout_info[0].vout, 'status' : 'danger'});
+          }
         }
         
         txs.sort(function(tx1, tx2) {
