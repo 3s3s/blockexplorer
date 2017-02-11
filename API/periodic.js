@@ -15,8 +15,14 @@ exports.UpdateTransactions = function()
 {
     g_rpc.getrawmempool('', function(rpcRet) {
 //        rpcRet.data = ["55cc1c283a2b27b48fa73470ab2ed7b473953c2cc4b98e7a51eebb6951333b81"];
-        if (!rpcRet || rpcRet.status != 'success' || !rpcRet.data)
+        if (!rpcRet || rpcRet.status != 'success')
             return;
+            
+        if (!rpcRet.data.length)
+        {
+            g_mempool = [];
+            return;
+        }
         
         g_utils.ForEachSync(rpcRet.data, SaveMemPool, function(){});
     });
