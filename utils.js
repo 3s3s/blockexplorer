@@ -4,7 +4,7 @@ const https = require('https');
 const http = require('http');
 const g_constants = require("./constants");
 const g_db = require("./API/database");
-const periodic = require('./API/periodic');
+const periodic = require("./API/periodic");
 
 
 exports.getJSON = function(query, callback)
@@ -96,7 +96,7 @@ exports.GetTxByHash = function(hash, callback)
             if (rows.length != 1)
             {
                 //callback( {'status' : false, 'message' : 'unexpected return from database'} );
-                GetTxFromMempool(hash, callback);
+                exports.GetTxFromMempool(hash, callback);
                 return;
             }
             
@@ -104,7 +104,7 @@ exports.GetTxByHash = function(hash, callback)
             var vin = JSON.parse(unescape(rows[0].vin));
             if (vin && vin.length)
             {
-                exports.ForEachSync(vin, SaveInput, function() {
+                exports.ForEachSync(vin, exports.SaveInput, function() {
                     rows[0].vin = vin;
                     callback( {'status' : 'success', 'data' : rows} );
                 });
@@ -117,7 +117,7 @@ exports.GetTxByHash = function(hash, callback)
     });
 };
 
-function SaveInput(aVIN, nIndex, callback)
+exports.SaveInput = function(aVIN, nIndex, callback)
 {
     if (aVIN[nIndex].coinbase || aVIN[nIndex].vout == undefined)
     {
@@ -141,7 +141,7 @@ function SaveInput(aVIN, nIndex, callback)
     });
 }
 
-function GetTxFromMempool(hash, callback)
+exports.GetTxFromMempool = function(hash, callback)
 {
     const mempool = periodic.GetMempoolTXs();
     if (!mempool) 
@@ -171,7 +171,6 @@ function GetTxFromMempool(hash, callback)
     }
     callback( {'status' : false, 'message' : 'transaction not found'} );
 }
-
 
 exports.GetLastUnSyncAddrTransactions = function(limit, callback)
 {
