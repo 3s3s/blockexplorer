@@ -273,7 +273,7 @@ exports.GetUnconfirmedTransactionsByAddress = function(query, res)
             ReturnSuccess(mapAddrToTransactions, res);
         });
         
-        var strQueryTx = "";
+/*        var strQueryTx = "";
         for (var i=0; i<mempool.length; i++)
         {
             //Get unconfirmed txs with '+' value for given address
@@ -346,7 +346,7 @@ exports.GetUnconfirmedTransactionsByAddress = function(query, res)
                 res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
             }
             
-        });
+        });*/
     }
     catch(e) {
         res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
