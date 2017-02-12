@@ -156,7 +156,7 @@ exports.GetTxFromMempool = function(hash, callback)
             const vin = mempool[i].vin;
             if (vin && vin.length)
             {
-                exports.ForEachSync(vin, SaveInput, function() {
+                exports.ForEachSync(vin, exports.SaveInput, function() {
                     var strTmp = JSON.stringify(mempool[i]);
                     var rows = [];
                     rows.push(JSON.parse(strTmp));
