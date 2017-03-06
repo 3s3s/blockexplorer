@@ -1,6 +1,9 @@
 *.db
 *.db-journal
 *.log
+*.crt
+*.key
 e51
 d51
+node_modules
 SmailCoinDB
