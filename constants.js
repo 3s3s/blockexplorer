@@ -1,12 +1,12 @@
 'use strict';
 
-exports.my_port = process.env.PORT; //8088; //http port
-exports.my_portSSL = 9443; //https port
+exports.my_port = process.env.PORT || 11080; //9088; //http port
+exports.my_portSSL = 11443; //https port
 
-exports.dbName = './e51/blockchain.db';
+exports.dbName = './d51/blockchain.db';
 exports.rpcHost = '198.54.121.57';
-exports.rpcPort = '4443';
-exports.rpcProtocol = 'https';
+exports.rpcPort = '8435';
+exports.rpcProtocol = 'http';
 exports.rpcUser = 'blablablaUser';
 exports.rpcPassword = 'blablablaPassword';
 
