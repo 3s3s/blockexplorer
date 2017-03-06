@@ -13,7 +13,7 @@ exports.Sync = function()
   //  try
  //   {
         g_rpc.getblockcount('', function(rpcRet) {
-            if (rpcRet.status != 'success')
+            if (rpcRet.status != 'success' || !g_constants.dbTables['Blocks'])
             {
                 setTimeout(exports.Sync, 10000);
                 return;
