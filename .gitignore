@@ -2,4 +2,8 @@
 *.db-journal
 *.log
 e51
+r51
+y51
+d51
 SmailCoinDB
+node_modules
