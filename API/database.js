@@ -8,6 +8,7 @@ const g_utils = require('../utils');
 var g_db;
 
 exports.Init = function() {
+    console.log('Init database start');
     g_db = new sqlite3.Database(g_constants.dbName);
     
     //g_db.run("VACUUM");
@@ -175,10 +176,13 @@ exports.Init = function() {
         }
     }
     
+    console.log('Init database step 1');
+
     g_db.parallelize(function(){
         
        // g_constants.dbTables['selectAll'] = function(name, cols, where, other, callback, param) {
        //         SelectAll(cols, name, where, other, callback, param);};
+        console.log('Init database step 2');
                 
         g_utils.ForEachSync(g_constants.dbTables, CreateTable, function(err) {
             if (err) throw 'unexpected init db error 2';
