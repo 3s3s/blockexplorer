@@ -36,6 +36,8 @@ exports.Init = function() {
     
     function CreateTable(dbTables, nIndex, cbError)
     {
+        console.log('CreateTable nIndex='+nIndex);
+        
         var cols = ' (';
         for (var i=0; i<dbTables[nIndex].cols.length; i++) {
             cols += dbTables[nIndex].cols[i][0] + ' ' + dbTables[nIndex].cols[i][1];
@@ -48,6 +50,7 @@ exports.Init = function() {
     
          cols += ')';
          
+         console.log('CreateTable '+'CREATE TABLE IF NOT EXISTS ' + dbTables[nIndex].name + cols);
          g_db.run('CREATE TABLE IF NOT EXISTS ' + dbTables[nIndex].name + cols, function(err) {
             if (!err)
             {
@@ -182,7 +185,7 @@ exports.Init = function() {
         
        // g_constants.dbTables['selectAll'] = function(name, cols, where, other, callback, param) {
        //         SelectAll(cols, name, where, other, callback, param);};
-        console.log('Init database step 2');
+        console.log('Init database step 2 (g_constants.dbTables.length='+g_constants.dbTables.length+')');
                 
         g_utils.ForEachSync(g_constants.dbTables, CreateTable, function(err) {
             if (err) throw 'unexpected init db error 2';
