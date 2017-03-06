@@ -9,16 +9,18 @@ const apiAddressV1 = require('./API/v1/address');
 
 exports.handle = function(app)
 {
-    app.get('/', function (req, res) {res.render('index.html');});
+    app.get('/', function (req, res) {res.render('pages/index.ejs');});
+    app.get('/api.html', function (req, res) {res.render('pages/api.ejs');});
+    app.get('/contact.html', function (req, res) {res.render('pages/contact.ejs');});
     app.get('/api/v1/search', onV1Search);
     app.get('/api/v1/getmempool', onV1Mempool);
     app.get('/api/v1/getlastblocks', onV1Blocks);
     app.get('/api/v1/getlasttransactions', onV1Transactions);
     app.get('/api/v1/getblock', onV1GetBlock);
-    app.get('/block/*', function (req, res) {
-      res.sendFile(__dirname + '/site/index.html');});
-    app.get('/transaction/*', function (req, res) {res.sendFile(__dirname + '/site/index.html');});
-    app.get('/address/*', function (req, res) {res.sendFile(__dirname + '/site/index.html');});
+    app.get('/block/*', function (req, res) {res.render('pages/index.ejs');}); //{
+     // res.sendFile(__dirname + '/site/index.html');});
+    app.get('/transaction/*', function (req, res){res.render('pages/index.ejs');}); // {res.sendFile(__dirname + '/site/index.html');});
+    app.get('/address/*', function (req, res){res.render('pages/index.ejs');}); // {res.sendFile(__dirname + '/site/index.html');});
     app.get('/api/v1/gettransaction', onV1GetTransaction);
     app.get('/api/v1/getaddress', onV1GetAddress);
     
@@ -184,4 +186,4 @@ exports.handle = function(app)
       }
     }
 
-};
+}

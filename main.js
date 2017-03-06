@@ -63,6 +63,7 @@ httpsServer.listen(g_constants.my_portSSL, function(){
 });
 
 app.use(express.static('site'));
+app.set('view engine', 'ejs');
 
 
 require('./reqHandler.js').handle(app);
