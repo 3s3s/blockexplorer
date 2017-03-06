@@ -1,0 +1,22 @@
+<div id='main_page' class='container'>
+	  <div class="page-header">
+		<h1>Cards</h1>
+	  </div>	
+	<form class="col-md-6 col-md-offset-3">
+	  <div class="form-group">
+		<label>Select card type</label>
+		  <div class="btn-group btn-group-justified" role="group" aria-label="Justified button group">
+			<a href="/card/d" class="btn btn-default" role="button">D</a>
+			<a href="/card/e" class="btn btn-default" role="button">E</a>
+			<a href="/card/r" class="btn btn-default" role="button">R</a>
+			<a href="/card/y" class="btn btn-default" role="button">Y</a>
+		  </div>
+	  </div>
+	{{#if error_message}}<div class="alert bg-danger">{{error_message}}</div>{{/if}}
+	{{#if message}}<div class="alert bg-info">{{message}}</div>{{/if}}
+  </form>
+
+
+
+</div>
+

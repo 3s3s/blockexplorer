@@ -1,0 +1,8 @@
+{
+	"auth": {
+		"key": "7bba0d07b1771831733da2271cf0ee2e2e1da1a5bb1a63f0c2f683fc31dee5f2",
+		"secret": "76e4a7e719a5416340BdC6A43Cb61cb2Dc208395147bc50e94FBdf147D284253"
+	},
+	"amount":1,
+	"ipn_host" : "https://cryptobank.uk"
+}

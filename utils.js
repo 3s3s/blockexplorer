@@ -4,6 +4,7 @@ const https = require('https');
 const http = require('http');
 const g_constants = require("./constants");
 const g_db = require("./API/database");
+const periodic = require("./API/periodic");
 
 
 exports.getJSON = function(query, callback)
@@ -94,7 +95,8 @@ exports.GetTxByHash = function(hash, callback)
             }
             if (rows.length != 1)
             {
-                callback( {'status' : false, 'message' : 'unexpected return from database'} );
+                //callback( {'status' : false, 'message' : 'unexpected return from database'} );
+                exports.GetTxFromMempool(hash, callback);
                 return;
             }
             
@@ -102,7 +104,7 @@ exports.GetTxByHash = function(hash, callback)
             var vin = JSON.parse(unescape(rows[0].vin));
             if (vin && vin.length)
             {
-                exports.ForEachSync(vin, SaveInput, function() {
+                exports.ForEachSync(vin, exports.SaveInput, function() {
                     rows[0].vin = vin;
                     callback( {'status' : 'success', 'data' : rows} );
                 });
@@ -113,32 +115,62 @@ exports.GetTxByHash = function(hash, callback)
             callback( {'status' : false, 'message' : 'unexpected error'} );
         }
     });
+};
 
-    function SaveInput(aVIN, nIndex, callback)
+exports.SaveInput = function(aVIN, nIndex, callback)
+{
+    if (aVIN[nIndex].coinbase || aVIN[nIndex].vout == undefined)
     {
-        if (aVIN[nIndex].coinbase || aVIN[nIndex].vout == undefined)
+        aVIN[nIndex].addr = [];
+        callback(false);
+        return;
+    }
+    g_constants.dbTables['Transactions'].selectAll("vout", "txid='"+escape(aVIN[nIndex].txid)+"'", "", function(error, rows) {
+        if (error || !rows.length || !rows[0].vout.length)
         {
-            aVIN[nIndex].addr = [];
             callback(false);
             return;
         }
-        g_constants.dbTables['Transactions'].selectAll("vout", "txid='"+escape(aVIN[nIndex].txid)+"'", "", function(error, rows) {
-            if (error || !rows.length || !rows[0].vout.length)
-            {
-                callback(false);
-                return;
-            }
             
-            const vout_o = JSON.parse(unescape(rows[0].vout));
-            if (vout_o.length && aVIN[nIndex].vout < vout_o.length)
-            {
-                aVIN[nIndex].vout_o = vout_o[aVIN[nIndex].vout];
-            }
-            callback(false);
-        });
-    }
-};
+        const vout_o = JSON.parse(unescape(rows[0].vout));
+        if (vout_o.length && aVIN[nIndex].vout < vout_o.length)
+        {
+            aVIN[nIndex].vout_o = vout_o[aVIN[nIndex].vout];
+        }
+        callback(false);
+    });
+}
 
+exports.GetTxFromMempool = function(hash, callback)
+{
+    const mempool = periodic.GetMempoolTXs();
+    if (!mempool) 
+    {
+        callback( {'status' : false, 'message' : 'transaction not found'} );
+        return;
+    }
+    for (var i=0; i<mempool.length; i++)
+    {
+        if (mempool[i].txid == hash)
+        {
+            const vin = mempool[i].vin;
+            if (vin && vin.length)
+            {
+                exports.ForEachSync(vin, exports.SaveInput, function() {
+                    var strTmp = JSON.stringify(mempool[i]);
+                    var rows = [];
+                    rows.push(JSON.parse(strTmp));
+                    
+                    rows[0].vin = vin;
+                    rows[0].vout = JSON.stringify(rows[0].vout);
+                    callback( {'status' : 'success', 'data' : rows} );
+                });
+            }
+            return;
+        }
+    }
+    callback( {'status' : false, 'message' : 'transaction not found'} );
+}
 
 exports.GetLastUnSyncAddrTransactions = function(limit, callback)
 {

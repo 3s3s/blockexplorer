@@ -62,7 +62,7 @@ exports.GetAddress = function(query, res)
         return;
     }
     
-    g_constants.dbTables['Address'].selectAll("*", "address='"+escape(query.hash)+"'", "ORDER BY time DESC LIMIT 400", function(error, rows) {
+    g_constants.dbTables['Address'].selectAll("*", "address='"+escape(query.hash)+"'", "ORDER BY height DESC LIMIT 400", function(error, rows) {
         try
         {
             if (error || !rows)
@@ -162,25 +162,20 @@ exports.GetTransactionsByAddress = function(query, res)
                 g_utils.ForEachSync(rows, SaveTransaction, function() {
                     for (var i=0; i<rows.length; i++)
                     {
-                        for (var i=0; i<rows.length; i++)
+                        const isoTime = (rows[i].time+'').indexOf('-') == -1 ? new Date(rows[i].time*1000).toISOString() : rows[i].time;
+                        mapAddrToTransactions[rows[i].address].nb_txs++;
+                        mapAddrToTransactions[rows[i].address].txs.push(
+                            {'tx' : rows[i].txin, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : rows[i].value});
+                            
+                        if (rows[i].txout_info && rows[i].txout_info.length && rows[i].txout == rows[i].txout_info[0].txid)
                         {
-                            const isoTime = (rows[i].time+'').indexOf('-') == -1 ? new Date(rows[i].time*1000).toISOString() : rows[i].time;
+                            const isoTime = (rows[i].txout_info[0].time+'').indexOf('-') == -1 ? new Date(rows[i].txout_info[0].time*1000).toISOString() : rows[i].txout_info[0].time;
                             mapAddrToTransactions[rows[i].address].nb_txs++;
                             mapAddrToTransactions[rows[i].address].txs.push(
-                                {'tx' : rows[i].txin, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : rows[i].value});
-                            
-                            const n = parseInt(rows[i].number) - 1;
-                            if (n >= 0 && rows[i].txout_info && rows[i].txout_info.length > n && rows[i].txout == rows[i].txout_info[n].txid)
-                            {
-                                const isoTime = (rows[i].txout_info[n].time+'').indexOf('-') == -1 ? new Date(rows[i].txout_info[n].time*1000).toISOString() : rows[i].txout_info[n].time;
-                                mapAddrToTransactions[rows[i].address].nb_txs++;
-                                mapAddrToTransactions[rows[i].address].txs.push(
-                                    {'tx' : rows[i].txout, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].txout_info[n].blockHeight, 'amount' : '-'+rows[i].value});
-                            }
+                                {'tx' : rows[i].txout, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].txout_info[0].blockHeight, 'amount' : '-'+rows[i].value});
                         }
-                        
-                        ReturnSuccess(mapAddrToTransactions, res);
                     }
+                    ReturnSuccess(mapAddrToTransactions, res);
                 });
             }
             catch(e)
@@ -192,6 +187,22 @@ exports.GetTransactionsByAddress = function(query, res)
     });
 };
 
+function UpdateMempool(aMempool, nIndex, cbError)
+{
+    if (!aMempool || aMempool.length <= nIndex)
+    {
+        cbError(true);
+        return;
+    }
+    if (!aMempool[nIndex].vin || !aMempool[nIndex].vin.length)
+    {
+        cbError(false);
+        return;
+    }
+    
+    g_utils.ForEachSync(aMempool[nIndex].vin, g_utils.SaveInput, function() {cbError(false);});
+    
+}
 exports.GetUnconfirmedTransactionsByAddress = function(query, res)
 {
     const aAddr = query.split(',');
@@ -201,7 +212,6 @@ exports.GetUnconfirmedTransactionsByAddress = function(query, res)
     try
     {
         var strQueryAddr = "address='";
-        var strQueryTx = "";
         for (var i=0; i<aAddr.length; i++)
         {
             mapAddrToTransactions[aAddr[i]] = {'address' : aAddr[i], 'unconfirmed' : []};
@@ -215,8 +225,55 @@ exports.GetUnconfirmedTransactionsByAddress = function(query, res)
                 break;
         }
     
-        const mempool = periodic.GetMempoolTXs();
+        var mempool = periodic.GetMempoolTXs();
+        g_utils.ForEachSync(mempool, UpdateMempool, function(){
+            for (var i=0; i<mempool.length; i++)
+            {
+                //Get unconfirmed txs with '+' value for given address
+                const aVout = mempool[i].vout;
+                for (var k=0; k<aVout.length; k++)
+                {
+                    for (var j=0; j<aVout[k].scriptPubKey.addresses.length; j++)
+                    {
+                        if (mapAddrToTransactions[aVout[k].scriptPubKey.addresses[j]] == undefined) 
+                            continue;
+                        
+                        mapAddrToTransactions[aVout[k].scriptPubKey.addresses[j]].unconfirmed.push({
+                            'tx' : mempool[i].txid, 
+                            'amount' : aVout[k].value,
+                            'n' : aVout[k].n,
+                            'time_utc' : new Date().toISOString()
+                        });
+                    }
+                }
+    
+                //Get unconfirmed txs with '-' value for given address (from prev transaction)
+                const aVin = mempool[i].vin;
+                for (var j=0; j<aVin.length; j++)
+                {
+                    if (aVin[j].txid == undefined || aVin[j].vout_o == undefined || 
+                        !aVin[j].vout_o.scriptPubKey || !aVin[j].vout_o.scriptPubKey.addresses || !aVin[j].vout_o.scriptPubKey.addresses.length)
+                        continue;
+                        
+                    for (var k=0; k<aVin[j].vout_o.scriptPubKey.addresses.length; k++)
+                    {
+                        if (mapAddrToTransactions[aVin[j].vout_o.scriptPubKey.addresses[k]] == undefined) 
+                            continue;
+                            
+                        mapAddrToTransactions[aVin[j].vout_o.scriptPubKey.addresses[k]].unconfirmed.push({
+                            'tx' : mempool[i].txid, 
+                            'amount' : "-" + aVin[j].vout_o.value,
+                            'n' : aVin[j].vout_o.n,
+                            'time_utc' : new Date().toISOString()
+                        });
+                    }
+                }
+            }
+
+            ReturnSuccess(mapAddrToTransactions, res);
+        });
         
+/*        var strQueryTx = "";
         for (var i=0; i<mempool.length; i++)
         {
             //Get unconfirmed txs with '+' value for given address
@@ -270,7 +327,9 @@ exports.GetUnconfirmedTransactionsByAddress = function(query, res)
                 
                 for (var i=0; i<rows.length; i++)
                 {
-                    if (rows[i].txout == undefined) 
+                    //if (rows[i].txout == undefined) 
+                    //    continue;
+                    if (mapAddrToTransactions[rows[i].address] == undefined)
                         continue;
                         
                     mapAddrToTransactions[rows[i].address].unconfirmed.push({
@@ -287,7 +346,7 @@ exports.GetUnconfirmedTransactionsByAddress = function(query, res)
                 res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
             }
             
-        });
+        });*/
     }
     catch(e) {
         res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );

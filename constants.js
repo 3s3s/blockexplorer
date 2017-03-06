@@ -1,14 +1,26 @@
 'use strict';
 
-exports.my_port = process.env.PORT; //8088; //http port
-exports.my_portSSL = 9443; //https port
+exports.my_port = 80; //http port
+exports.my_portSSL = 443; //https port
 
-exports.dbName = './e51/blockchain.db';
+exports.dbName = './r51/blockchain.db';
 exports.rpcHost = '198.54.121.57';
 exports.rpcPort = '4443';
 exports.rpcProtocol = 'https';
 exports.rpcUser = 'blablablaUser';
 exports.rpcPassword = 'blablablaPassword';
+exports.mysql = {
+    host: 'localhost',
+    port: 3306,
+    user: 'root',
+    database: 'cryptobank',
+    //password: '1111'
+    password: 'f378J,fu43gVPj/43bny7D'
+};
+
+exports.auth ={
+	authRoutes:['/cards','/card-request',/^\/card\/./]
+};
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
@@ -85,3 +97,15 @@ exports.dbIndexes = [
     'fields' : 'hash, height, time'
   }
 ];
+
+
+/*exports.rpcHost = 'multicoins.org';
+exports.rpcPort = '9902';
+exports.rpcUser = 'kzv';
+exports.rpcPassword = 'q2210';*/
+
+/*xports.intervals = {
+    'mempool_tx' : 10000,
+    'block' : 60000*5,
+    'synchronization' : 1000
+}*/

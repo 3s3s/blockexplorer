@@ -1,0 +1,28 @@
+{
+	"name": "node-blockexplorer",
+	"version": "1.0.0",
+	"description": "Block explorer",
+	"dependencies": {
+		"express": "4.14.1",
+		"body-parser": "1.16.0",
+		"mysql": "*",
+		"sqlite3": "3.1.8",
+		"express-handlebars":"3.0.0",
+		"express-session":"*",
+		"session-file-store":"*",
+		"express-validator":"*",
+		"handlebars-helpers":"*",
+		"md5":"*",
+		"connect-flash":"*",
+		"request":"*",
+		"dateformat":"*",
+		"coinpayments":"*"
+		
+	},
+	"engines": {
+		"node": "7.0.0"
+	},
+	"scripts": {
+		"start": "node main.js"
+	}
+}

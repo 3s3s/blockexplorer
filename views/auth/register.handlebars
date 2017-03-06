@@ -1,0 +1,111 @@
+	<div class="container" style="margin-top: 70px;">    
+		<div id="signupbox" class="mainbox col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<div class="panel-title">Register</div>
+					
+					<div style="float:right; font-size: 85%; position: relative; top:-18px"><a id="signinlink" href="/login">Login</a></div>
+				</div>  
+				<div class="panel-body" >
+					<form method="post" action="/register">
+						<div class="form-group {{#if formErrors.varName}}has-error{{/if}}">
+							<label class="control-label"  for="name">Name</label>
+							<input type="text" value="{{params.varName}}" class="form-control" id="varName" name="varName" placeholder="Name" required>
+							{{#if formErrors.varName}}
+								<span class="help-block">{{formErrors.varName.msg}}</span>
+							{{/if}}
+						</div>
+						<div class="form-group {{#if formErrors.varSurname}}has-error{{/if}}">
+							<label class="control-label"  for="varSurname">Surname</label>
+							<input type="text" value="{{params.varSurname}}" class="form-control" id="varSurname" name="varSurname" placeholder="Surname" required>
+							{{#if formErrors.varName}}
+								<span class="help-block">{{formErrors.varSurname.msg}}</span>
+							{{/if}}
+						</div>
+						<div class="form-group {{#if formErrors.varDob}}has-error{{/if}}">
+							<label class="control-label" for="varDob">Dob</label>
+							<input type="text" value="{{params.varDob}}" class="form-control" id="varDob" name="varDob" placeholder="Dob" required>
+							{{#if formErrors.varDob}}
+								<span class="help-block">{{formErrors.varDob.msg}}</span>
+							{{/if}}
+						</div>
+						<div class="form-group {{#if formErrors.varEmail}}has-error{{/if}}">
+							<label class="control-label"  for="varEmail">Email address</label>
+							<input type="email" value="{{params.varEmail}}" class="form-control" id="varEmail" name="varEmail" placeholder="Email" required>
+							{{#if formErrors.varEmail}}
+								<span class="help-block">{{formErrors.varEmail.msg}}</span>
+							{{/if}}
+						</div>
+						<div class="form-group {{#if formErrors.varPassword}}has-error{{/if}}">
+							<label class="control-label"  for="varPassword">Password</label>
+							<input type="password" class="form-control" id="register_password" name="varPassword" placeholder="Password" required>
+							{{#if formErrors.varPassword}}
+								<span class="help-block">{{formErrors.varPassword.msg}}</span>
+							{{/if}}
+						</div>
+						<div class="form-group">
+							<label class="control-label"  for="confirm_password">Password</label>
+							<input type="password" class="form-control" id="confirm_password"placeholder="Confirm password" required>
+						</div>
+						<div class="form-group {{#if formErrors.varAddress}}has-error{{/if}}">
+							<label class="control-label" for="varAddress">Address</label>
+							<input type="text" value="{{params.varAddress}}" class="form-control" id="varAddress" name="varAddress" placeholder="Address" required>
+							{{#if formErrors.varAddress}}
+								<span class="help-block">{{formErrors.varAddress.msg}}</span>
+							{{/if}}
+						</div>
+						<div class="form-group {{#if formErrors.varCity}}has-error{{/if}}">
+							<label class="control-label"  for="varCity">City</label>
+							<input type="text" value="{{params.varCity}}" class="form-control" id="varCity" name="varCity" placeholder="City" required>
+							{{#if formErrors.varCity}}
+								<span class="help-block">{{formErrors.varCity.msg}}</span>
+							{{/if}}
+						</div>
+						<div class="form-group {{#if formErrors.varCountry}}has-error{{/if}}">
+							<label class="control-label"  for="varCountry">Country</label>
+							<input type="text" value="{{params.varCountry}}" class="form-control" id="varCountry" name="varCountry" placeholder="Country" required>
+							{{#if formErrors.varCountry}}
+								<span class="help-block">{{formErrors.varCountry.msg}}</span>
+							{{/if}}
+						</div>
+						<div class="form-group {{#if formErrors.varZip}}has-error{{/if}}">
+							<label class="control-label"  for="varZip">Zip</label>
+							<input type="text" value="{{params.varZip}}" class="form-control" id="varZip" name="varZip" placeholder="Zip" required>
+							{{#if formErrors.varZip}}
+								<span class="help-block">{{formErrors.varZip.msg}}</span>
+							{{/if}}
+						</div>
+						<div class="form-group {{#if formErrors.confirm}}has-error{{/if}}">
+							<div class="checkbox">
+								<label class="control-label" >
+									<input type="checkbox" {{#if params.confirm}}checked{{/if}} name="confirm" value="1" required> By signing up you accept our 
+								</label>
+								<a href="#">Terms of service</a>
+							</div>
+							{{#if formErrors.confirm}}
+								<span class="help-block">{{formErrors.confirm.msg}}</span>
+							{{/if}}
+						</div>
+
+						<button type="submit" class="btn btn-default">Submit</button>
+					</form>
+					{{#if register_errors}}<div style="margin-top: 15px;" id="login-alert" class="alert alert-danger col-sm-12">{{register_errors}}</div>{{/if}}
+				 </div>
+			</div>
+		</div> 
+	</div>
+	<script>
+		var password = document.getElementById("register_password")
+		, confirm_password = document.getElementById("confirm_password");
+
+		function validatePassword(){
+		  if(password.value != confirm_password.value) {
+			confirm_password.setCustomValidity("Passwords Don't Match");
+		  } else {
+			confirm_password.setCustomValidity('');
+		  }
+		}
+
+		password.onchange = validatePassword;
+		confirm_password.onkeyup = validatePassword;
+	</script>

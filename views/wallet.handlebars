@@ -1,0 +1,589 @@
+<div id='main_page' class='container'>
+	<div class="page-header">
+		<h1>Wallet</h1>
+	</div>    
+	<div id="page-preloader" class="loader"></div>
+    <div id="page-preloader-info" class="loader-info">Loading...</div>
+
+    <div class="container-fluid">
+
+      
+      <div class="container">
+      <div class="panel panel-default">
+        <div class="panel-body">
+            <div class="row">
+              <div class="col-md-1">
+                <button id="toolButtonSend" type="button" class="btn btn-default" aria-label="Left Align" data-toggle="tooltip" title="Send money"><span class="glyphicon glyphicon-send" aria-hidden="true"></span></button>
+              </div>
+              <div class="col-md-1">
+                <button id="toolButtonRequest" type="button" class="btn btn-default" aria-label="Left Align" data-toggle="tooltip" title="Request money"><span class="glyphicon glyphicon-piggy-bank" aria-hidden="true"></span></button>
+              </div>
+               <div class="col-md-1">
+                <button id="toolButtonTransactions" type="button" class="btn btn-default" aria-label="Left Align" data-toggle="tooltip" title="Transactions"><span class="glyphicon glyphicon-retweet" aria-hidden="true"></span></button>
+              </div>
+               <div class="col-md-1">
+                <button id="toolButtonSignMessage" type="button" class="btn btn-default" aria-label="Left Align" data-toggle="tooltip" title="Sign message"><span class="glyphicon glyphicon-edit" aria-hidden="true"></span></button>
+              </div>
+               <div class="col-md-1">
+                <button id="toolButtonCheckMessage" type="button" class="btn btn-default" aria-label="Left Align" data-toggle="tooltip" title="Verify message"><span class="glyphicon glyphicon-check" aria-hidden="true"></span></button>
+              </div>
+               <div class="col-md-1">
+                <button id="toolButtonEncodeWallet" type="button" class="btn btn-default" aria-label="Left Align" data-toggle="tooltip" title="Encode/Decode Wallet"><span class="glyphicon glyphicon-lock" aria-hidden="true"></span></button>
+              </div>
+               <div class="col-md-1">
+                <button id="toolButtonSaveWallet" type="button" class="btn btn-default" aria-label="Left Align" data-toggle="tooltip" title="Backup/Restore Wallet"><span class="glyphicon glyphicon-cloud-upload" aria-hidden="true"></span></button>
+              </div>
+            </div>
+        </div>
+      </div>
+      </div>
+
+
+      <div class="container"> 
+        <div class="row">
+          <div class="col-md-3">
+              <div id='tab_balance'>
+                <ul class="nav nav-tabs">
+                  <li class="active"><a href="#div_tab_balance" data-toggle="tab">Wallet balance</a></li>
+                </ul>
+                <div class="tab-content">
+                  <div id="div_tab_balance" class="tab-pane fade in active">
+                    <h3>Total balance</h3>
+                    <table id="tab_tab_balance" class="table table-striped table-bordered fixed-table">
+                    </table>
+                  </div>
+                </div>
+              </div>
+          </div>
+          <div class="col-md-9">
+              <!-- Security -->
+              <div id='tab_security' style="display:none">
+                <ul class="nav nav-tabs">
+                  <li class="active"><a href="#tab_encrypt_wallet" data-toggle="tab">Encrypt/Decrypt wallet</a></li>
+                  <li><a href="#tab_backup_wallet" data-toggle="tab">Backup/Restore wallet</a></li>
+                </ul>
+                
+                <div class="tab-content">
+                  
+                  <!-- Tab Security -> Encrypt wallet -->
+                  <div id="tab_encrypt_wallet" class="tab-pane fade in active">
+                    <table class="table table-striped table-bordered fixed-table">
+                      <tr><td id="info_encrypt_status"></td></tr>
+                      <tr><td id="info_encrypt_note" class="active"></td></tr>
+                      <tr>
+                        <td>
+                          <div class="container">
+                            <div class="row top-buffer">
+                              <form class="form-horizontal">
+                                <div class="form-group">
+                                  <label for="inputEncryptPassword" class="col-sm-2 control-label">Password</label>
+                                  <div class="col-sm-3">
+                                    <input type="password" class="form-control" id="inputEncryptPassword">
+                                  </div>
+                                </div>
+                                <div id='divEncryptPassword2' class="form-group">
+                                  <label for="inputEncryptPassword2" class="col-sm-2 control-label">Repeat password</label>
+                                  <div class="col-sm-3">
+                                    <input type="password" class="form-control" id="inputEncryptPassword2">
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <div class="col-sm-offset-2 col-sm-4">
+                                    <strong>Keep your password safe.</strong><br>
+                                    You need this password to spend your coins.<br>
+                                    It cannot be recovered if lost.
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <div class="col-sm-offset-2 col-sm-10">
+                                    <button id="submitEncryptWallet" type="button" class="btn btn-primary btn-default"></button>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  
+                  <!-- Tab Security -> Backup wallet -->
+                  <div id="tab_backup_wallet" class="tab-pane fade">
+                    <table class="table table-striped table-bordered fixed-table">
+                      <tr><td>Instructions</td></tr>
+                      <tr><td class="info">Enter the old or create a new name for the wallet. Enter password and press "Backup" or "Restore" button<br>
+                          </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="container">
+                            <div class="row top-buffer">
+                              <form class="form-horizontal">
+                                <div id='divBackupWalletLogin' class="form-group">
+                                  <label for="inputBackupWalletLogin" class="col-sm-2 control-label">Wallet name</label>
+                                  <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="inputBackupWalletLogin" placeholder="My Multicoins Wallet">
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label for="inputBackupWalletPassword" class="col-sm-2 control-label">Password</label>
+                                  <div class="col-sm-5">
+                                    <input type="password" class="form-control" id="inputBackupWalletPassword">
+                                  </div>
+                                </div>
+                                <div id='divBackupWalletPassword2' class="form-group">
+                                  <label for="inputBackupWalletPassword2" class="col-sm-2 control-label">Repeat password</label>
+                                  <div class="col-sm-5">
+                                    <input type="password" class="form-control" id="inputBackupWalletPassword2">
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <div class="col-sm-offset-2 col-sm-1">
+                                    <button id="submitBackup" type="button" class="btn btn-primary btn-default">Backup</button>
+                                  </div>
+                                  <div class="col-sm-1">
+                                    <button id="submitRestore" type="button" class="btn btn-primary btn-default">Restore</button>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                </div>
+              </div>  
+        
+              <!-- Tools -->
+              <div id='tab_tools' style="display:none">
+                <ul class="nav nav-tabs">
+                  <li class="active"><a href="#tab_sign_message" data-toggle="tab">Sign message</a></li>
+                  <li><a href="#tab_verify_message" data-toggle="tab">Verify message</a></li>
+                  <!--<li><a href="#tab_gen_address" data-toggle="tab">Address Generator</a></li>-->
+                </ul>
+                
+                <div class="tab-content">
+                  
+                  <!-- TAB Tools -> Sign message -->
+                  <div id="tab_sign_message" class="tab-pane fade in active">
+                    <table class="table table-striped table-bordered fixed-table">
+                      <tr><td>Explanatory notes</td></tr>
+                      <tr><td class="bg-danger">You can sign messages with the one of your receiving address.<br>
+                              Only sign messages that you understand fully and agree to.
+                          </td>
+                      </tr>
+                      <tr><td>Sign your message</td></tr>
+                      <tr>
+                        <td>
+                          Enter your wallet password and signing address. Enter your message. Press 'Sign Message'.<br>
+                          <div class="container">
+                            <div class="row top-buffer">
+                              <form class="form-horizontal">
+                                <div id='divSignMessagePassword' class="form-group">
+                                  <label for="inputSignMessagePassword" class="col-sm-2 control-label">Wallet password</label>
+                                  <div class="col-sm-5">
+                                    <input type="password" class="form-control" id="inputSignMessagePassword">
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label for="inputPybKeyForSign" class="col-sm-2 control-label">Address</label>
+                                  <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="inputPybKeyForSign" placeholder="1CHeYxfYo6zVmHSm7B1KztA5f7ZKcMsEWA">
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label for="textForSign" class="col-sm-2 control-label">Message</label>
+                                  <div class="col-sm-5">
+                                    <textarea class="form-control" id="textForSign" cols="40" rows="5"></textarea>
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label for="textSignature" class="col-sm-2 control-label">Signature</label>
+                                  <div class="col-sm-5">
+                                    <textarea class="form-control" id="textSignature" cols="40" rows="2"></textarea>
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <div class="col-sm-offset-2 col-sm-10">
+                                    <button id="submitSignMessage" type="button" class="btn btn-primary btn-default">Sign Message</button>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+                  
+                  <!-- TAB Tools -> Verify message -->
+                  <div id="tab_verify_message" class="tab-pane fade">
+                    <table class="table table-striped table-bordered fixed-table">
+                      <tr><td>Instructions</td></tr>
+                      <tr><td class="info">Enter the signing address, message and signature below.<br>
+                              Ensure you copy line, breaks, tabs etc exactly.
+                          </td>
+                      </tr>
+                      <tr>
+                        <td>
+                          <div class="container">
+                            <div class="row top-buffer">
+                              <form class="form-horizontal">
+                                <div class="form-group">
+                                  <label for="inputPybKeyForSignVerify" class="col-sm-2 control-label">Address</label>
+                                  <div class="col-sm-5">
+                                    <input type="text" class="form-control" id="inputPybKeyForSignVerify" placeholder="1CHeYxfYo6zVmHSm7B1KztA5f7ZKcMsEWA">
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label for="textForSignVerify" class="col-sm-2 control-label">Message</label>
+                                  <div class="col-sm-5">
+                                    <textarea class="form-control" id="textForSignVerify" cols="40" rows="5"></textarea>
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <label for="textSignatureVerify" class="col-sm-2 control-label">Signature</label>
+                                  <div class="col-sm-5">
+                                    <textarea class="form-control" id="textSignatureVerify" cols="40" rows="2"></textarea>
+                                  </div>
+                                </div>
+                                <div class="form-group">
+                                  <div class="col-sm-offset-2 col-sm-10">
+                                    <button id="submitSignMessageVerify" type="button" class="btn btn-primary btn-default">Verify Message</button>
+                                  </div>
+                                </div>
+                              </form>
+                            </div>
+                          </div>
+                        </td>
+                      </tr>
+                    </table>
+                  </div>
+
+                </div>
+              </div>  
+            
+            <!-- Menu Trade -->  
+             <div id='tab_trade_top' style="display:none">
+                
+                <ul class="nav nav-tabs">
+                  <!-- Send Money (init in module app.js function UpdatePublicKeysTableHTML) -->
+                  <li><a href="#tab_send_money" data-toggle="tab">Send money</a></li>
+                  <li class="active"><a href="#tab_request_money" data-toggle="tab">Request money</a></li>
+                  <li><a href="#tab_transactions" data-toggle="tab">Transactions</a></li>
+                </ul>
+        
+                <div class="tab-content">
+                  <div id="tab_send_money" class="tab-pane fade">
+                    <h3>Addresses to send coins to</h3>
+                    
+                    <div class="row">
+                      <div class='col-md-12'>
+                        <table class="table table-striped table-bordered  fixed-table">
+                          <thead>
+                            <th class="col-md-1">Coin</th>
+                            <th class='col-md-5'>Address</th>
+                            <th class='col-md-5'>Label</th>
+                            <th class='col-md-1'></th>
+                            <th class='col-md-1'></th>
+                            <th class='col-md-1'></th>
+                          </thead>
+                          <tbody  id='addresses_to_send' >
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+        
+                    <div class="row">
+                      <div class='col-md-10'>
+                      </div>
+                      <div class='col-md-2'>
+                        <button id="add_address_to_send" type="button" class="btn btn-primary " data-toggle="modal" data-target="#add_new_address">Add new</button>
+                      </div>
+                    </div>
+                    
+                  </div>
+                  <div id="tab_request_money" class="tab-pane fade in active">
+                    <h3>Your addresses for request coins</h3>
+                    
+                    <div class="row">
+                      <div class='col-md-12'>
+                        <table class="table table-striped table-bordered fixed-table">
+                          <thead>
+                            <th class="col-md-1">Coin</th>
+                            <th class="col-md-6">Public address</th>
+                            <th class="col-md-2">Balance</th>
+                            <th class="col-md-2">Private key</th>
+                            <th class="col-md-1"></th>
+                          </thead>
+                          <tbody  id='keypairs' >
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    
+                    <div class="row">
+                      <div class='col-md-8'>
+                      </div>
+                      <div class='col-md-2'>
+                         <button id="load_address" type="button" class="btn btn-primary " data-toggle="modal" data-target="#add_private_key">Import Key</button>
+                      </div>
+                      <div class='col-md-2'>
+                        <button id="create_address" type="button" class="btn btn-primary " data-toggle="modal" data-target="#add_new_keypair">Create new</button>
+                      </div>
+                    </div>
+                    
+                  </div>
+                  <div id="tab_transactions" class="tab-pane fade">
+                    <h3>Your last transactions</h3>
+                    
+                    <div class="row">
+                      <div class='col-md-12'>
+                        <table class="table table-striped table-bordered  fixed-table">
+                          <thead>
+                            <th class="col-md-1">Coin</th>
+                            <th class="col-md-1">Status</th>
+                            <th class="col-md-3">Date</th>
+                            <th class="col-md-5">Description</th>
+                            <th class="col-md-2">Amount</th>
+                          </thead>
+                          <tbody  id='transactions' >
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                    
+                  </div>
+                </div>     
+              </div> 
+        
+            </div><!-- /.container-fluid -->
+          
+          </div>
+        </div>
+      </div>
+
+
+    <!-- Modal Send money-->
+    <div class="modal fade" id="send_coins_to" tabindex="-1" role="dialog" aria-labelledby="SendCoinsLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="SendCoinsLabel">Send coins</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal">
+              <input type="hidden" id="inputModalSendNetwork">
+              <input type="hidden" id="inputModalSendAddress">
+              <div class="divSendAddressGroup">
+                <table class="table table-striped table-bordered ">
+                  <thead>
+                    <th class="col-md-7">Address</th>
+                    <th class="col-md-3">Amount</th>
+                    <th class="col-md-1"></th>
+                    <th class="col-md-1"></th>
+                  </thead>
+                  <tbody class="tableSendAddressGroup">
+                  </tbody>
+                </table>
+              </div>
+              <div class="form-group">
+                <label for="inputModalSendFee" class="col-sm-2 control-label">Fee</label>
+                <div class="col-sm-4 display-table">
+                  <input type="text" class="form-control" id="inputModalSendFee">
+                  <span id='spanModalFeeCoinName' class="input-group-addon">BTC</span>
+                </div>
+                <div class="col-sm-6 display-table control-label align_left">
+                  <span class='spanRecommendedFee'></span>
+                </div>
+              </div>
+              <div class="form-group groupBalance">
+                <label for="spanModalBalance" class="col-sm-2 control-label">Balance</label>
+                <div class="col-sm-4 display-table">
+                  <div class='form-control'>
+                    <span id='spanModalBalance'>BTC</span>
+                  </div>
+                  
+                </div>
+              </div>
+              <div id='divSendMoneyPassword' class="form-group">
+                <label for="inputSendMoneyPassword" class="col-sm-2 control-label">Password</label>
+                <div class="col-sm-4 display-table">
+                  <input type="password" class="form-control" id="inputSendMoneyPassword" >  
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id='btnSendCoinsReady' type="button" class="btn btn-primary">OK</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modal Import Private Key-->
+    <div class="modal fade" id="add_private_key" tabindex="-1" role="dialog" aria-labelledby="AddPrivKeyLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="AddPrivKeyLabel">Insert private key</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label for="inputNewPivateKey" class="col-sm-3 control-label">Private key</label>
+                <div class="col-sm-9">
+                  <input id='inputNewPivateKey' type="text" class="form-control" placeholder="KyzBwx3juwhHHKMViiGUZjQsKDFrLXV3bP3deLdGNd9q16jt2U3B" size="40">
+                </div>
+              </div>
+              <div id='divNewPivateKeyPassword' class="form-group">
+                <label for="inputNewPivateKeyPassword" class="col-sm-3 control-label">Wallet password</label>
+                <div class="col-sm-9">
+                  <input type="password" class="form-control" id="inputNewPivateKeyPassword">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id='btnPrivateKeyReady' type="button" class="btn btn-primary">OK</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Modal Add address to send transaction to-->
+    <div class="modal fade" id="add_new_address" tabindex="-1" role="dialog" aria-labelledby="AddNewAddressLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="AddKeyPairLabel">Add new address for send money to</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal">
+              <div class="form-group">
+                <label for="inputNewPublicKey" class="col-sm-2 control-label">Address</label>
+                <div class="col-sm-10">
+                  <input id='inputNewPublicKey' type="text" class="form-control" placeholder="1CHeYxfYo6zVmHSm7B1KztA5f7ZKcMsEWA" size="40">
+                </div>
+              </div>
+              <div class="form-group">
+                <label for="inputNewPublicKeyLabel" class="col-sm-2 control-label">Label</label>
+                <div class="col-sm-10">
+                  <input id='inputNewPublicKeyLabel' type="text" class="form-control" placeholder="Multicoin Donate" size="40">
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id='btnPublicKeyReady' type="button" class="btn btn-primary">OK</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Modal Create new Key Pair-->
+    <div class="modal fade" id="add_new_keypair" tabindex="-1" role="dialog" aria-labelledby="AddKeyPairLabel">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            <h4 class="modal-title" id="AddKeyPairLabel">Create new Key Pair</h4>
+          </div>
+          <div class="modal-body">
+            <form class="form-horizontal">
+              <!--<div class="form-group">
+                <div class="col-sm-offset-3 col-sm-3">
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" value="bitcoin" checked>
+                      Bitcoin main
+                    </label>
+                  </div>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-3">
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" value="litecoin">
+                      Litecoin main
+                    </label>
+                  </div>          
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-3">
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" value="dogecoin">
+                      Dogecoin main
+                    </label>
+                  </div>          
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-3">
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" value="peercoin">
+                      Peercoin main
+                    </label>
+                  </div>          
+                </div>
+              </div> 
+              <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-3">
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" value="testnet">
+                      Bitcoin test
+                    </label>
+                  </div>          
+                </div>
+              </div>-->
+              <div class="form-group">
+                <div class="col-sm-offset-3 col-sm-3">
+                  <div class="radio">
+                    <label>
+                      <input type="radio" name="optionsRadios" value="e51">
+                      E51
+                    </label>
+                  </div>          
+                </div>
+              </div>
+
+              <div id='divNewKeyPairPassword' class="form-group">
+                <label for="inputNewKeyPairPassword" class="col-sm-3 control-label">Wallet password</label>
+                <div class="col-sm-5">
+                  <input type="password" class="form-control" id="inputNewKeyPairPassword">
+                </div>
+              </div>
+            
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button id='btnNewKeyPairReady' type="button" class="btn btn-primary">OK</button>
+            <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+
+
+    <!-- Bootstrap core JavaScript
+    ================================================== -->
+    <!-- Placed at the end of the document so the pages load faster -->
+    
+    
+    <!--<script src="js/wallet_loader.js"></script>-->
+    <script src='js/wallet.js'></script>

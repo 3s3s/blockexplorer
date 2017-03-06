@@ -1,0 +1,25 @@
+<div id='main_page' class='container'>
+	<div class="page-header">
+		<h1>Payment detail</h1>
+	</div>
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">Payment detail</div>
+				<div class="panel-body">
+					<table class="table pay-info">
+						<tbody>
+							<tr><td>Status</td><td>{{#gte transaction.status 100}}Payd{{else}}Wait for payment{{/gte}}</td></tr>
+							<tr><td>Transaction ID</td><td>{{transaction.txn_id}}</td></tr>
+							<tr><td>Amount to transfer</td><td>{{transaction.amount}} BTC</td></tr>
+							<tr><td>BTC address</td><td>{{transaction.address}}</td></tr>
+							<tr><td>QR code</td><td><img src="{{transaction.qrcode_url}}"></td></tr>
+						</tbody>
+					</table>
+					{{#if message}}<div class="alert bg-info">{{message}}</div>{{/if}}
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+		

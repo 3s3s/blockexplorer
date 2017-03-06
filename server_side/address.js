@@ -43,7 +43,7 @@ exports.ShowAddress = function(hash)
             balance += parseFloat(data.data[i].value);
         }
         
-        var nTxCount = 0;  
+/*        var nTxCount = 0;  
         for (var i=0; i<data.data.length; i++)
         {
           if (data.data[i].txin.length > 1)
@@ -68,10 +68,32 @@ exports.ShowAddress = function(hash)
           }
           
           //g_utils.ShowTransactionInfo(tx.txid, vin, vout, 'txs_info_table');
+        }*/
+
+        var txs = [];
+        for (var i=0; i<data.data.length; i++)
+        {
+          if (data.data[i].txin.length > 1 && data.data[i].txin_info && data.data[i].txin_info.length)
+            txs.push({'tx' : data.data[i].txin, 'info' : data.data[i].txin_info, 'vout' : data.data[i].txin_info[0].vout, 'status' : 'success'});
+          if (data.data[i].txout.length > 1 && data.data[i].txout_info && data.data[i].txout_info.length)
+            txs.push({'tx' : data.data[i].txout, 'info' : data.data[i].txout_info, 'vout' : data.data[i].txout_info[0].vout, 'status' : 'danger'});
+        }
+        
+        txs.sort(function(tx1, tx2) {
+          return (tx2.info[0].blockHeight - tx1.info[0].blockHeight);
+        });
+        
+        for (var i=0; i<txs.length; i++)
+        {
+            $('#addr_inputs_table').append($("<tr></tr>").append($("<td></td>").append(g_txs.CreateTxHash(unescape(txs[i].tx))), $("<td></td><td></td>")));
+            
+            const vout = JSON.parse(unescape(txs[i].vout));
+            g_txs.ShowTransactionInfo(txs[i].tx, txs[i].info[0].vin, vout, '#addr_inputs_table', txs[i].status);
         }
 
+
         $('#addr_io_table').append(
-          $("<tr></tr>").append($("<td>"+"No. Transactions"+"</td>"), $("<td></td>").append(nTxCount)),
+          $("<tr></tr>").append($("<td>"+"No. Transactions"+"</td>"), $("<td></td>").append(txs.length)),
           $("<tr></tr>").append($("<td>"+"Total Received"+"</td>"), $("<td></td>").append(recieved)),
           $("<tr></tr>").append($("<td>"+"Final Balance"+"</td>"), $("<td></td>").append(balance))
           );

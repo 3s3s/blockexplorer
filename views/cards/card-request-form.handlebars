@@ -1,0 +1,41 @@
+<div id='main_page' class='container'>
+	<div class="page-header">
+		<h1>Card request</h1>
+	</div>
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<form method="post">
+				<div class="form-group {{#if formErrors.varAddress}}has-error{{/if}}">
+					<label class="control-label" for="varAddress">Address</label>
+					<input type="text" value="{{params.varAddress}}" class="form-control" id="varAddress" name="varAddress" placeholder="Address">
+					{{#if formErrors.varAddress}}
+						<span class="help-block">{{formErrors.varAddress.msg}}</span>
+					{{/if}}
+				</div>
+				<div class="form-group {{#if formErrors.varCity}}has-error{{/if}}">
+					<label class="control-label"  for="varCity">City</label>
+					<input type="text" value="{{params.varCity}}" class="form-control" id="varCity" name="varCity" placeholder="City">
+					{{#if formErrors.varCity}}
+						<span class="help-block">{{formErrors.varCity.msg}}</span>
+					{{/if}}
+				</div>
+				<div class="form-group {{#if formErrors.varCountry}}has-error{{/if}}">
+					<label class="control-label"  for="varCountry">Country</label>
+					<input type="text" value="{{params.varCountry}}" class="form-control" id="varCountry" name="varCountry" placeholder="Country">
+					{{#if formErrors.varCountry}}
+						<span class="help-block">{{formErrors.varCountry.msg}}</span>
+					{{/if}}
+				</div>
+				<div class="form-group {{#if formErrors.varZip}}has-error{{/if}}">
+					<label class="control-label"  for="varZip">Zip</label>
+					<input type="text" value="{{params.varZip}}" class="form-control" id="varZip" name="varZip" placeholder="Zip">
+					{{#if formErrors.varZip}}
+						<span class="help-block">{{formErrors.varZip.msg}}</span>
+					{{/if}}
+				</div>
+				<button type="submit" class="btn btn-default">Submit</button>
+			</form>
+				{{#if request_error}}<div class="alert alert-danger">{{request_error}}</div>{{/if}}
+		</div>
+	</div>
+</div>

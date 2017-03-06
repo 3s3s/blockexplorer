@@ -1,0 +1,38 @@
+<style>
+	.card-info tbody tr td{
+		width: 50%;
+	}
+	.card-info tbody tr:first-child td{
+		border-top: 0;
+	}
+	
+</style>
+<div id='main_page' class='container'>
+	<div class="page-header">
+		<h1>Card detail</h1>
+	</div>
+	<div class="row">
+		<div class="col-md-6 col-md-offset-3">
+			<div class="panel panel-default">
+				<div class="panel-heading">Card detail</div>
+				<div class="panel-body">
+					<table class="table card-info">
+						<tbody>
+							<tr><td>Status</td><td>{{request.varStatus}}</td></tr>
+							<tr><td>Type</td><td>{{request.varType}}</td></tr>
+							<tr><td>Delivery address</td><td>{{request.varCity}}, {{request.varAddress}}, {{request.varZip}}, {{request.varCountry}}</td></tr>
+							{{#is request.varStatus 'wait'}}
+							<!--<tr><td></td><td><a class="btn btn-success" style="width: 90%" href="javascript:void(0)">Pay 10$</a></td></tr>-->
+							<tr><td></td><td><form action="/pay/{{request.varType}}" method="post">
+								<input type="image" src="https://www.coinpayments.net/images/pub/buynow-wide-blue.png" alt="Pay using CoinPayments.net">
+							</form></td></tr>
+							{{/is}}
+						</tbody>
+					</table>
+					{{#if message}}<div class="alert bg-info">{{message}}</div>{{/if}}
+				</div>
+			</div>
+		{{#if detail_error}}<div class="alert alert-danger">{{detail_error}}</div>{{/if}}
+		</div>
+	</div>
+</div>

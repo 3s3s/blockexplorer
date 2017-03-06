@@ -9,7 +9,12 @@ const apiAddressV1 = require('./API/v1/address');
 
 exports.handle = function(app)
 {
-    app.get('/', function (req, res) {res.render('index.html');});
+    app.get('/wallet', function (req, res) {
+		res.render('wallet');
+	});
+	app.get('/', function (req, res) {
+		res.render('index');
+	});
     app.get('/api/v1/search', onV1Search);
     app.get('/api/v1/getmempool', onV1Mempool);
     app.get('/api/v1/getlastblocks', onV1Blocks);
