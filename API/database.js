@@ -207,6 +207,8 @@ exports.Init = function() {
         }, function(err, params, cbError){
             if (err) throw 'unexpected init db error 1';
             
+            console.log('Init database tables');
+            
             const i = params.nIndex;
             
             g_constants.dbTables[g_constants.dbTables[i]['name']] = g_constants.dbTables[i];
