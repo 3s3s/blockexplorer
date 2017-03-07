@@ -112,7 +112,7 @@ exports.dbIndexes = [
     'fields' : 'hash, height, time'
   }
 ];
-exports.dbName = './'+exports.currentCoin+'/blockchain.db';
+exports.dbName = __dirname+"/"+exports.currentCoin+'/blockchain.db';
 
 exports.my_port = process.env.PORT || coinInfo[exports.currentCoin].httpPort;   //http port
 exports.my_portSSL = coinInfo[exports.currentCoin].httpsPort;                   //https port

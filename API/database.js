@@ -11,7 +11,7 @@ var g_db;
 exports.Init = function() {
     console.log('Init database start');
 
-    try {fs.mkdirSync(g_constants.currentCoin);} catch(e) {}
+    try {fs.mkdirSync(__dirname+"/"+g_constants.currentCoin);} catch(e) {}
     
     g_db = new sqlite3.Database(g_constants.dbName);
     
