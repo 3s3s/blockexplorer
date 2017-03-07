@@ -12,8 +12,8 @@ exports.Init = function() {
     console.log('Init database start');
 
     try {
-        console.log('try create db directory: '+ __dirname+"/"+g_constants.currentCoin);
-        fs.mkdirSync(__dirname+"/"+g_constants.currentCoin);
+        console.log('try create db directory: '+ g_constants.dbPath);
+        fs.mkdirSync(g_constants.dbPath);
     } catch(e) {
         console.log('error creating db directory: '+ e.message);
     }

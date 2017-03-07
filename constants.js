@@ -1,7 +1,7 @@
 'use strict';
 const fs = require("fs");
 
-exports.currentCoin = 'd51';
+const currentCoin = 'd51';
 
 exports.views = __dirname + '/views';
 exports.static = __dirname + '/site';
@@ -112,11 +112,12 @@ exports.dbIndexes = [
     'fields' : 'hash, height, time'
   }
 ];
-exports.dbName = __dirname+"/"+exports.currentCoin+'/blockchain.db';
+exports.dbPath = __dirname+"/"+currentCoin;
+exports.dbName = exports.dbPath+'/blockchain.db';
 
-exports.my_port = process.env.PORT || coinInfo[exports.currentCoin].httpPort;   //http port
-exports.my_portSSL = coinInfo[exports.currentCoin].httpsPort;                   //https port
-exports.rpcPort = coinInfo[exports.currentCoin].rpcPort;
+exports.my_port = process.env.PORT || coinInfo[currentCoin].httpPort;   //http port
+exports.my_portSSL = coinInfo[currentCoin].httpsPort;                   //https port
+exports.rpcPort = coinInfo[currentCoin].rpcPort;
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
