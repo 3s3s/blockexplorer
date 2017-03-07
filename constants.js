@@ -1,16 +1,43 @@
 'use strict';
+const fs = require("fs");
 
-exports.my_port = process.env.PORT || 11080; //9088; //http port
-exports.my_portSSL = 11443; //https port
+exports.currentCoin = 'd51';
 
-exports.dbName = './d51/blockchain.db';
+exports.views = __dirname + '/views';
+exports.static = __dirname + '/site';
+
+const coinInfo = {
+  d51 : {
+    httpPort  : 11080,
+    httpsPort : 11443,
+    rpcPort   : 8435
+  },
+  e51 : {
+    httpPort  : 12080,
+    httpsPort : 12443,
+    rpcPort   : 8535
+  },
+  r51 : {
+    httpPort  : 13080,
+    httpsPort : 13443,
+    rpcPort   : 8635
+  },
+  y51 : {
+    httpPort  : 14080,
+    httpsPort : 14443,
+    rpcPort   : 8735
+  },
+};
+
 exports.rpcHost = '198.54.121.57';
-exports.rpcPort = '8435';
 exports.rpcProtocol = 'http';
 exports.rpcUser = 'blablablaUser';
 exports.rpcPassword = 'blablablaPassword';
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+exports.options = {
+    key: fs.readFileSync(__dirname + "/server.key"),
+    cert: fs.readFileSync(__dirname + "/server.crt")
+};
 
 exports.dbTables = [
     {
@@ -85,3 +112,12 @@ exports.dbIndexes = [
     'fields' : 'hash, height, time'
   }
 ];
+exports.dbName = './'+exports.currentCoin+'/blockchain.db';
+
+exports.my_port = process.env.PORT || coinInfo[exports.currentCoin].httpPort;   //http port
+exports.my_portSSL = coinInfo[exports.currentCoin].httpsPort;                   //https port
+exports.rpcPort = coinInfo[exports.currentCoin].rpcPort;
+
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
+

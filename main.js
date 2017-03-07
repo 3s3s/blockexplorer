@@ -2,11 +2,6 @@
 
 const fs = require("fs");
 
-const options = {
-    key: fs.readFileSync(__dirname + "/server.key"),
-    cert: fs.readFileSync(__dirname + "/server.crt")
-};
-
 const http = require('http');
 const https = require('https');
 const periodic = require('./API/periodic');
@@ -51,21 +46,17 @@ app.use(function (req, res, next) {
     // Pass to next layer of middleware
     next();
 });
-
-// your express configuration here
+app.use(express.static(g_constants.static));
+app.set('view engine', 'ejs');
+app.set('views', g_constants.views);
 
 var httpServer = http.createServer(app);
-var httpsServer = https.createServer(options, app);
+var httpsServer = https.createServer(g_constants.options, app);
 
 httpServer.listen(g_constants.my_port);
 httpsServer.listen(g_constants.my_portSSL, function(){
     console.log("SSL Proxy listening on port "+g_constants.my_portSSL);
 });
-
-app.use(express.static('site'));
-app.set('view engine', 'ejs');
-app.set('views', __dirname + '/views');
-
 
 require('./reqHandler.js').handle(app);
 

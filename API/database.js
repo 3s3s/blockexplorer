@@ -1,6 +1,7 @@
 'use strict';
 
 var sqlite3 = require('sqlite3').verbose();
+var fs    = require('fs');
 
 const g_constants = require('../constants');
 const g_utils = require('../utils');
@@ -9,6 +10,9 @@ var g_db;
 
 exports.Init = function() {
     console.log('Init database start');
+
+    try {fs.mkdirSync(g_constants.currentCoin);} catch(e) {}
+    
     g_db = new sqlite3.Database(g_constants.dbName);
     
     //g_db.run("VACUUM");
