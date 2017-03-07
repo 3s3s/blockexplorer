@@ -11,7 +11,12 @@ var g_db;
 exports.Init = function() {
     console.log('Init database start');
 
-    try {fs.mkdirSync(__dirname+"/"+g_constants.currentCoin);} catch(e) {}
+    try {
+        console.log('try create db directory: '+ __dirname+"/"+g_constants.currentCoin);
+        fs.mkdirSync(__dirname+"/"+g_constants.currentCoin);
+    } catch(e) {
+        console.log('error creating db directory: '+ e.message);
+    }
     
     g_db = new sqlite3.Database(g_constants.dbName);
     
