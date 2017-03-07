@@ -29,7 +29,7 @@ const coinInfo = {
   },
 };
 
-exports.rpcHost = '198.54.121.57';
+exports.rpcHost = process.env.PORT ? '198.54.121.57' : '127.0.0.1';
 exports.rpcProtocol = 'http';
 exports.rpcUser = 'blablablaUser';
 exports.rpcPassword = 'blablablaPassword';
