@@ -123,10 +123,6 @@ exports.CreateTxHash = function(hash)
     return "";
     
   const ret = $('<a hash="'+hash+'" href="/transaction/'+hash+'">'+hash+'</a></td>');  
-  /*ret[0].onclick = function()
-  {
-    exports.ShowTransaction($(this).attr('hash'));
-  };*/
   return ret;
 };
 
