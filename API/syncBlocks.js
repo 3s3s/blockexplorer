@@ -47,7 +47,7 @@ exports.Sync = function()
                 } ();
                 
                 g_utils.SetSyncState(false);
-                DeleteTail(heightStart);
+                DeleteTail(heightEnd);
                 
                 console.log('start from '+heightStart);
                 g_utils.ForEachSync(aBlockNumbers, SaveBlock, function(){
@@ -74,11 +74,13 @@ exports.Sync = function()
     }*/
 };
 
-function DeleteTail(heightStart)
+function DeleteTail(heightEnd)
 {
-     g_constants.dbTables['Blocks'].delete("height > " + heightStart);
-     g_constants.dbTables['Transactions'].delete("blockHeight > " + heightStart);
-     g_constants.dbTables['Address'].delete("height > " + heightStart);
+    const heightStart = heightEnd > 10 ? heightEnd-10 : heightEnd;
+    
+    g_constants.dbTables['Blocks'].delete("height > " + heightStart);
+    g_constants.dbTables['Transactions'].delete("blockHeight > " + heightStart);
+    g_constants.dbTables['Address'].delete("height > " + heightStart);
 }
 
 function SaveBlock(aBlockNumbers, nIndex, cbError)
