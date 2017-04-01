@@ -235,3 +235,25 @@ exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
         }
     }
 };
+
+var bIsSync = false;
+exports.SetSyncState = function(bState)
+{
+    bIsSync = bState;
+}
+exports.WaitBlockSync = function(cb)
+{
+    const callback = cb;
+    
+    setTimeout(onTimeout, 1000);
+    
+    function onTimeout()
+    {
+        if (!bIsSync)
+        {
+            setTimeout(onTimeout, 1000);
+            return;
+        }
+        callback();
+    }
+}
