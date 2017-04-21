@@ -1,14 +1,14 @@
 'use strict';
 
-exports.my_port = process.env.PORT; //8088; //http port
-exports.my_portSSL = 9443; //https port
+exports.my_port = 8089; //http port
+exports.my_portSSL = 14443; //https port
 
-exports.dbName = './SmailCoinDB/blockchain.db';
-exports.rpcHost = 'smailblock.info';
-exports.rpcPort = '5553';
+exports.dbName = './NatCoinDB/blockchain.db';
+exports.rpcHost = '3s3s.ru';
+exports.rpcPort = '5563';
 exports.rpcProtocol = 'https';
-exports.rpcUser = 'blablablaUser';
-exports.rpcPassword = 'blablablaPassword';
+exports.rpcUser = 'blablaNatUser';
+exports.rpcPassword = 'blablaNatPassword';
 
 //process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
