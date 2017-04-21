@@ -6,8 +6,8 @@ exports.g_bDebug = false;
 exports.my_port = 5563;
 
 exports.options = {
-    key: fs.readFileSync(__dirname + "../server.key"),
-    cert: fs.readFileSync(__dirname + "../server.crt")
+    key: fs.readFileSync(__dirname + "/../server.key"),
+    cert: fs.readFileSync(__dirname + "/../server.crt")
 }
 
 exports.proxyHost = "localhost";
