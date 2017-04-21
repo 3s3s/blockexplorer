@@ -46,7 +46,11 @@ exports.Sync = function()
                     return ret;
                 } ();
                 
-                g_utils.SetSyncState(false);
+                if (heightEnd - heightStart > 300)
+                    g_utils.SetSyncState(true);
+                else
+                    g_utils.SetSyncState(false);
+                
                 DeleteTail(heightEnd);
                 
                 console.log('start from '+heightStart);
