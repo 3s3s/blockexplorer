@@ -32,6 +32,7 @@ exports.Sync = function()
                 if (rows.length && rows[0].height == rpcRet.data)
                 {
                     //if all synced then try again after 10 sec
+                    g_utils.SetSyncState(true);
                     setTimeout(exports.Sync, 10000);
                     return;
                 }
@@ -46,7 +47,11 @@ exports.Sync = function()
                     return ret;
                 } ();
                 
-                g_utils.SetSyncState(false);
+                if (heightEnd - heightStart > 300)
+                    g_utils.SetSyncState(true);
+                else
+                    g_utils.SetSyncState(false);
+                
                 DeleteTail(heightEnd);
                 
                 console.log('start from '+heightStart);
