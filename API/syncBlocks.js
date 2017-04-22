@@ -32,6 +32,7 @@ exports.Sync = function()
                 if (rows.length && rows[0].height == rpcRet.data)
                 {
                     //if all synced then try again after 10 sec
+                    g_utils.SetSyncState(true);
                     setTimeout(exports.Sync, 10000);
                     return;
                 }
