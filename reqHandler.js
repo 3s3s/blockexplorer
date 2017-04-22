@@ -9,7 +9,7 @@ const apiAddressV1 = require('./API/v1/address');
 
 exports.handle = function(app)
 {
-    app.get('/', function (req, res) {res.render('index.html');});
+   /* app.get('/', function (req, res) {res.render('index.html');});
     app.get('/api/v1/search', onV1Search);
     app.get('/api/v1/getmempool', onV1Mempool);
     app.get('/api/v1/getlastblocks', onV1Blocks);
@@ -20,13 +20,13 @@ exports.handle = function(app)
     app.get('/transaction/*', function (req, res) {res.sendFile(__dirname + '/site/index.html');});
     app.get('/address/*', function (req, res) {res.sendFile(__dirname + '/site/index.html');});
     app.get('/api/v1/gettransaction', onV1GetTransaction);
-    app.get('/api/v1/getaddress', onV1GetAddress);
+    app.get('/api/v1/getaddress', onV1GetAddress);*/
     
     app.get('/api/v1/address/balance/*', onV1GetAddressBalance);
     app.get('/api/v1/address/txs/*', onV1GetTransactionsByAddress);
-    app.get('/api/v1/address/unconfirmed/*', onV1GetUnconfirmedTransactionsByAddress);
+    /*app.get('/api/v1/address/unconfirmed/*', onV1GetUnconfirmedTransactionsByAddress);
     app.get('/api/v1/address/unspent/*', onV1GetUnspentTransactionsByAddress);
-    app.post('/api/v1/tx/push', onV1PushTransaction);
+    app.post('/api/v1/tx/push', onV1PushTransaction);*/
   
     function onV1Search(req, res)
     {
