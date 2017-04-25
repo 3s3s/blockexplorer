@@ -54,3 +54,39 @@ exports.PushTransaction = function(body, res)
         res.end( JSON.stringify(rpcRet) );
     });
 };
+
+exports.GetTransactionInfo = function(query, res)
+{
+    const aTXs = query.split(',');
+    
+    let retResult = [];
+    
+    g_utils.WaitBlockSync(()=>{ 
+        g_rpc.getblockcount("", function(result) {
+            if (result.status != 'success')
+            {
+                res.end( JSON.stringify({'status' : false, 'message' : 'rpc getblockcount failed'}) );
+                return;
+            }
+            
+            let ret = {lastblock : parseInt(result.data), txs : []};
+
+            g_utils.ForEachSync(aTXs, SaveTX, function(){
+                ret.txs = retResult;
+                res.end( JSON.stringify(ret) ); 
+            });
+        });
+    });
+    
+    function SaveTX(aTXs, nIndex, cbError)
+    {
+        g_utils.GetTxByHash(aTXs[nIndex], function(result) {
+            if (result.status == 'success' && result.data)
+            {
+                for (var i=0; i<result.data.length; i++)
+                    retResult.push(result.data[i]);
+            }
+            cbError(false);
+        });
+    }
+};
