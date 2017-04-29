@@ -1,7 +1,7 @@
 'use strict';
 
 exports.my_port = 9098; //8088; //http port
-exports.my_portSSL = 9443; //https port
+exports.my_portSSL = 15443; //https port
 
 exports.dbName = './PeercoinDB/blockchain.db';
 exports.rpcHost = '3s3s.ru';
