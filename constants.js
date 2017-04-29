@@ -1,16 +1,16 @@
 'use strict';
 
-exports.my_port = process.env.PORT; //8088; //http port
+exports.my_port = 9098; //8088; //http port
 exports.my_portSSL = 9443; //https port
 
-exports.dbName = './SmailCoinDB/blockchain.db';
-exports.rpcHost = 'smailblock.info';
-exports.rpcPort = '5553';
+exports.dbName = './PeercoinDB/blockchain.db';
+exports.rpcHost = '3s3s.ru';
+exports.rpcPort = '6553';
 exports.rpcProtocol = 'https';
-exports.rpcUser = 'blablablaUser';
-exports.rpcPassword = 'blablablaPassword';
+exports.rpcUser = 'kzv_rpc';
+exports.rpcPassword = 'kzv_q221';
 
-//process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 exports.dbTables = [
     {

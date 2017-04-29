@@ -45,6 +45,8 @@ exports.LeftTable = function()
 
 exports.UTC = function(unixtime)
 {
+  if (unescape(unixtime).indexOf('UTC') > 0)
+    return unescape(unixtime);
   return (new Date(unescape(unixtime)*1000)).toUTCString();
 }
 

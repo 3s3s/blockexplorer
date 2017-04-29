@@ -143,4 +143,4 @@ $(function() {
 });
 
 
-//browserify --debug ~/workspace/server_side/main.js -s htmlEvents > ~/workspace/site/js/main.js
+//browserify --debug server_side/main.js -s htmlEvents > site/js/main.js
