@@ -15,6 +15,7 @@ exports.Sync = function()
         g_rpc.getblockcount('', function(rpcRet) {
             if (rpcRet.status != 'success' || !g_constants.dbTables['Blocks'])
             {
+                console.log('syncBlocks error1 wait 10000');
                 setTimeout(exports.Sync, 10000);
                 return;
             }
@@ -25,6 +26,7 @@ exports.Sync = function()
                 if (error || !rows)
                 {
                     //if database error then try again after 10 sec
+                    console.log('syncBlocks error2 wait 10000');
                     setTimeout(exports.Sync, 10000);
                     return;
                 }
@@ -32,6 +34,7 @@ exports.Sync = function()
                 if (rows.length && rows[0].height == rpcRet.data)
                 {
                     //if all synced then try again after 10 sec
+                    console.log('all synced then try again after 10 sec');
                     g_utils.SetSyncState(true);
                     setTimeout(exports.Sync, 10000);
                     return;

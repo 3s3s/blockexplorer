@@ -49,6 +49,7 @@ exports.postString = function(host, port, path, headers, strBody, callback)
 			res_data += chunk;
 		});
 		res.on('end', function() {
+		    console.log('data: '+res_data);
 			callback({'success': 'success', 'data': res_data});
 		});	
     }); 
