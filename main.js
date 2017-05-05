@@ -74,7 +74,7 @@ require('./reqHandler.js').handle(app);
 
 require("./API/database").Init();
 
-periodic.UpdateTransactions();  
+periodic.UpdateTransactions();   
 
 setInterval(periodic.UpdateTransactions, 10000);
 

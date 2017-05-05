@@ -21,7 +21,7 @@ exports.Init = function() {
         if (err) throw err.message;
     });*/
     
-    g_db.run('PRAGMA journal_mode = OFF');
+    g_db.run('PRAGMA journal_mode = OFF'); 
     g_db.run("VACUUM");
     
     ///!!!DEBUG
