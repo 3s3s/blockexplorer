@@ -20,11 +20,14 @@ exports.Init = function(callback) {
     g_db.run("CREATE INDEX IF NOT EXISTS blk ON Blocks (hash, height, time)", function(err){
         if (err) throw err.message;
     });*/
-    g_db.run("VACUUM", (err) => {
-        g_db.run('PRAGMA journal_mode = OFF');
-        callback();
-    });
-    
+    g_db.run('PRAGMA journal_mode = OFF', (err) => {
+        if (err) throw 'DB init failed '+(err.message || 'unknown error at (PRAGMA journal_mode = OFF)')
+        g_db.run("VACUUM", (err2) => {
+            if (err2) throw 'DB init failed '+(err.message || 'unknown error at (VACUUM)')
+            callback();
+        });
+    })
+
     ///!!!DEBUG
    // g_db.run('DROP TABLE KeyValue');
    // g_db.run('DROP TABLE Address');
