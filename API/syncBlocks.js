@@ -90,6 +90,7 @@ function DeleteTail(heightEnd)
 
 function SaveBlock(aBlockNumbers, nIndex, cbError)
 {
+    console.log('SaveBlock start');
     if (!aBlockNumbers || !aBlockNumbers.length || aBlockNumbers.length <= nIndex)
     {
         cbError(true);
@@ -98,6 +99,7 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
     
     const WHERE = "height="+aBlockNumbers[nIndex];    
     g_constants.dbTables['Blocks'].selectAll("*", WHERE, "LIMIT 1", function(error, rows) {
+        console.log('SaveBlock select * return');
         if (error)
         {
             //if database error - wait 10 sec and try again
@@ -115,6 +117,7 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
             
         //if block not found in database then call rpc to get block hash
         g_rpc.getblockhash({'nBlock' : aBlockNumbers[nIndex]}, function (rpcRet) {
+            console.log('SaveBlock g_rpc.getblockhash return');
             if (rpcRet.status != 'success')
             {
                 //if rpc error then wait 10 sec and try again
@@ -124,6 +127,7 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                 
             //call rpc to get full block info
             g_rpc.getblock({'hash' : rpcRet.data}, function(rpcRet2) {
+                console.log('SaveBlock g_rpc.getblock return');
                 if (rpcRet2.status != 'success' || !rpcRet2.data.hash)
                 {
                     //if rpc error then wait 10 sec and try again
@@ -152,6 +156,7 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                         rpcRet2.data.ip || "",
                         rpcRet2.data.tx,
                         function(err) {
+                            console.log('SaveBlock insert2 return');
                             if (err) throw 'unexpected block insert error';
                             cbError(false, rpcRet2.data);
                         }
@@ -161,6 +166,7 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                 {
                     const SET = "nextblockhash='"+rpcRet2.data.nextblockhash+"'";
                     g_constants.dbTables['Blocks'].update(SET, WHERE, function(err) {
+                        console.log('SaveBlock update return');
                         if (err) throw 'unexpected block update error';
                         cbError(false, rpcRet2.data); 
                     });
