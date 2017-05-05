@@ -22,10 +22,10 @@ exports.Init = function(callback) {
     });*/
     g_db.run('PRAGMA journal_mode = OFF', (err) => {
         if (err) throw 'DB init failed '+(err.message || 'unknown error at (PRAGMA journal_mode = OFF)')
-        g_db.run("VACUUM", (err2) => {
-            if (err2) throw 'DB init failed '+(err.message || 'unknown error at (VACUUM)')
+        //g_db.run("VACUUM", (err2) => {
+        //    if (err2) throw 'DB init failed '+(err.message || 'unknown error at (VACUUM)')
             callback();
-        });
+        //});
     })
 
     ///!!!DEBUG
