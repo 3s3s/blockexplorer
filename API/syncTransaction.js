@@ -28,6 +28,7 @@ exports.SaveTxFromBlock = function(block, cbError)
 
 function SaveTX(aTXs, nTX, cbError)
 {
+    console.log('SaveTX start');
     if (!aTXs || !aTXs.length || aTXs.length <= nTX)
     {
         cbError(true);
@@ -36,6 +37,7 @@ function SaveTX(aTXs, nTX, cbError)
                     
     //find transaction in table
     g_constants.dbTables['Transactions'].selectAll("*", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error, rowTX) {
+        console.log('SaveTX select * from Transactions return');
         if (error)
         {
             //if database error - wait 10 sec and try again
@@ -53,6 +55,7 @@ function SaveTX(aTXs, nTX, cbError)
         }
         
          g_rpc.getrawtransaction({'txid' : aTXs[nTX].txid}, function (rpcRet) {
+            console.log('SaveTX g_rpc.getrawtransaction return');
             if (rpcRet.status != 'success')
             {
                 console.log('RPC ERROR getrawtransaction: txid='+aTXs[nTX].txid);
@@ -68,6 +71,7 @@ function SaveTX(aTXs, nTX, cbError)
             }
 
             g_rpc.decoderawtransaction({'tx' : rpcRet.data}, function (rpcRet2) {
+                console.log('SaveTX g_rpc.decoderawtransaction return');
                 if (rpcRet2.status != 'success')
                 {
                     //if rpc error then wait 10 sec and try again
@@ -88,6 +92,7 @@ function SaveTX(aTXs, nTX, cbError)
                     aTXs[nTX].vin,
                     aTXs[nTX].vout,
                     function(err) {
+                        console.log('SaveTX insert2 return');
                         if (err) throw 'unexpected insert error to Transactions table'
                         //g_address.SaveOutputsFromTransaction([ aTXs[nTX] ], cbError);
                         console.log('success inserted transaction txid='+aTXs[nTX].txid);

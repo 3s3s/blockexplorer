@@ -14,6 +14,7 @@ exports.SaveFromTransaction = function(aTXs, cbError)
 
 function SaveOutputs(aTXs, nIndex, cbError)
 {
+    console.log('SaveOutputs start');
    // try
   //  {
         if (!aTXs || !aTXs.length || aTXs.length <= nIndex)
@@ -60,10 +61,12 @@ function SaveOutputs(aTXs, nIndex, cbError)
 
     function SaveAddress(aInfoForSave, nIndex, callbackErr)
     {
+        console.log('SaveAddress start');
         //check - if address already present in database
         //const WHERE = "address='"+escape(aInfoForSave[nIndex].addr)+"' AND txin='"+aInfoForSave[nIndex].txin+"' AND number="+aInfoForSave[nIndex].n;
         const WHERE = "key='"+escape(aInfoForSave[nIndex].key)+"'";
         g_constants.dbTables['Address'].selectAll("number", WHERE, "LIMIT 1", function(error, rows) {
+            console.log('SaveAddress select number from Address return');
             if (error || !rows)
             {
                 //if database error then try again after 10 sec
@@ -98,6 +101,7 @@ function SaveOutputs(aTXs, nIndex, cbError)
 
 function SaveInputs(aTXs, nIndex, cbError)
 {
+    console.log('SaveInputs start');
    // try
   //  {
         if (!aTXs || !aTXs.length || aTXs.length <= nIndex)
@@ -140,6 +144,7 @@ function SaveInputs(aTXs, nIndex, cbError)
     
     function UpdateAddress(aInfoForSave, nIndex, callbackErr)
     {
+        console.log('UpdateAddress start');
         if (!aInfoForSave || aInfoForSave.length <= nIndex)
         {
             callbackErr(true);
@@ -150,6 +155,7 @@ function SaveInputs(aTXs, nIndex, cbError)
         //const WHERE = "txin='"+aInfoForSave[nIndex].txid+"' AND number="+aInfoForSave[nIndex].vout;
         const WHERE = "key='"+aInfoForSave[nIndex].txid+(aInfoForSave[nIndex].vout || "0")+"'";
         g_constants.dbTables['Address'].selectAll("*", WHERE, "LIMIT 1", function(e, r) {
+            console.log('UpdateAddress select * from Address return');
             if (e || !r)
             {
                 //if database error then try again after 10 sec

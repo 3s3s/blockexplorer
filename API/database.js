@@ -325,6 +325,7 @@ exports.EndTransaction = function(callback)
 var g_memQueries = [];
 exports.addMemQuery = function(strQuery) 
 {
+    console.log('addMemQuery '+strQuery);
     if (!strQuery || !strQuery.length) throw 'invlid SQL query';
     
     g_memQueries.push(strQuery);
