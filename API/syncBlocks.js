@@ -97,7 +97,8 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
         return;
     }
     
-    const WHERE = "height="+aBlockNumbers[nIndex];    
+    const WHERE = "height="+aBlockNumbers[nIndex]; 
+    console.log('SaveBlock start select * from Blocks where '+WHERE);
     g_constants.dbTables['Blocks'].selectAll("*", WHERE, "LIMIT 1", function(error, rows) {
         console.log('SaveBlock select * return');
         if (error)
