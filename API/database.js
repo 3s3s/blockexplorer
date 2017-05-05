@@ -7,7 +7,7 @@ const g_utils = require('../utils');
 
 var g_db;
 
-exports.Init = function() {
+exports.Init = function(callback) {
     g_db = new sqlite3.Database(g_constants.dbName);
     
     //g_db.run("VACUUM");
@@ -20,9 +20,10 @@ exports.Init = function() {
     g_db.run("CREATE INDEX IF NOT EXISTS blk ON Blocks (hash, height, time)", function(err){
         if (err) throw err.message;
     });*/
-    
-    g_db.run('PRAGMA journal_mode = OFF'); 
-    g_db.run("VACUUM");
+    g_db.run("VACUUM", (err) => {
+        g_db.run('PRAGMA journal_mode = OFF');
+        callback();
+    });
     
     ///!!!DEBUG
    // g_db.run('DROP TABLE KeyValue');

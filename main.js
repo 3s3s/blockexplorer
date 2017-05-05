@@ -72,11 +72,11 @@ require('./reqHandler.js').handle(app);
   console.log("Node NOT Exiting...");
 });*/
 
-require("./API/database").Init();
-
-periodic.UpdateTransactions();   
-
-setInterval(periodic.UpdateTransactions, 10000);
-
-periodic.StartSyncronize();
+require("./API/database").Init(() => {
+  periodic.UpdateTransactions();   
+  
+  setInterval(periodic.UpdateTransactions, 10000);
+  
+  periodic.StartSyncronize();
+});
 
