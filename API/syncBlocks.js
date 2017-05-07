@@ -98,10 +98,10 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
     }
     
     const WHERE = "height="+aBlockNumbers[nIndex]; 
-    const OFFSET = ''; //'OFFSET ' + 0;//(parseInt(aBlockNumbers[nIndex]) > 0 ? parseInt(aBlockNumbers[nIndex])-1 : 0);
-    console.log('SaveBlock start select * from Blocks where '+WHERE);
-    g_constants.dbTables['Blocks'].selectAll("*", WHERE, "LIMIT 1 "+OFFSET, function(error, rows) {
-        console.log('SaveBlock select * return '+(error && error.message ? error.message : ""));
+    //const OFFSET = ''; //'OFFSET ' + 0;//(parseInt(aBlockNumbers[nIndex]) > 0 ? parseInt(aBlockNumbers[nIndex])-1 : 0);
+    //console.log('SaveBlock start select * from Blocks where '+WHERE);
+    //g_constants.dbTables['Blocks'].selectAll("*", WHERE, "LIMIT 1 "+OFFSET, function(error, rows) {
+    /*    console.log('SaveBlock select * return '+(error && error.message ? error.message : ""));
         if (error)
         {
             //if database error - wait 10 sec and try again
@@ -115,7 +115,7 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
             console.log('block #'+aBlockNumbers[nIndex]+' alredy in db');
             cbError(false, rows[0]);
             return;
-        }
+        }*/
             
         //if block not found in database then call rpc to get block hash
         g_rpc.getblockhash({'nBlock' : aBlockNumbers[nIndex]}, function (rpcRet) {
@@ -141,9 +141,24 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                 
                 rpcRet2.data.tx = JSON.stringify(arrayTX) || "[]";
                
-                if (!rows.length)   
-                {
-                    g_constants.dbTables['Blocks'].insert2(
+                const block = {
+                        hash: rpcRet2.data.hash,
+                        size: rpcRet2.data.size,
+                        height: rpcRet2.data.height,
+                        version: rpcRet2.data.version,
+                        merkleroot: rpcRet2.data.merkleroot,
+                        time: rpcRet2.data.time,
+                        nonce: rpcRet2.data.nonce,
+                        bits: rpcRet2.data.bits,
+                        difficulty: rpcRet2.data.difficulty,
+                        previousblockhash: rpcRet2.data.previousblockhash || "",
+                        nextblockhash: rpcRet2.data.nextblockhash || "",
+                        ip: rpcRet2.data.ip || "",
+                        tx: rpcRet2.data.tx,
+                };
+                //if (!rows.length)   
+                //{
+                    g_constants.dbTables['Blocks'].insert(
                         rpcRet2.data.hash,
                         rpcRet2.data.size,
                         rpcRet2.data.height,
@@ -159,12 +174,31 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                         rpcRet2.data.tx,
                         function(err) {
                             console.log('SaveBlock insert2 return');
-                            if (err) throw 'unexpected block insert error';
+                            if (err) 
+                            {
+                                if (err.errno != 19) throw 'unexpected block insert error';
+                                if (block.nextblockhash.length)
+                                {
+                                    //if block found in database - return for process new block
+                                    console.log('block #'+rpcRet2.data.height+' alredy in db');
+                                    cbError(false, block);
+                                    return;
+                                }
+                                else
+                                {
+                                    const SET = "nextblockhash='"+rpcRet2.data.nextblockhash+"'";
+                                    g_constants.dbTables['Blocks'].update(SET, WHERE, function(err) {
+                                        console.log('SaveBlock update return');
+                                        if (err) throw 'unexpected block update error';
+                                        cbError(false, rpcRet2.data); 
+                                    });
+                                }
+                            }
                             cbError(false, rpcRet2.data);
                         }
                     );
-                }
-                else
+                //}
+                /*else
                 {
                     const SET = "nextblockhash='"+rpcRet2.data.nextblockhash+"'";
                     g_constants.dbTables['Blocks'].update(SET, WHERE, function(err) {
@@ -172,8 +206,8 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                         if (err) throw 'unexpected block update error';
                         cbError(false, rpcRet2.data); 
                     });
-                }
+                }*/
             });
         });
-    });
+    //});
 }
