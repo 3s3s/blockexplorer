@@ -98,9 +98,10 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
     }
     
     const WHERE = "height="+aBlockNumbers[nIndex]; 
+    const OFFSET = ''; //'OFFSET ' + 0;//(parseInt(aBlockNumbers[nIndex]) > 0 ? parseInt(aBlockNumbers[nIndex])-1 : 0);
     console.log('SaveBlock start select * from Blocks where '+WHERE);
-    g_constants.dbTables['Blocks'].selectAll("*", WHERE, "LIMIT 1", function(error, rows) {
-        console.log('SaveBlock select * return');
+    g_constants.dbTables['Blocks'].selectAll("*", WHERE, "LIMIT 1 "+OFFSET, function(error, rows) {
+        console.log('SaveBlock select * return '+(error && error.message ? error.message : ""));
         if (error)
         {
             //if database error - wait 10 sec and try again

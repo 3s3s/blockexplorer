@@ -347,7 +347,7 @@ exports.RunMemQueries = function(callback)
     exports.BeginTransaction(function() {
         g_memQueries.forEach(function(val, index, array){
              g_db.run(val, function(error) {
-                 if (error) throw 'RunMemQueries unexpected error for query='+val;
+                 if (error) throw 'RunMemQueries unexpected error for query='+val+' '+error.message;
              });
         });
         g_memQueries = [];

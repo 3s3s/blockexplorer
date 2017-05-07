@@ -36,8 +36,8 @@ function SaveTX(aTXs, nTX, cbError)
     }
                     
     //find transaction in table
-    g_constants.dbTables['Transactions'].selectAll("*", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error, rowTX) {
-        console.log('SaveTX select * from Transactions return');
+   // g_constants.dbTables['Transactions'].selectAll("*", "txid='"+aTXs[nTX].txid+"'", "LIMIT 1", function(error, rowTX) {
+    /*    console.log('SaveTX select * from Transactions return');
         if (error)
         {
             //if database error - wait 10 sec and try again
@@ -52,7 +52,7 @@ function SaveTX(aTXs, nTX, cbError)
             console.log('tx already in db n='+nTX+'   ('+aTXs.length+')');
             g_address.SaveFromTransaction(rowTX, cbError);
             return;
-        }
+        }*/
         
          g_rpc.getrawtransaction({'txid' : aTXs[nTX].txid}, function (rpcRet) {
             console.log('SaveTX g_rpc.getrawtransaction return');
@@ -84,7 +84,15 @@ function SaveTX(aTXs, nTX, cbError)
                 aTXs[nTX].vin = JSON.stringify(rpcRet2.data.vin) || "[]";
                 aTXs[nTX].vout = JSON.stringify(rpcRet2.data.vout) || "[]";
                 
-                g_constants.dbTables['Transactions'].insert2(
+                /*const rowTX = {
+                    blockHash: aTXs[nTX].blockHash,
+                    blockHeight: aTXs[nTX].blockHeight,
+                    txid: aTXs[nTX].txid,
+                    time: aTXs[nTX].time,
+                    vin: aTXs[nTX].vin,
+                    vout: aTXs[nTX].vout,
+                };*/
+                g_constants.dbTables['Transactions'].insert(
                     aTXs[nTX].blockHash,
                     aTXs[nTX].blockHeight,
                     aTXs[nTX].txid,
@@ -93,7 +101,14 @@ function SaveTX(aTXs, nTX, cbError)
                     aTXs[nTX].vout,
                     function(err) {
                         console.log('SaveTX insert2 return');
-                        if (err) throw 'unexpected insert error to Transactions table'
+                        if (err) //throw 'unexpected insert error to Transactions table'
+                        {
+                            if (err.errno != 19) //throw 'unexpected insert error to Transactions table'
+                            //console.log('ERROR inserting transaction message: '+err.message);
+                            console.log('tx already in db n='+nTX+'   ('+aTXs.length+')');
+                            g_address.SaveFromTransaction(aTXs[nTX], cbError);
+                            return;
+                        }
                         //g_address.SaveOutputsFromTransaction([ aTXs[nTX] ], cbError);
                         console.log('success inserted transaction txid='+aTXs[nTX].txid);
                         g_Transactions.push( aTXs[nTX] );
@@ -102,5 +117,5 @@ function SaveTX(aTXs, nTX, cbError)
                 );
             });
          });
-    });
+    //});
 }
