@@ -141,21 +141,6 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                 
                 rpcRet2.data.tx = JSON.stringify(arrayTX) || "[]";
                
-                const block = {
-                        hash: rpcRet2.data.hash,
-                        size: rpcRet2.data.size,
-                        height: rpcRet2.data.height,
-                        version: rpcRet2.data.version,
-                        merkleroot: rpcRet2.data.merkleroot,
-                        time: rpcRet2.data.time,
-                        nonce: rpcRet2.data.nonce,
-                        bits: rpcRet2.data.bits,
-                        difficulty: rpcRet2.data.difficulty,
-                        previousblockhash: rpcRet2.data.previousblockhash || "",
-                        nextblockhash: rpcRet2.data.nextblockhash || "",
-                        ip: rpcRet2.data.ip || "",
-                        tx: rpcRet2.data.tx,
-                };
                 //if (!rows.length)   
                 //{
                     g_constants.dbTables['Blocks'].insert(
@@ -177,11 +162,11 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                             if (err) 
                             {
                                 if (err.errno != 19) throw 'unexpected block insert error';
-                                if (block.nextblockhash.length)
+                                if (rpcRet2.data.nextblockhash.length)
                                 {
                                     //if block found in database - return for process new block
                                     console.log('block #'+rpcRet2.data.height+' alredy in db');
-                                    cbError(false, block);
+                                    cbError(false, rpcRet2.data);
                                     return;
                                 }
                                 else
@@ -192,6 +177,7 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
                                         if (err) throw 'unexpected block update error';
                                         cbError(false, rpcRet2.data); 
                                     });
+                                    return;
                                 }
                             }
                             cbError(false, rpcRet2.data);
