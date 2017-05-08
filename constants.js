@@ -4,9 +4,9 @@ exports.my_port = 9098; //8088; //http port
 exports.my_portSSL = 15443; //https port
 
 exports.dbName = './PeercoinDB/blockchain.db'; 
-exports.rpcHost = 'ppc.multicoins.org';
-exports.rpcPort = '6553';
-exports.rpcProtocol = 'https';
+exports.rpcHost = 'localhost';
+exports.rpcPort = '10336';
+exports.rpcProtocol = 'http';
 exports.rpcUser = 'kzv_rpc';
 exports.rpcPassword = 'kzv_q221';
 

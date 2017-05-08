@@ -14,15 +14,19 @@ function ReturnSuccess(mapAddrTo, res)
     res.end( JSON.stringify({'status' : 'success', 'data' : retArray.length == 1 ? retArray[0] : retArray}) );
 }
 
-function SaveTransaction(aAddress, nIndex, cbErr)
+function SaveTransaction(aAddress_in, nIndex_in, cbErr_in)
 {
+    let aAddress = aAddress_in;
+    const nIndex = nIndex_in;
+    const cbErr = cbErr_in;
+    
     if (!aAddress || !aAddress.length)
     {
         cbErr(true);
         return;
     }
         
-    if (nIndex > 400)
+    if (nIndex > 20)
     {
         aAddress[nIndex]['txin_info'] = [];
         aAddress[nIndex]['txout_info'] = [];
@@ -55,6 +59,7 @@ function SaveTransaction(aAddress, nIndex, cbErr)
         });
     });
 }
+
 
 exports.GetAddress = function(query, res)
 {

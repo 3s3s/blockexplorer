@@ -183,8 +183,13 @@ exports.ForEachAsync = function(array, func, cbEndAll)
     return;
 };
 
-exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
+exports.ForEachSync = function(array_in, func_in, cbEndAll_in, cbEndOne_in)
 {
+    let array = array_in;
+    const func = func_in;
+    const cbEndAll = cbEndAll_in;
+    const cbEndOne = cbEndOne_in;
+    
     if (!array || !array.length)
     {
         console.log('success: ForEachAsync (!array || !array.length)');
@@ -194,25 +199,32 @@ exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
     
     Run(0);
     
-    function Run(nIndex)
+    function Run(nIndex_in)
     {
+        const nIndex = nIndex_in;
         if (nIndex >= array.length) throw 'error: ForEachSync_Run (nIndex >= array.length)';
         func(array, nIndex, onEndOne);
         
         function onEndOne(err, params)
         {
-            /*if (nIndex+1 >= array.length) {
+            /*if (nIndex+1 >= 114 && array.length == 114) {
                 //if all processed then stop and return from 'ForEachSync'
                 //console.log('success: ForEachSync_Run_cbEndOne return all ok');
-                cbEndAll(false);
-                return;
+                //cbEndAll(false);
+                //return;
+                let i = 0;
+                i++;
             }*/
             if (!cbEndOne)
             {
-                if (nIndex+1 < array.length)
-                    Run(nIndex+1);
-                else
-                    cbEndAll(false); //if all processed then stop and return from 'ForEachSync'
+                setTimeout(()=>{
+                    if (nIndex+1 < array.length)
+                        Run(nIndex+1);
+                    else
+                        cbEndAll(false); //if all processed then stop and return from 'ForEachSync'
+                        
+                    }, 1
+                );
                 return;
             }
             
