@@ -56,6 +56,25 @@ function SaveTransaction(aAddress, nIndex, cbErr)
     });
 }
 
+exports.GenerateAddress = function(query, res)
+{
+    if (!query.count || !parseInt(query['count']))
+        query['count'] = 0;
+
+    if (!query.nonce)
+        query['nonce'] = Math.random()+" ";
+
+    let ret = [];
+    for (var i=0; i<parseInt(query['count']); i++)
+    {
+        const hash = g_utils.Hash(query['nonce'] + i);
+        const pair = g_utils.GetKeypair(hash);
+        ret.push({address : pair.getAddress(), privkey : pair.toWIF()});
+    }
+    
+    res.end( JSON.stringify({'status' : 'success', 'data' : ret}) );
+}
+
 exports.GetAddress = function(query, res)
 {
     if (!query.hash)
@@ -289,8 +308,9 @@ exports.GetUnconfirmedTransactionsByAddress = function(query, res)
     });
 };
 
-exports.GetUnspentTransactionsByAddress = function(query, res)
+exports.GetUnspentTransactionsByAddress = function(query, responce)
 {
+    const res = responce;
     const aAddr = query.split(',');
     
     var mapAddrToTransactions = {};

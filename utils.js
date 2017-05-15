@@ -5,7 +5,36 @@ const http = require('http');
 const g_constants = require("./constants");
 const g_db = require("./API/database");
 const periodic = require("./API/periodic");
+const bitcoin = require('multicoinjs-lib');
+const g_crypto = require('crypto');
+var bigi = require('bigi');
 
+exports.MakeFloat = function(str)
+{
+    const f = parseFloat(str);
+    if (isNaN(f) || Math.abs(f) < 1.e-12)
+        return 0;
+        
+    const ret = parseFloat(f.toPrecision(12));
+    if (Math.abs(ret) < 1.e-12)
+        return 0;
+    return ret;
+};
+
+exports.Hash = function(str)
+{
+    return g_crypto.createHash("sha256").update(str).digest('base64');
+};
+
+exports.GetKeypair = function(str)
+{
+    const hash = bitcoin.crypto.sha256(str);
+    const d = bigi.fromBuffer(hash);
+
+    const keyPair = new bitcoin.ECPair(d, null, {network: bitcoin.networks[g_constants.COIN]});
+
+    return keyPair;
+};
 
 exports.getJSON = function(query, callback)
 {

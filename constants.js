@@ -3,6 +3,8 @@
 exports.my_port = 8089; //http port
 exports.my_portSSL = 14443; //https port
 
+exports.COIN = 'natcoin';
+
 exports.dbName = './NatCoinDB/blockchain.db';
 exports.rpcHost = '3s3s.ru';
 exports.rpcPort = '5563';
