@@ -50,3 +50,14 @@ exports.UTC = function(unixtime)
   return (new Date(unescape(unixtime)*1000)).toUTCString();
 }
 
+exports.MakeFloat = function(str)
+{
+    const f = parseFloat(str);
+    if (isNaN(f) || Math.abs(f) < 1.e-10)
+        return 0;
+        
+    const ret = parseFloat(f.toPrecision(10));
+    if (Math.abs(ret) < 1.e-10)
+        return 0;
+    return ret;
+};

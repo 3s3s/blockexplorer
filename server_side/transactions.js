@@ -168,10 +168,22 @@ exports.ShowTransactionInfo = function(hash, vin, vout, table, cls)
       
     td3.append("<br><br>");
   }
-    
-  $(table).append(
-    $("<tr></tr>").append(td1).append("<td class='"+(cls || "active")+"'>"+td2+"</td>").append(td3)
-  );
-      
+  
+  if ($(table)[0].tagName == 'TABLE')  
+  {
+    $(table).append(
+      $("<tr></tr>").append(td1).append("<td class='"+(cls || "active")+"'>"+td2+"</td>").append(td3)
+    );
+  }
+  else
+  {
+    if ($(table)[0].tagName == 'TR') 
+    {
+      $(table).after(
+        $("<tr></tr>").append(td1).append("<td class='"+(cls || "active")+"'>"+td2+"</td>").append(td3)
+      );
+    }
+  }
+
   return totalInput;
 };

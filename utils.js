@@ -117,6 +117,45 @@ exports.GetTxByHash = function(hash, callback)
     });
 };
 
+exports.GetTxByHashFast = function(hash, callback)
+{
+    g_constants.dbTables['Transactions'].selectAll("*", "txid='"+escape(hash)+"'", "", function(error, rows) {
+        try
+        {
+            if (error || !rows)
+            {
+                callback( {'status' : false, 'message' : error} );
+                return;
+            }
+            if (rows.length != 1)
+            {
+                //callback( {'status' : false, 'message' : 'unexpected return from database'} );
+                //exports.GetTxFromMempool(hash, callback);
+                callback( {'status' : false, 'message' : error} );
+                return;
+            }
+            
+            //res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
+            var vin = JSON.parse(unescape(rows[0].vin));
+            if (vin && vin.length)
+            {
+                //exports.ForEachSync(vin, exports.SaveInput, function() {
+                    rows[0].vin = vin;
+                    callback( {'status' : 'success', 'data' : rows} );
+                //});
+            }
+            else
+            {
+                callback( {'status' : false, 'message' : 'unexpected error1'} );
+            }
+        }
+        catch(e)
+        {
+            callback( {'status' : false, 'message' : 'unexpected error2'} );
+        }
+    });
+};
+
 exports.SaveInput = function(aVIN, nIndex, callback)
 {
     if (aVIN[nIndex].coinbase || aVIN[nIndex].vout == undefined)
@@ -257,13 +296,13 @@ exports.WaitBlockSync = function(cb)
 {
     const callback = cb;
     
-    setTimeout(onTimeout, 1000);
+    setTimeout(onTimeout, 1);
     
     function onTimeout()
     {
         if (!bIsSync)
         {
-            setTimeout(onTimeout, 1000);
+            setTimeout(onTimeout, 1);
             return;
         }
         callback();

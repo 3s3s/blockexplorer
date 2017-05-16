@@ -26,15 +26,25 @@ function SaveTransaction(aAddress_in, nIndex_in, cbErr_in)
         return;
     }
         
-    if (nIndex > 20)
+    /*if (nIndex > 1000)
     {
         aAddress[nIndex]['txin_info'] = [];
         aAddress[nIndex]['txout_info'] = [];
         cbErr(false);
         return;
-    }
+    }*/
     
-    g_utils.WaitBlockSync(()=>{    
+    g_utils.WaitBlockSync(()=>{   
+        /*if (aAddress[nIndex].txin)
+        {
+            g_utils.GetTxByHashFast(aAddress[nIndex].txin, onSavedTXIN);
+            return;
+        }
+        if (aAddress[nIndex].txout)
+        {
+            g_utils.GetTxByHashFast(aAddress[nIndex].txout, onSavedTXOUT);
+            return;
+        }*/
         g_utils.GetTxByHash(aAddress[nIndex].txin, function(result) {
             if (!result.data)
             {
@@ -47,6 +57,7 @@ function SaveTransaction(aAddress_in, nIndex_in, cbErr_in)
                 cbErr(false);
                 return;
             }
+            
             g_utils.GetTxByHash(aAddress[nIndex].txout, function(result2) {
                 if (!result2.data)
                 {
@@ -58,19 +69,93 @@ function SaveTransaction(aAddress_in, nIndex_in, cbErr_in)
             });
         });
     });
+    
+    /*function onSavedTXIN(result)
+    {
+        if (!result.data)
+        {
+            cbErr(true);
+            return;
+        }
+        aAddress[nIndex]['txin_info'] = result.data;
+        if (!aAddress[nIndex].txout)
+        {
+            cbErr(false);
+            return;
+        }
+
+        if (aAddress[nIndex].txout)
+        {
+            g_utils.GetTxByHashFast(aAddress[nIndex].txout, onSavedTXOUT);
+            return;
+        }
+    }
+    
+    function onSavedTXOUT(result)
+    {
+        if (!result.data)
+        {
+            cbErr(false);
+            return;
+        }
+        aAddress[nIndex]['txout_info'] = result.data;
+        cbErr(false);
+    }*/
 }
 
-
-exports.GetAddress = function(query, res)
+function GetAddress2(query, res)
 {
     if (!query.hash)
     {
         res.end( JSON.stringify({'status' : false, 'message' : 'ERROR: bad query (nead ?hash=...)'}) );
         return;
     }
+    const responce = res;
     
     g_utils.WaitBlockSync(()=>{ 
-        g_constants.dbTables['Address'].selectAll("*", "address='"+escape(query.hash)+"'", "ORDER BY height DESC LIMIT 400", function(error, rows) {
+        g_constants.dbTables['Address'].selectAll("*", "address='"+escape(query.hash)+"'", "ORDER BY height DESC", (error, rows) => {
+            try
+            {
+                if (error || !rows)
+                {
+                    res.end( JSON.stringify({'status' : false, 'message' : error}) );
+                    return;
+                }
+                
+                res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
+            }
+            catch(e)
+            {
+                res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
+            }
+            
+        });
+    });
+}
+
+exports.GetAddress = function(query, res)
+{
+    GetAddress2(query, res);
+    return;
+    
+    if (!query.hash)
+    {
+        res.end( JSON.stringify({'status' : false, 'message' : 'ERROR: bad query (nead ?hash=...)'}) );
+        return;
+    }
+    const responce = res;
+    
+    const address = escape(query.hash);
+    g_utils.WaitBlockSync(()=>{ 
+        /*GetAddrTransactions(responce, address, 'txin', (err, rows) => {
+            if (err) return;
+            GetAddrTransactions(responce, address, 'txout', (err2, rows2) => {
+                if (err2) return;
+                const ret = rows.concat(rows2);
+                responce.end( JSON.stringify({'status' : 'success', 'data' : ret}) );
+            });
+        });*/
+        g_constants.dbTables['Address'].selectAll("*", "address='"+escape(query.hash)+"'", "ORDER BY height DESC", function(error, rows) {
             try
             {
                 if (error || !rows)
@@ -89,6 +174,31 @@ exports.GetAddress = function(query, res)
             }
         });
     });
+    
+    function GetAddrTransactions(res, address, field, callback)
+    {
+        g_constants.dbTables['Address'].selectAll("DISTINCT address, "+field, "address='"+address+"' AND "+field+"<>'0'", "ORDER BY height DESC", function(error, rows) {
+            try
+            {
+                if (error || !rows)
+                {
+                    res.end( JSON.stringify({'status' : false, 'message' : error}) );
+                    return;
+                }
+                
+                g_utils.ForEachSync(rows, SaveTransaction, function() {
+                    //res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
+                    callback(false, rows)
+                });
+            }
+            catch(e)
+            {
+                res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
+            }
+        });
+        
+    }
+    
 };
 
 exports.GetAddressBalance = function(query, res)
