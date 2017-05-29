@@ -1,11 +1,11 @@
 'use strict';
 
-exports.my_port = 9098; //8088; //http port
-exports.my_portSSL = 15443; //https port
+exports.my_port = 9099; //8088; //http port
+exports.my_portSSL = 16443; //https port
 
-exports.dbName = './PeercoinDB/blockchain.db'; 
+exports.dbName = './MarycoinDB/blockchain.db'; 
 exports.rpcHost = 'localhost';
-exports.rpcPort = '10336';
+exports.rpcPort = '33336';
 exports.rpcProtocol = 'http';
 exports.rpcUser = 'kzv_rpc';
 exports.rpcPassword = 'kzv_q221';

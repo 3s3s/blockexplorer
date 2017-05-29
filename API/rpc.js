@@ -20,7 +20,7 @@ function rpcPostJSON(strJSON, callback)
                 if (result.data.error && result.data.error.message)
                     result.message = result.data.error.message+"<br>";
                     
-                if (result.data.result)
+                if (!result.data.error && result.data.result != undefined)
                     result.data = result.data.result
                 else
                     result.success = false; 

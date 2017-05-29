@@ -37,7 +37,7 @@
                 <li><a href="/">Home</a></li>
                 <li class="active"><a href="/api.html">API</a></li>
                 <li><a href="https://multicoins.org">Wallet</a></li>
-                <li><a href="https://peercoin.net">Peercoin site</a></li>
+                <li><a href="hhttps://bitcointalk.org/index.php?topic=1929459.msg19152904#msg19152904">Marycoin site</a></li>
               </ul>
               
               <form id="main_search_form" class="navbar-form navbar-right">
@@ -59,14 +59,14 @@
 
             <div class="code">So instead of doing three separate API calls:
               <div>
-                <p><a href='api/v1/address/txs/PZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu'>https://ppc.multicoins.org/api/v1/address/txs/PZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu</a></p>
-                <p><a href='api/v1/address/txs/PUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ'>https://ppc.multicoins.org/api/v1/address/txs/PUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ</a></p>
+                <p><a href='api/v1/address/txs/MZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu'>https://mc.multicoins.org/api/v1/address/txs/MZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu</a></p>
+                <p><a href='api/v1/address/txs/MUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ'>https://mc.multicoins.org/api/v1/address/txs/MUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ</a></p>
               </div>
             </div>
 
             <div class="code">You can do just one:
               <div>
-                <p><a href='api/v1/address/txs/PZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,PUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ'>https://ppc.multicoins.org/api/v1/address/txs/PZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,PUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ</a></p>
+                <p><a href='api/v1/address/txs/MZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,MUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ'>https://mc.multicoins.org/api/v1/address/txs/MZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,MUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ</a></p>
               </div>
             </div>
 
@@ -83,11 +83,11 @@
               If there was an error decoding this transaction a 'fail' error is returned.</p>
             <div class="code">To publish a transaction make a POST (!) request with your transaction hex to the push API. 
               <div>
-                <p>https://ppc.multicoins.org/api/v1/tx/push </p>
+                <p>https://mc.multicoins.org/api/v1/tx/push </p>
               </div>
               Using curl this would be like (shell example):
               <div>
-                <p>curl -d '{"hex":"TX_HASH"}' https://ppc.multicoins.org/api/v1/tx/push </p>
+                <p>curl -d '{"hex":"TX_HASH"}' https://mc.multicoins.org/api/v1/tx/push </p>
               </div>
             </div>
           </div>
@@ -101,7 +101,7 @@
             <h3>Address balance</h3>
             <div class="code">This api call can be used to fast request only the address balance. You can add multiple addresses to api call.
               <div>
-                <p><a href='api/v1/address/balance/PZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,PUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ'>https://ppc.multicoins.org/api/v1/address/balance/PZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,PUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ </a></p>
+                <p><a href='api/v1/address/balance/MZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,MUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ'>https://mc.multicoins.org/api/v1/address/balance/MZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,MUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ </a></p>
               </div>
             </div>
 
@@ -110,7 +110,7 @@
             <div class="code">Returns transactions for given address. Only the most recent 200 transactions are shown. 
                               If you need more, contact us. You can add multiple addresses to api call.
               <div>
-                <p><a href='api/v1/address/txs/PZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,PUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ'>https://ppc.multicoins.org/api/v1/address/txs/PZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,PUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ </a></p>
+                <p><a href='api/v1/address/txs/MZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,MUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ'>https://mc.multicoins.org/api/v1/address/txs/MZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,MUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ </a></p>
               </div>
             </div>
 
@@ -118,7 +118,7 @@
             
             <div class="code">Returns unconfirmed transaction data filtered by address. Unconfirmed transactions are not a part of the blockchain and should not be trusted! 
               <div>
-                <p><a href='api/v1/address/unconfirmed/PZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,PUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ'>https://ppc.multicoins.org/api/v1/address/unconfirmed/PZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,PUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ </a></p>
+                <p><a href='api/v1/address/unconfirmed/MZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,MUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ'>https://mc.multicoins.org/api/v1/address/unconfirmed/MZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,MUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ </a></p>
               </div>
             </div>
 
@@ -127,7 +127,7 @@
             <div class="code">Returns unspent transactions for a given address. Unspent transactions are transactions that still have value. Value of these transactions hasn't been spent yet. You can add multiple addresses to api call. 
                               Be carefull when using outputs with low number of confirmations (if transaction has more then 6 confirmations then it's usually safe to include it). 
               <div>
-                <p><a href='api/v1/address/unspent/PZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,PUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ'>https://ppc.multicoins.org/api/v1/address/unspent/PZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,PUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ</a></p>
+                <p><a href='api/v1/address/unspent/MZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,MUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ'>https://mc.multicoins.org/api/v1/address/unspent/MZfZR2Fa3UxRGFfkr42mnoZi3qTQsDaJZu,MUvTPb7QBiSMh1zyjqSrxwVSyZnMgDNWgQ</a></p>
               </div>
             </div>
 
