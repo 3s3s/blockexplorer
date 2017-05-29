@@ -77,7 +77,10 @@ function InitBlocksTimer()
     $.getJSON( "/api/v1/getlastblocks?count=10", function(data) {
       if (data.status == 'success' && (data.data instanceof Array))
       {
-        g_Blocks = data.data.concat(g_Blocks).slice(0, 10);
+        if (data.data.length == 1 && data.data[0].height == 0 && g_Blocks.length)
+        {}
+        else
+          g_Blocks = data.data.concat(g_Blocks).slice(0, 10);
         
         $('#table_blocks').find("tr:gt(0)").remove();
         for (var i=0; i<g_Blocks.length; i++)
