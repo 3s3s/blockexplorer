@@ -1,10 +1,12 @@
 'use strict';
 
 const fs = require("fs");
+const cert = '/etc/letsencrypt/live/ppc.multicoins.org-0001/fullchain.pem';
+const key = '/etc/letsencrypt/live/ppc.multicoins.org-0001/privkey.pem';
 
 const options = {
-    key: fs.readFileSync(__dirname + "/server.key"),
-    cert: fs.readFileSync(__dirname + "/server.crt")
+    key: fs.readFileSync(key),
+    cert: fs.readFileSync(cert)
 };
 
 const http = require('http');

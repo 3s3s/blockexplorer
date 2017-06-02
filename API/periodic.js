@@ -13,6 +13,7 @@ exports.GetMempoolTXs = function() {return g_mempool};
 
 exports.UpdateTransactions = function()
 {
+    let tmpPool = [];
     g_rpc.getrawmempool('', function(rpcRet) {
 //        rpcRet.data = ["55cc1c283a2b27b48fa73470ab2ed7b473953c2cc4b98e7a51eebb6951333b81"];
         if (!rpcRet || rpcRet.status != 'success')
@@ -24,7 +25,9 @@ exports.UpdateTransactions = function()
             return;
         }
         
-        g_utils.ForEachSync(rpcRet.data, SaveMemPool, function(){});
+        g_utils.ForEachSync(rpcRet.data, SaveMemPool, function(){
+            g_mempool = tmpPool;
+        });
     });
     
     function SaveMemPool(aTXs, nIndex, cbError)
@@ -52,16 +55,17 @@ exports.UpdateTransactions = function()
                     return;
                 }
                 
-                for (var i=0; i<g_mempool.length; i++)
+                for (var i=0; i<tmpPool.length; i++)
                 {
-                    if (g_mempool[i].txid == txid)
+                    if (tmpPool[i].txid == txid)
                     {
                         cbError(false);
                         return;
                     }
                 }
-                g_mempool.push(rpcRet2.data);
-                g_mempool[g_mempool.length-1]['txid'] = txid;
+                tmpPool.push(rpcRet2.data);
+                tmpPool[tmpPool.length-1]['txid'] = txid;
+                cbError(false);
             });
         });
 
