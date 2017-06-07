@@ -388,7 +388,8 @@ exports.GetUnconfirmedTransactionsByAddress = function(query, res)
                                 'tx' : mempool[i].txid, 
                                 'amount' : "-" + aVin[j].vout_o.value,
                                 'n' : aVin[j].vout_o.n,
-                                'time_utc' : new Date().toISOString()
+                                'time_utc' : new Date().toISOString(),
+                                'vinTX' : aVin[j].txid || 0
                             });
                         }
                     }
