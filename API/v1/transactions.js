@@ -91,7 +91,7 @@ exports.PushTx = function(body, responce)
     g_addrAPI.GetUnspentTransactionsByAddress(addresses.toString(), {end : function(dataSTR) {
         const data = JSON.parse(dataSTR);
         setTimeout(function(){
-            if (!data || !data.status || data.status.localeCompare('success') != 0)
+            if (!data || !data.status)
             {
                 console.log("getUnspentTransaction failed data="+(data?JSON.stringify(data):"null"))
                 res.end( JSON.stringify({'status' : false, 'message' : "Сan not find unspent transaction for this addresses. Please try again later."}) );
