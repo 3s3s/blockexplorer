@@ -15,7 +15,7 @@ $('#form_getbalance').submit(function(e) {
     e.preventDefault();
     
     $.getJSON('/api/v1/address/balance/'+$('#address_getbalance').val(), (data) => {
-        if (data.status != 'success')
+        if (data.status != true)
         {
             $('#address_balance').html(data.message);
             return;
