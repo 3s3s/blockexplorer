@@ -164,9 +164,11 @@ exports.PushTx = function(body, responce)
             }
     
             exports.PushTransaction({hex : new_transaction.build().toHex()}, {end : function(dataRet) {
-                const data = dataRet;
+                const data = JSON.parse(dataRet);
                 setTimeout(function() {
-                    res.end( JSON.stringify({'status' : true, 'message' : data}));    
+                    if (data.status)
+                        data.status = true;
+                    res.end( JSON.stringify({'status' : true, 'message' : JSON.stringify(data)}));    
                 }, 1);
             }});
         }, 1);
