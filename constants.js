@@ -1,6 +1,6 @@
 'use strict';
 
-exports.my_port = 8089; //http port
+exports.my_port = 8999; //http port
 exports.my_portSSL = 14443; //https port
 
 exports.COIN = 'natcoin';
