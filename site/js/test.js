@@ -29,7 +29,7 @@ $('#form_pushtx').submit(function(e) {
     
     var dataPost = {
         fee : $('#amount_fee').val(),
-        inputs : [$('#privkey1').val(), $('#privkey2').val()],
+        inputs : [$('#privkey1').val()],
         outputs : {},
         change : $('#addr_change').val()
     };

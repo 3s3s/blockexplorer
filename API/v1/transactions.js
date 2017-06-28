@@ -166,7 +166,7 @@ exports.PushTx = function(body, responce)
             exports.PushTransaction({hex : new_transaction.build().toHex()}, {end : function(dataRet) {
                 const data = dataRet;
                 setTimeout(function() {
-                    res.end( JSON.stringify({'status' : 'success', 'message' : data}));    
+                    res.end( JSON.stringify({'status' : true, 'message' : data}));    
                 }, 1);
             }});
         }, 1);

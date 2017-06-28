@@ -11,7 +11,7 @@ function ReturnSuccess(mapAddrTo, res)
     for(var data in mapAddrTo)
         retArray.push(mapAddrTo[data]);
     
-    res.end( JSON.stringify({'status' : 'success', 'data' : retArray.length == 1 ? retArray[0] : retArray}) );
+    res.end( JSON.stringify({'status' : true, 'data' : retArray.length == 1 ? retArray[0] : retArray}) );
 }
 
 function SaveTransaction(aAddress, nIndex, cbErr)
@@ -72,7 +72,7 @@ exports.GenerateAddress = function(query, res)
         ret.push({address : pair.getAddress(), privkey : pair.toWIF()});
     }
     
-    res.end( JSON.stringify({'status' : 'success', 'data' : ret}) );
+    res.end( JSON.stringify({'status' : true, 'data' : ret}) );
 }
 
 exports.GetAddress = function(query, res)
