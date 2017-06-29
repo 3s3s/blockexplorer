@@ -36,6 +36,6 @@ $('#form_pushtx').submit(function(e) {
     dataPost.outputs[$('#addr_destination').val()] = $('#amount_send').val();
     
     $.post('/api/v1/tx/pushtx', dataPost, (data) => {
-        $('#pushtx_status').html(data.status+(data.message ? " ("+data.message + ")" : ""));
+        $('#pushtx_status').html(JSON.stringify(data));
     });
 });
