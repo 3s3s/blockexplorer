@@ -168,7 +168,7 @@ exports.PushTx = function(body, responce)
                 setTimeout(function() {
                     if (data.status)
                         data.status = true;
-                    res.end( JSON.stringify({'status' : true, 'message' : JSON.stringify(data)}));    
+                    res.end(JSON.stringify(data)); //( JSON.stringify({'status' : true, 'message' : JSON.stringify(data)}));    
                 }, 1);
             }});
         }, 1);
