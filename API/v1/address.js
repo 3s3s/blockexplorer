@@ -149,6 +149,7 @@ exports.GetAddressBalance = function(query, res)
 
 exports.GetTransactionsByAddress = function(query, res)
 {
+    const responce = res;
     const aAddr = query.split(',');
     
     var mapAddrToTransactions = {};
@@ -200,8 +201,37 @@ exports.GetTransactionsByAddress = function(query, res)
                                 mapAddrToTransactions[rows[i].address].txs.push(
                                     {'tx' : rows[i].txout, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].txout_info[0].blockHeight, 'amount' : '-'+rows[i].value});
                             }
-                        }
-                        ReturnSuccess(mapAddrToTransactions, res);
+                            
+                            if (!rows[i].txin_info)
+                                continue;
+                            
+                            var vinAddresses = [];
+                            for (var n=0; n<rows[i].txin_info.length; n++)
+                            {
+                                if (!rows[i].txin_info[n].vin)
+                                    continue;
+                                    
+                                for (var j=0; j<rows[i].txin_info[n].vin.length; j++)
+                                {
+                                    if (!rows[i].txin_info[n].vin[j].vout_o ||
+                                        !rows[i].txin_info[n].vin[j].vout_o.scriptPubKey ||
+                                        !rows[i].txin_info[n].vin[j].vout_o.scriptPubKey.addresses)
+                                        continue;
+                                        
+                                    vinAddresses = vinAddresses.concat(rows[i].txin_info[n].vin[j].vout_o.scriptPubKey.addresses);
+                                }
+                            }
+                            
+                            if (!mapAddrToTransactions[rows[i].address][rows[i].txin])
+                                mapAddrToTransactions[rows[i].address][rows[i].txin] = vinAddresses;
+                            else
+                                mapAddrToTransactions[rows[i].address][rows[i].txin] = mapAddrToTransactions[rows[i].address][rows[i].txin].concat(vinAddresses)
+                         }
+
+                        AddTXInfo(mapAddrToTransactions, (retMap) => {
+                            ReturnSuccess(retMap, responce);
+                        });
+                        
                     });
                 }
                 catch(e)
@@ -212,6 +242,18 @@ exports.GetTransactionsByAddress = function(query, res)
             });
         });
     });
+    
+    function AddTXInfo(mapAddrToTransactions, callback)
+    {
+        /*var data = [].concat(mapAddrToTransactions.data);
+        for (var i=0; i<data.length; i++)
+        {
+            g_utils.ForEachSync(data[i].txs, SaveTransactionInfo, function() {
+                
+            });
+        }*/
+        callback(mapAddrToTransactions);
+    }
 };
 
 function UpdateMempool(aMempool, nIndex, cbError)
