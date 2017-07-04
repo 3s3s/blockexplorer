@@ -147,7 +147,7 @@ exports.GetAddressBalance = function(query, res)
     });
 };
 
-exports.GetTransactionsByAddress = function(query, res)
+exports.GetTransactionsByAddress = function(query, res, queryAll)
 {
     const responce = res;
     const aAddr = query.split(',');
@@ -177,7 +177,9 @@ exports.GetTransactionsByAddress = function(query, res)
             
             const nBlockCount = parseInt(result.data);
     
-            strQueryAddr += ' AND height<10 ';
+            if (queryAll && queryAll.conf)
+                strQueryAddr += ' AND height>='+((parseInt(nBlockCount)+1)-parseInt(queryAll.conf))+' ';
+                
             g_constants.dbTables['Address'].selectAll("*", strQueryAddr, "LIMIT 400", function(error, rows) {
                 try
                 {

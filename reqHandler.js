@@ -170,7 +170,9 @@ exports.handle = function(app)
         const query = path.substr(path.lastIndexOf('/')+1);
         const addrOnly = query.substr(0, (query.indexOf('?') == -1) ? query.length : query.indexOf('?'));
         
-        apiAddressV1.GetTransactionsByAddress(addrOnly, res);
+        const queryAll = url.parse(req.url, true).query;
+        
+        apiAddressV1.GetTransactionsByAddress(addrOnly, res, queryAll);
       } 
       catch(e) {
         console.log(e.message);
