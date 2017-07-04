@@ -11,7 +11,7 @@ function ReturnSuccess(mapAddrTo, res)
     for(var data in mapAddrTo)
         retArray.push(mapAddrTo[data]);
     
-    res.end( JSON.stringify({'status' : true, 'data' : retArray.length == 1 ? retArray[0] : retArray}) );
+    res.end( JSON.stringify({'status' : true, 'data' : retArray}) );
 }
 
 function SaveTransaction(aAddress, nIndex, cbErr)
