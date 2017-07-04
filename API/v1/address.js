@@ -177,6 +177,7 @@ exports.GetTransactionsByAddress = function(query, res)
             
             const nBlockCount = parseInt(result.data);
     
+            strQueryAddr += ' AND height<10 ';
             g_constants.dbTables['Address'].selectAll("*", strQueryAddr, "LIMIT 400", function(error, rows) {
                 try
                 {
