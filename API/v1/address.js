@@ -13,6 +13,14 @@ function ReturnSuccess(mapAddrTo, res)
     
     res.end( JSON.stringify({'status' : true, 'data' : retArray}) );
 }
+function ReturnSuccess0(mapAddrTo, res)
+{
+    var retArray = [];
+    for(var data in mapAddrTo)
+        retArray.push(mapAddrTo[data]);
+    
+    res.end( JSON.stringify({'status' : true, 'data' : retArray.length == 1 ? retArray[0] : retArray}) );
+}
 
 function SaveTransaction(aAddress, nIndex, cbErr)
 {
@@ -137,7 +145,7 @@ exports.GetAddressBalance = function(query, res)
                 for (var i=0; i<rows.length; i++)
                     mapAddrToBalance[rows[i].address].balance += parseFloat(rows[i].value);
     
-                ReturnSuccess(mapAddrToBalance, res);
+                ReturnSuccess0(mapAddrToBalance, res);
             }
             catch(e) {
                 res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
