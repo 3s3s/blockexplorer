@@ -26,6 +26,7 @@ exports.handle = function(app)
     app.get('/api/v1/address/txs/*', onV1GetTransactionsByAddress);
     app.get('/api/v1/address/unconfirmed/*', onV1GetUnconfirmedTransactionsByAddress);
     app.get('/api/v1/address/unspent/*', onV1GetUnspentTransactionsByAddress);
+    app.get('/api/v1/totalsup', onV1GetTotalSupply);
     app.post('/api/v1/tx/push', onV1PushTransaction);
   
     function onV1Search(req, res)
@@ -35,6 +36,19 @@ exports.handle = function(app)
         const query = url.parse(req.url, true).query;
         
         apiSearchV1.process(query, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+    }
+    
+    function onV1GetTotalSupply(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "text/plain"});
+        const query = url.parse(req.url, true).query;
+        
+        apiBlocksV1.GetTotalSupply(query, res);
       } 
       catch(e) {
         console.log(e.message);
