@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>TEST PAGE</title>
+
+    <!-- Bootstrap core CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+  </head>
+  <body>
+      <div id='main_page' class='container-fluid'>
+          <div class='row'>
+              <div class='col-xs-6'>
+                  <h3>Генератор адресов</h3>
+                  <form class="form-horizontal" id='form_getaddress' method='post'>
+                      <div class="form-group">
+                        <div class="col-xs-offset-3 col-xs-9"><input type="text" class="form-control" id="nonce" placeholder="Любая случайная (или пустая) строка"></div>
+                      </div>
+                      <div class="form-group">
+                          <div class="col-xs-offset-3 col-xs-9" >
+                              <button type="submit" class="btn btn-default">Отправить</button>
+                          </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-xs-3 control-label" for="address">Адрес</label>
+                        <div class="col-xs-9"><span class="form-control" id="address"></span></div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-xs-3 control-label" for="key">Приватный ключ</label>
+                        <div class="col-xs-9"><span class="form-control" id="key"></span></div>
+                      </div>
+                  </form>
+              </div>
+          </div>
+          <hr>
+          <div class='row'>
+              <div class='col-xs-6'>
+                  <h3>Проверка баланса по адресу</h3>
+                  <form class="form-horizontal" id='form_getbalance' method='post'>
+                      <div class="form-group">
+                        <label class="col-xs-3 control-label" for="address_getbalance">Адрес</label>
+                        <div class="col-xs-9"><input type="text" class="form-control" id="address_getbalance" placeholder="MGvAomkBshrLkhBgJasp7UmM2Awma8nYBX"></div>
+                      </div>
+                      <div class="form-group">
+                          <div class="col-xs-offset-3 col-xs-9" >
+                              <button type="submit" class="btn btn-default">Проверить</button>
+                          </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-xs-3 control-label" for="address_balance">Баланс</label>
+                        <div class="col-xs-9"><span class="form-control" id="address_balance"></span></div>
+                      </div>
+                  </form>
+              </div>
+          </div>
+          <hr>
+          <div class='row'>
+              <div class='col-xs-6'>
+                  <h3>Отправка транзакции</h3>
+                  <form class="form-horizontal" id='form_pushtx' method='post'>
+                      <div class="form-group">
+                        <label class="col-xs-3 control-label" for="privkey1">Приватный ключ отправителя 1</label>
+                        <div class="col-xs-9"><input type="text" class="form-control" id="privkey1" placeholder="LkNHENNrY1w3s5Wbox5azqqrfZVyoUvQSXfPSsk85QkteQNj5FxS"></div>
+                      </div>
+                      <!--<div class="form-group">
+                        <label class="col-xs-3 control-label" for="privkey2">Приватный ключ отправителя 2</label>
+                        <div class="col-xs-9"><input type="text" class="form-control" id="privkey2" placeholder="ThPkyMxH61EwBExPYeqsVgEeNVDwHH4RgaoeAnaZnGodRJ5u1B8q"></div>
+                      </div>-->
+                      <div class="form-group">
+                        <label class="col-xs-3 control-label" for="amount_send">Сумма отправления</label>
+                        <div class="col-xs-9"><input type="number" step="0.0001" class="form-control" id="amount_send" placeholder="0.1" value="0.0"></div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-xs-3 control-label" for="addr_destination">Адрес получателя</label>
+                        <div class="col-xs-9"><input type="text" class="form-control" id="addr_destination" placeholder="M911BwhjLDA1FdiSugGAzYSNVUTDNVwBtC"></div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-xs-3 control-label" for="addr_change">Адрес для сдачи</label>
+                        <div class="col-xs-9"><input type="text" class="form-control" id="addr_change" placeholder="M9KcQsjV4S8VKegTLreeQbdCuJvaRUYVzz"></div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-xs-3 control-label" for="amount_fee">Комиссия майнерам</label>
+                        <div class="col-xs-9"><input type="number" step="0.0001" class="form-control" id="amount_fee" placeholder="0.001" value="0.0"></div>
+                      </div>
+                      <div class="form-group">
+                          <div class="col-xs-offset-3 col-xs-9" >
+                              <button type="submit" class="btn btn-default">Отправить</button>
+                          </div>
+                      </div>
+                      <div class="form-group">
+                        <label class="col-xs-3 control-label" for="pushtx_status">Статус</label>
+                        <div class="col-xs-9"><span class="form-control" id="pushtx_status"></span></div>
+                      </div>
+                  </form>
+              </div>
+          </div>
+          
+      </div>
+    <script src='/js/test.js'></script>
+  </body>
+</html>
