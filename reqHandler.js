@@ -218,6 +218,19 @@ exports.handle = function(app)
       }
       
     }
+    function onV1GenerateAddress(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "application/json"});
+        const query = url.parse(req.url, true).query;
+        
+        apiAddressV1.GenerateAddress(query, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+      
+    }
     
 
 };
