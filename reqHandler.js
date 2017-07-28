@@ -231,6 +231,17 @@ exports.handle = function(app)
       }
       
     }
+    function onV1PushTx(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "application/json"});
+
+        apiTransactionsV1.PushTx(req.body, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+    }
     
 
 };
