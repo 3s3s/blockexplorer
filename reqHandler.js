@@ -202,5 +202,22 @@ exports.handle = function(app)
         console.log(e.message);
       }
     }
+    
+    function onV1GetTransactionInfo(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "application/json"});
+        const path = url.parse(req.url, true).path;
+        const query = path.substr(path.lastIndexOf('/')+1);
+        const addrOnly = query.substr(0, (query.indexOf('?') == -1) ? query.length : query.indexOf('?'));
+        
+        apiTransactionsV1.GetTransactionInfo(addrOnly, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+      
+    }
+    
 
 };
