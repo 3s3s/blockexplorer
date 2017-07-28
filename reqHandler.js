@@ -9,6 +9,13 @@ const apiAddressV1 = require('./API/v1/address');
 
 exports.handle = function(app)
 {
+    app.get('/api/v1/address/balance/*', onV1GetAddressBalance);
+    app.get('/api/v1/address/txs/*', onV1GetTransactionsByAddress);
+    app.get('/api/v1/address/txinfo/*', onV1GetTransactionInfo);
+    app.get('/api/v1/address/generate', onV1GenerateAddress);
+    app.post('/api/v1/tx/pushtx', onV1PushTx);
+
+////////////////////////////////////////////////////////////////////////////////
     app.get('/', function (req, res) {res.render('index.html');});
     app.get('/api/v1/search', onV1Search);
     app.get('/api/v1/getmempool', onV1Mempool);
