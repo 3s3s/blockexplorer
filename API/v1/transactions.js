@@ -4,6 +4,8 @@ const g_rpc = require("../rpc");
 const periodic = require("../periodic");
 const g_constants = require('../../constants');
 const g_utils = require('../../utils');
+const bitcoin = require('multicoinjs-lib');
+const g_addrAPI = require('./address')
 
 
 exports.GetMempool = function(query, res)
