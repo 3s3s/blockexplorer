@@ -9,8 +9,6 @@ const apiAddressV1 = require('./API/v1/address');
 
 exports.handle = function(app)
 {
-    app.get('/api/v1/address/balance/*', onV1GetAddressBalance);
-    app.get('/api/v1/address/txs/*', onV1GetTransactionsByAddress);
     app.get('/api/v1/address/txinfo/*', onV1GetTransactionInfo);
     app.get('/api/v1/address/generate', onV1GenerateAddress);
     app.post('/api/v1/tx/pushtx', onV1PushTx);
