@@ -76,9 +76,12 @@ require('./reqHandler.js').handle(app);
 
 require("./API/database").Init(() => {
   periodic.UpdateTransactions();   
+  periodic.UpdateBlockCount();   
   
+  setInterval(periodic.UpdateBlockCount, 10000);
   setInterval(periodic.UpdateTransactions, 10000);
   
   periodic.StartSyncronize();
+
 });
 
