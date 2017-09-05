@@ -11,6 +11,14 @@ function ReturnSuccess(mapAddrTo, res)
     for(var data in mapAddrTo)
         retArray.push(mapAddrTo[data]);
     
+    res.end( JSON.stringify({'status' : true, 'data' : retArray}) );
+}
+function ReturnSuccess0(mapAddrTo, res)
+{
+    var retArray = [];
+    for(var data in mapAddrTo)
+        retArray.push(mapAddrTo[data]);
+    
     res.end( JSON.stringify({'status' : true, 'data' : retArray.length == 1 ? retArray[0] : retArray}) );
 }
 
@@ -137,7 +145,7 @@ exports.GetAddressBalance = function(query, res)
                 for (var i=0; i<rows.length; i++)
                     mapAddrToBalance[rows[i].address].balance += parseFloat(rows[i].value);
     
-                ReturnSuccess(mapAddrToBalance, res);
+                ReturnSuccess0(mapAddrToBalance, res);
             }
             catch(e) {
                 res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
@@ -147,11 +155,13 @@ exports.GetAddressBalance = function(query, res)
     });
 };
 
-exports.GetTransactionsByAddress = function(query, res)
+exports.GetTransactionsByAddress = function(query, res, queryAll)
 {
+    const responce = res;
     const aAddr = query.split(',');
     
-    var mapAddrToTransactions = {};
+    let mapAddrToTransactions = {};
+    let mapTransactionsToInfo = {};
     
     var strQueryAddr = "address='";
     for (var i=0; i<aAddr.length; i++)
@@ -176,6 +186,9 @@ exports.GetTransactionsByAddress = function(query, res)
             
             const nBlockCount = parseInt(result.data);
     
+            if (queryAll && queryAll.conf)
+                strQueryAddr += ' AND height>='+((parseInt(nBlockCount)+1)-parseInt(queryAll.conf))+' ';
+                
             g_constants.dbTables['Address'].selectAll("*", strQueryAddr, "LIMIT 400", function(error, rows) {
                 try
                 {
@@ -185,23 +198,72 @@ exports.GetTransactionsByAddress = function(query, res)
                         return;
                     }
                     
+                    for (var i=0; i<rows.length; i++)
+                    {
+                        const isoTime = (rows[i].time+'').indexOf('-') == -1 ? new Date(rows[i].time*1000).toISOString() : rows[i].time;
+                        
+                        mapTransactionsToInfo[rows[i].txin] = {tx: rows[i].txin, amount: rows[i].value, confirmations: (parseInt(nBlockCount)+1)-rows[i].height, time_utc: isoTime, sender: [], address: rows[i].address};
+                        
+                        if (rows[i].txout != '0')
+                            mapTransactionsToInfo[rows[i].txout] = {tx: rows[i].txout, amount: '-'+rows[i].value, confirmations: 0, time_utc: isoTime, sender: [], address: rows[i].address};
+                    }
+                    
                     g_utils.ForEachSync(rows, SaveTransaction, function() {
                         for (var i=0; i<rows.length; i++)
                         {
-                            const isoTime = (rows[i].time+'').indexOf('-') == -1 ? new Date(rows[i].time*1000).toISOString() : rows[i].time;
+                            //const isoTime = (rows[i].time+'').indexOf('-') == -1 ? new Date(rows[i].time*1000).toISOString() : rows[i].time;
+                            
                             mapAddrToTransactions[rows[i].address].nb_txs++;
                             mapAddrToTransactions[rows[i].address].txs.push(
-                                {'tx' : rows[i].txin, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : rows[i].value});
-                                
+                                {'tx' : rows[i].txin, 'time_utc' : mapTransactionsToInfo[rows[i].txin].time_utc, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : rows[i].value});
+                            
+                            //mapTransactionsToInfo[rows[i].txin].time_utc = mapTransactionsToInfo[rows[i].txout].time_utc = isoTime;
+                            
                             if (rows[i].txout_info && rows[i].txout_info.length && rows[i].txout == rows[i].txout_info[0].txid)
                             {
                                 const isoTime = (rows[i].txout_info[0].time+'').indexOf('-') == -1 ? new Date(rows[i].txout_info[0].time*1000).toISOString() : rows[i].txout_info[0].time;
                                 mapAddrToTransactions[rows[i].address].nb_txs++;
                                 mapAddrToTransactions[rows[i].address].txs.push(
                                     {'tx' : rows[i].txout, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].txout_info[0].blockHeight, 'amount' : '-'+rows[i].value});
+                            
+                                mapTransactionsToInfo[rows[i].txout].confirmations = (parseInt(nBlockCount)+1)-rows[i].txout_info[0].blockHeight;
                             }
-                        }
-                        ReturnSuccess(mapAddrToTransactions, res);
+                            
+                            if (!rows[i].txin_info)
+                                continue;
+                            
+                            var vinAddresses = [];
+                            for (var n=0; n<rows[i].txin_info.length; n++)
+                            {
+                                if (!rows[i].txin_info[n].vin)
+                                    continue;
+                                    
+                                for (var j=0; j<rows[i].txin_info[n].vin.length; j++)
+                                {
+                                    if (!rows[i].txin_info[n].vin[j].vout_o ||
+                                        !rows[i].txin_info[n].vin[j].vout_o.scriptPubKey ||
+                                        !rows[i].txin_info[n].vin[j].vout_o.scriptPubKey.addresses)
+                                        continue;
+                                        
+                                    vinAddresses = vinAddresses.concat(rows[i].txin_info[n].vin[j].vout_o.scriptPubKey.addresses);
+                                }
+                            }
+                            
+                            if (!mapAddrToTransactions[rows[i].address][rows[i].txin])
+                                mapAddrToTransactions[rows[i].address][rows[i].txin] = vinAddresses;
+                            else
+                                mapAddrToTransactions[rows[i].address][rows[i].txin] = mapAddrToTransactions[rows[i].address][rows[i].txin].concat(vinAddresses)
+                                
+                            mapTransactionsToInfo[rows[i].txin].sender = mapAddrToTransactions[rows[i].address][rows[i].txin];
+                         }
+
+                        /*AddTXInfo(mapAddrToTransactions, (retMap) => {
+                            ReturnSuccess(retMap, responce);
+                        });*/
+                        AddTXInfo(mapTransactionsToInfo, (retMap) => {
+                            ReturnSuccess(retMap, responce);
+                        });
+                        
                     });
                 }
                 catch(e)
@@ -212,6 +274,18 @@ exports.GetTransactionsByAddress = function(query, res)
             });
         });
     });
+    
+    function AddTXInfo(mapAddrToTransactions, callback)
+    {
+        /*var data = [].concat(mapAddrToTransactions.data);
+        for (var i=0; i<data.length; i++)
+        {
+            g_utils.ForEachSync(data[i].txs, SaveTransactionInfo, function() {
+                
+            });
+        }*/
+        callback(mapAddrToTransactions);
+    }
 };
 
 function UpdateMempool(aMempool, nIndex, cbError)
