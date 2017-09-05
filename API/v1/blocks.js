@@ -3,6 +3,20 @@
 const g_constants = require('../../constants');
 const g_utils = require('../../utils');
 
+exports.GetTotalSupply = function(query, res)
+{
+    g_utils.WaitBlockSync(()=>{ 
+        g_constants.dbTables['Blocks'].selectAll("*", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
+            if (error || !rows || ! rows.length)
+            {
+                res.end( "error" );
+                return;
+            }
+            
+            res.end( rows[0].height*50+"" );
+        });
+    });
+}
 
 exports.GetBlocks = function(query, res)
 {

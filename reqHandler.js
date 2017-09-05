@@ -13,7 +13,9 @@ exports.handle = function(app)
     app.get('/api/v1/address/txs/*', onV1GetTransactionsByAddress);
     app.get('/api/v1/address/txinfo/*', onV1GetTransactionInfo);
     app.get('/api/v1/address/generate', onV1GenerateAddress);
+    app.get('/api/v1/totalsup', onV1GetTotalSupply);
     app.post('/api/v1/tx/pushtx', onV1PushTx);
+    
 
 //////////////////////////////////////////////////////////////////////////
 /*    app.get('/', function (req, res) {res.render('index.html');});
@@ -229,5 +231,18 @@ exports.handle = function(app)
         console.log(e.message);
       }
     }
+    
+  	function onV1GetTotalSupply(req, res)
+      {
+        try {
+          res.writeHead(200, {"Content-Type": "text/plain"});
+          const query = url.parse(req.url, true).query;
+          
+          apiBlocksV1.GetTotalSupply(query, res);
+        } 
+        catch(e) {
+          console.log(e.message);
+        }
+      }
 
 };
