@@ -1,8 +1,8 @@
 'use strict';
 
 const fs = require("fs");
-const cert = '/etc/letsencrypt/live/ppc.multicoins.org-0001/fullchain.pem';
-const key = '/etc/letsencrypt/live/ppc.multicoins.org-0001/privkey.pem';
+const cert = 'fullchain2.pem';
+const key = 'privkey2.pem';
 
 const options = {
     key: fs.readFileSync(key),

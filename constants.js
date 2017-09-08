@@ -5,10 +5,10 @@ exports.my_portSSL = 16443; //https port
 
 exports.dbName = './MarycoinDB/blockchain.db'; 
 exports.rpcHost = 'localhost';
-exports.rpcPort = '33336';
+exports.rpcPort = '33346';
 exports.rpcProtocol = 'http';
-exports.rpcUser = 'kzv_rpc';
-exports.rpcPassword = 'kzv_q221';
+exports.rpcUser = 'kzv_rpc_nohtpw';
+exports.rpcPassword = 'kzv_rpc_bwohw';
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
