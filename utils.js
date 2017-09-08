@@ -5,7 +5,36 @@ const http = require('http');
 const g_constants = require("./constants");
 const g_db = require("./API/database");
 const periodic = require("./API/periodic");
+const bitcoin = require('multicoinjs-lib');
+const g_crypto = require('crypto');
+var bigi = require('bigi');
 
+exports.MakeFloat = function(str)
+{
+    const f = parseFloat(str);
+    if (isNaN(f) || Math.abs(f) < 1.e-12)
+        return 0;
+        
+    const ret = parseFloat(f.toPrecision(12));
+    if (Math.abs(ret) < 1.e-12)
+        return 0;
+    return ret;
+};
+
+exports.Hash = function(str)
+{
+    return g_crypto.createHash("sha256").update(str).digest('base64');
+};
+
+exports.GetKeypair = function(str)
+{
+    const hash = bitcoin.crypto.sha256(str);
+    const d = bigi.fromBuffer(hash);
+
+    const keyPair = new bitcoin.ECPair(d, null, {network: bitcoin.networks[g_constants.COIN]});
+
+    return keyPair;
+};
 
 exports.getJSON = function(query, callback)
 {
@@ -117,45 +146,6 @@ exports.GetTxByHash = function(hash, callback)
     });
 };
 
-exports.GetTxByHashFast = function(hash, callback)
-{
-    g_constants.dbTables['Transactions'].selectAll("*", "txid='"+escape(hash)+"'", "", function(error, rows) {
-        try
-        {
-            if (error || !rows)
-            {
-                callback( {'status' : false, 'message' : error} );
-                return;
-            }
-            if (rows.length != 1)
-            {
-                //callback( {'status' : false, 'message' : 'unexpected return from database'} );
-                //exports.GetTxFromMempool(hash, callback);
-                callback( {'status' : false, 'message' : error} );
-                return;
-            }
-            
-            //res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
-            var vin = JSON.parse(unescape(rows[0].vin));
-            if (vin && vin.length)
-            {
-                //exports.ForEachSync(vin, exports.SaveInput, function() {
-                    rows[0].vin = vin;
-                    callback( {'status' : 'success', 'data' : rows} );
-                //});
-            }
-            else
-            {
-                callback( {'status' : false, 'message' : 'unexpected error1'} );
-            }
-        }
-        catch(e)
-        {
-            callback( {'status' : false, 'message' : 'unexpected error2'} );
-        }
-    });
-};
-
 exports.SaveInput = function(aVIN, nIndex, callback)
 {
     if (aVIN[nIndex].coinbase || aVIN[nIndex].vout == undefined)
@@ -222,13 +212,8 @@ exports.ForEachAsync = function(array, func, cbEndAll)
     return;
 };
 
-exports.ForEachSync = function(array_in, func_in, cbEndAll_in, cbEndOne_in)
+exports.ForEachSync = function(array, func, cbEndAll, cbEndOne)
 {
-    let array = array_in;
-    const func = func_in;
-    const cbEndAll = cbEndAll_in;
-    const cbEndOne = cbEndOne_in;
-    
     if (!array || !array.length)
     {
         console.log('success: ForEachAsync (!array || !array.length)');
@@ -238,32 +223,25 @@ exports.ForEachSync = function(array_in, func_in, cbEndAll_in, cbEndOne_in)
     
     Run(0);
     
-    function Run(nIndex_in)
+    function Run(nIndex)
     {
-        const nIndex = nIndex_in;
         if (nIndex >= array.length) throw 'error: ForEachSync_Run (nIndex >= array.length)';
         func(array, nIndex, onEndOne);
         
         function onEndOne(err, params)
         {
-            /*if (nIndex+1 >= 114 && array.length == 114) {
+            /*if (nIndex+1 >= array.length) {
                 //if all processed then stop and return from 'ForEachSync'
                 //console.log('success: ForEachSync_Run_cbEndOne return all ok');
-                //cbEndAll(false);
-                //return;
-                let i = 0;
-                i++;
+                cbEndAll(false);
+                return;
             }*/
             if (!cbEndOne)
             {
-                setTimeout(()=>{
-                    if (nIndex+1 < array.length)
-                        Run(nIndex+1);
-                    else
-                        cbEndAll(false); //if all processed then stop and return from 'ForEachSync'
-                        
-                    }, 1
-                );
+                if (nIndex+1 < array.length)
+                    Run(nIndex+1);
+                else
+                    cbEndAll(false); //if all processed then stop and return from 'ForEachSync'
                 return;
             }
             
@@ -296,13 +274,13 @@ exports.WaitBlockSync = function(cb)
 {
     const callback = cb;
     
-    setTimeout(onTimeout, 1);
+    setTimeout(onTimeout, 1000);
     
     function onTimeout()
     {
         if (!bIsSync)
         {
-            setTimeout(onTimeout, 1);
+            setTimeout(onTimeout, 1000);
             return;
         }
         callback();

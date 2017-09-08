@@ -15,16 +15,19 @@ exports.Sync = function()
         g_rpc.getblockcount('', function(rpcRet) {
             if (rpcRet.status != 'success' || !g_constants.dbTables['Blocks'])
             {
+                console.log('BlockSynk: getblockcount error. Wait 10 sec');
                 setTimeout(exports.Sync, 10000);
                 return;
             }
             
             //rpcRet.data = g_tmp++;
             //find last synced block by height
+            console.log('BlockSynk: find last synced block by height');
             g_constants.dbTables['Blocks'].selectAll("height", "", "ORDER BY height DESC LIMIT 1", function(error, rows) {
                 if (error || !rows)
                 {
                     //if database error then try again after 10 sec
+                    console.log('BlockSynk: database error. Wait 10 sec');
                     setTimeout(exports.Sync, 10000);
                     return;
                 }
@@ -32,6 +35,7 @@ exports.Sync = function()
                 if (rows.length && rows[0].height == rpcRet.data)
                 {
                     //if all synced then try again after 10 sec
+                    console.log('BlockSynk: all synced. Wait 10 sec');
                     g_utils.SetSyncState(true);
                     setTimeout(exports.Sync, 10000);
                     return;
@@ -40,6 +44,15 @@ exports.Sync = function()
                // const heightStart = 0;// rows.length ? (rows[0].height) : 0;
                 const heightStart = (rows.length && rows[0].height > 100) ? (rows[0].height-100) : 0;
                 const heightEnd = rpcRet.data; //rpcRet.data - heightStart > 100 ? heightStart+100 : rpcRet.data;
+                
+                if ( heightEnd < heightStart)
+                {
+                    //if not ready then try again after 10 sec
+                    console.log('BlockSynk: not ready. Wait 10 sec');
+                    g_utils.SetSyncState(true);
+                    setTimeout(exports.Sync, 10000);
+                    return;
+                }
 
                 const aBlockNumbers = function() {
                     var ret = [];

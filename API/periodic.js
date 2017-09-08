@@ -9,7 +9,21 @@ const g_syncAddr = require("./syncAddr");
 const g_utils = require('../utils');
 
 var g_mempool = [];
-exports.GetMempoolTXs = function() {return g_mempool};
+exports.GetMempoolTXs = function() {return g_mempool;};
+
+var g_blockcount = 0;
+exports.GetBlockCount = function() {return g_blockcount;};
+
+exports.UpdateBlockCount = function()
+{
+    const strJSON = '{"jsonrpc": "1.0", "id":"curltest", "method": "getblockcount", "params": [] }';
+    
+    g_rpc.rpcPostJSON(strJSON, (ret) => {
+        if (ret.data >= 0)
+            g_blockcount = ret.data;
+    });
+    
+}
 
 exports.UpdateTransactions = function()
 {
@@ -75,6 +89,8 @@ exports.UpdateTransactions = function()
 
 exports.StartSyncronize = function()
 {
+    g_utils.SetSyncState(false);
+    
     g_syncBlocks.Sync();
     //g_syncTX.Sync();
     //g_syncAddr.Sync();

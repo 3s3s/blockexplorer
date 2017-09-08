@@ -1,5 +1,7 @@
 'use strict';
 
+exports.COIN = 'marycoin';
+
 exports.my_port = 9099; //8088; //http port
 exports.my_portSSL = 16443; //https port
 

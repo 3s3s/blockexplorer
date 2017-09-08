@@ -9,6 +9,11 @@ const apiAddressV1 = require('./API/v1/address');
 
 exports.handle = function(app)
 {
+    app.get('/api/v1/address/txinfo/*', onV1GetTransactionInfo);
+    app.get('/api/v1/address/generate', onV1GenerateAddress);
+    app.post('/api/v1/tx/pushtx', onV1PushTx);
+
+////////////////////////////////////////////////////////////////////////////////
     app.get('/', function (req, res) {res.render('index.html');});
     app.get('/api/v1/search', onV1Search);
     app.get('/api/v1/getmempool', onV1Mempool);
@@ -26,6 +31,7 @@ exports.handle = function(app)
     app.get('/api/v1/address/txs/*', onV1GetTransactionsByAddress);
     app.get('/api/v1/address/unconfirmed/*', onV1GetUnconfirmedTransactionsByAddress);
     app.get('/api/v1/address/unspent/*', onV1GetUnspentTransactionsByAddress);
+    app.get('/api/v1/totalsup', onV1GetTotalSupply);
     app.post('/api/v1/tx/push', onV1PushTransaction);
   
     function onV1Search(req, res)
@@ -35,6 +41,19 @@ exports.handle = function(app)
         const query = url.parse(req.url, true).query;
         
         apiSearchV1.process(query, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+    }
+    
+    function onV1GetTotalSupply(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "text/plain"});
+        const query = url.parse(req.url, true).query;
+        
+        apiBlocksV1.GetTotalSupply(query, res);
       } 
       catch(e) {
         console.log(e.message);
@@ -183,5 +202,46 @@ exports.handle = function(app)
         console.log(e.message);
       }
     }
+    
+    function onV1GetTransactionInfo(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "application/json"});
+        const path = url.parse(req.url, true).path;
+        const query = path.substr(path.lastIndexOf('/')+1);
+        const addrOnly = query.substr(0, (query.indexOf('?') == -1) ? query.length : query.indexOf('?'));
+        
+        apiTransactionsV1.GetTransactionInfo(addrOnly, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+      
+    }
+    function onV1GenerateAddress(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "application/json"});
+        const query = url.parse(req.url, true).query;
+        
+        apiAddressV1.GenerateAddress(query, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+      
+    }
+    function onV1PushTx(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "application/json"});
+
+        apiTransactionsV1.PushTx(req.body, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+    }
+    
 
 };
