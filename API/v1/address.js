@@ -240,7 +240,7 @@ exports.GetTransactionsByAddress2 = function(query, res)
             
             const nBlockCount = parseInt(result.data);
     
-            g_constants.dbTables['Address'].selectAll("*", strQueryAddr, "ORDER BY height DESC LIMIT 50", function(error, rows) {
+            g_constants.dbTables['Address'].selectAll("*", strQueryAddr, "ORDER BY height DESC LIMIT 500", function(error, rows) {
                 try
                 {
                     if (error || !rows)
