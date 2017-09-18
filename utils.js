@@ -114,36 +114,54 @@ exports.GetBlockTransactions = function(hash, callback)
 
 exports.GetTxByHash = function(hash, callback)
 {
-    g_constants.dbTables['Transactions'].selectAll("*", "txid='"+escape(hash)+"'", "", function(error, rows) {
+    const txHash = escape(hash);
+    
+    g_constants.dbTables['KeyValue'].get(txHash, (err, value) => {
         try
         {
-            if (error || !rows)
+            if (value)
             {
-                callback( {'status' : false, 'message' : error} );
+                //cached
+                callback( {'status' : 'success', 'data' : JSON.parse(value)} );
                 return;
-            }
-            if (rows.length != 1)
-            {
-                //callback( {'status' : false, 'message' : 'unexpected return from database'} );
-                exports.GetTxFromMempool(hash, callback);
-                return;
-            }
-            
-            //res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
-            var vin = JSON.parse(unescape(rows[0].vin));
-            if (vin && vin.length)
-            {
-                exports.ForEachSync(vin, exports.SaveInput, function() {
-                    rows[0].vin = vin;
-                    callback( {'status' : 'success', 'data' : rows} );
-                });
             }
         }
         catch(e)
         {
-            callback( {'status' : false, 'message' : 'unexpected error'} );
+            
         }
-    });
+        g_constants.dbTables['Transactions'].selectAll("*", "txid='"+escape(hash)+"'", "", function(error, rows) {
+            try
+            {
+                if (error || !rows)
+                {
+                    callback( {'status' : false, 'message' : error} );
+                    return;
+                }
+                if (rows.length != 1)
+                {
+                    //callback( {'status' : false, 'message' : 'unexpected return from database'} );
+                    exports.GetTxFromMempool(hash, callback);
+                    return;
+                }
+                
+                //res.end( JSON.stringify({'status' : 'success', 'data' : rows}) );
+                var vin = JSON.parse(unescape(rows[0].vin));
+                if (vin && vin.length)
+                {
+                    exports.ForEachSync(vin, exports.SaveInput, function() {
+                        rows[0].vin = vin;
+                        g_constants.dbTables['KeyValue'].set(txHash, JSON.stringify(rows));
+                        callback( {'status' : 'success', 'data' : rows} );
+                    });
+                }
+            }
+            catch(e)
+            {
+                callback( {'status' : false, 'message' : 'unexpected error'} );
+            }
+        });
+    })
 };
 
 exports.SaveInput = function(aVIN, nIndex, callback)
