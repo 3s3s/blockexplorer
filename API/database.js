@@ -202,13 +202,14 @@ exports.Init = function(callback) {
                 });
             };
             g_constants.dbTables['KeyValue']['set'] = function(key, value, callback) {
+                const c_key = key;
+                const c_value = value
                 this.get(key, function(error, rows) {
                     if (error || (!rows.length))
-                        g_constants.dbTables['KeyValue'].insert(key, value);
+                        g_constants.dbTables['KeyValue'].insert(c_key, c_value, callback);
                     if (!error && rows.length)
-                        g_constants.dbTables['KeyValue'].update("value = '"+escape(value)+"'", "key='"+escape(key)+"'");
+                        g_constants.dbTables['KeyValue'].update("value = '"+escape(c_value)+"'", "key='"+escape(c_key)+"'", callback);
                         
-                    if (callback) callback();
                 });
             };
         }, function(err, params, cbError){
