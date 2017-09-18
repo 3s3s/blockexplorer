@@ -42,7 +42,7 @@ exports.Sync = function()
                 }
                 
                // const heightStart = 0;// rows.length ? (rows[0].height) : 0;
-                const heightStart = (rows.length && rows[0].height > 100) ? (rows[0].height-100) : 0;
+                const heightStart = (rows.length && rows[0].height > 400) ? (rows[0].height-400) : 0;
                 const heightEnd = rpcRet.data; //rpcRet.data - heightStart > 100 ? heightStart+100 : rpcRet.data;
                 
                 if ( heightEnd < heightStart)

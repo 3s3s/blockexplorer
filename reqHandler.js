@@ -29,6 +29,7 @@ exports.handle = function(app)
     
     app.get('/api/v1/address/balance/*', onV1GetAddressBalance);
     app.get('/api/v1/address/txs/*', onV1GetTransactionsByAddress);
+    app.get('/api/v1/address/txs2/*', onV1GetTransactionsByAddress2);
     app.get('/api/v1/address/unconfirmed/*', onV1GetUnconfirmedTransactionsByAddress);
     app.get('/api/v1/address/unspent/*', onV1GetUnspentTransactionsByAddress);
     app.get('/api/v1/totalsup', onV1GetTotalSupply);
@@ -156,6 +157,20 @@ exports.handle = function(app)
         const addrOnly = query.substr(0, (query.indexOf('?') == -1) ? query.length : query.indexOf('?'));
         
         apiAddressV1.GetTransactionsByAddress(addrOnly, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+    }
+    function onV1GetTransactionsByAddress2(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "application/json"});
+        const path = url.parse(req.url, true).path;
+        const query = path.substr(path.lastIndexOf('/')+1);
+        const addrOnly = query.substr(0, (query.indexOf('?') == -1) ? query.length : query.indexOf('?'));
+        
+        apiAddressV1.GetTransactionsByAddress2(addrOnly, res);
       } 
       catch(e) {
         console.log(e.message);
