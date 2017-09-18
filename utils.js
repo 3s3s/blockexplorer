@@ -122,6 +122,7 @@ exports.GetTxByHash = function(hash, callback)
             if (value)
             {
                 //cached
+                console.log('set tx from cache data:' + value);
                 callback( {'status' : 'success', 'data' : JSON.parse(value)} );
                 return;
             }
