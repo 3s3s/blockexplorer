@@ -151,7 +151,7 @@ exports.GetTxByHash = function(hash, callback)
                 {
                     exports.ForEachSync(vin, exports.SaveInput, function() {
                         rows[0].vin = vin;
-                        g_constants.dbTables['KeyValue'].set(txHash, JSON.stringify(rows));
+                        g_constants.dbTables['KeyValue'].set(txHash, JSON.stringify(rows), ()=>{});
                         callback( {'status' : 'success', 'data' : rows} );
                     });
                 }
