@@ -435,7 +435,7 @@ exports.GetUnspentTransactionsByAddress = function(query, res)
     
     var mapAddrToTransactions = {};
 
-    g_utils.WaitBlockSync(()=>{     
+   // g_utils.WaitBlockSync(()=>{     
         try
         {
             var strQueryAddr = "address='";
@@ -501,7 +501,7 @@ exports.GetUnspentTransactionsByAddress = function(query, res)
         catch(e) {
             res.end( JSON.stringify({'status' : false, 'message' : 'unexpected error'}) );
         }
-    });
+   // });
 }
 
 exports.GenerateAddress = function(query, res)
