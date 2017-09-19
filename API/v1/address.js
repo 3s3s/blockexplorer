@@ -467,7 +467,7 @@ exports.GetUnspentTransactionsByAddress = function(query, res)
                 
                 const nBlockCount = parseInt(result.data);
                 
-                g_constants.dbTables['Address'].selectAll("*", "(" + strQueryAddr + ")" + " AND (txout='0' AND value<>'0')", " ORDER BY value DESC LIMIT 400", function(error, rows) {
+                g_constants.dbTables['Address'].selectAll("*", "(" + strQueryAddr + ")" + " AND (txout='0' AND value<>'0')", " ORDER BY value DESC LIMIT 10000", function(error, rows) {
                     try
                     {
                         if (error || !rows)
