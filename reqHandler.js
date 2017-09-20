@@ -28,7 +28,7 @@ exports.handle = function(app)
     app.get('/api/v1/getaddress', onV1GetAddress);
     
     app.get('/api/v1/address/balance/*', onV1GetAddressBalance);
-    app.get('/api/v1/address/txs/*', onV1GetTransactionsByAddress);
+   // app.get('/api/v1/address/txs/*', onV1GetTransactionsByAddress);
     app.get('/api/v1/address/txs2/*', onV1GetTransactionsByAddress2);
     app.get('/api/v1/address/unconfirmed/*', onV1GetUnconfirmedTransactionsByAddress);
     app.get('/api/v1/address/unspent/*', onV1GetUnspentTransactionsByAddress);
