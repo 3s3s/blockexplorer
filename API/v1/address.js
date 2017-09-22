@@ -255,7 +255,7 @@ exports.GetTransactionsByAddress2 = function(query, res)
                         const isoTimeOut = (rows[i].outtime+'').indexOf('-') == -1 ? new Date(rows[i].outtime*1000).toISOString() : rows[i].outtime;
                         mapAddrToTransactions[rows[i].address].nb_txs++;
                         mapAddrToTransactions[rows[i].address].txs.push(
-                            {'tx' : rows[i].txin, 'txout' : rows[i].txout || 0, 'time_utc' : isoTime, outtime: , 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : rows[i].value});
+                            {'tx' : rows[i].txin, 'txout' : rows[i].txout || 0, 'time_utc' : isoTime, outtime: isoTimeOut, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : rows[i].value});
                     }
                     ReturnSuccess(mapAddrToTransactions, res);
                 }
