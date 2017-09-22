@@ -97,10 +97,10 @@ exports.Init = function(callback) {
             var callbackERR = values[values.length-1];
             
             if (values.length-1 != tableObject.cols.length ) {
-                console.log('ERROR: Insert to table "'+tableObject.name+'" failed arguments count: ' + (values.length-1));
+                throw 'ERROR: Insert to table "'+tableObject.name+'" failed arguments count: ' + (values.length-1);
                 
-                callbackERR(true);
-                return;
+                //callbackERR(true);
+                //return;
             }
             
             var vals = ' (';
@@ -235,54 +235,7 @@ exports.Init = function(callback) {
             
             cbError(false);
         });
-        /*for (var i=0; i<g_constants.dbTables.length; i++)
-        {
-            CreateTable(g_constants.dbTables[i]);
-            
-            g_constants.dbTables[g_constants.dbTables[i]['name']] = g_constants.dbTables[i];
-           
-            g_constants.dbTables[i]['insert'] = function() {
-                Insert(this, arguments);};
-            g_constants.dbTables[i]['insert2'] = function() {
-                Insert2(this, arguments);};
-            
-            g_constants.dbTables[i]['update'] = function(SET, WHERE, callback) {
-                Update(this.name, SET, WHERE, callback);};
-            
-            g_constants.dbTables[i]['delete'] = function(WHERE) {
-                Delete(this.name, WHERE);};
-            
-            g_constants.dbTables[i]['selectAll'] = function(cols, where, other, callback, param) {
-                SelectAll(cols, this.name, where, other, callback, param);};
-                
-        }
         
-        for (var i=0; i<g_constants.dbIndexes.length; i++)
-            CreateIndex(g_constants.dbIndexes[i]);*/
-
-        /*g_constants.dbTables['selectAll'] = function(name, cols, where, other, callback, param) {
-                SelectAll(cols, name, where, other, callback, param);};
-                
-        g_constants.dbTables['KeyValue']['get'] = function(key, callback) {
-            SelectAll("value", this.name, "key='"+escape(key)+"'", "", function(error, rows) {
-                if (rows && rows.length && rows[0].value) 
-                    callback(error, unescape(rows[0].value));
-                else
-                    callback(error, "");
-            });
-        };
-
-        g_constants.dbTables['KeyValue']['set'] = function(key, value, callback) {
-            this.get(key, function(error, rows) {
-                if (error || (!rows.length))
-                    g_constants.dbTables['KeyValue'].insert(key, value);
-                if (!error && rows.length)
-                    g_constants.dbTables['KeyValue'].update("value = '"+escape(value)+"'", "key='"+escape(key)+"'");
-                    
-                if (callback) callback();
-            });
-        };*/
-            
     });
 };
 

@@ -91,6 +91,7 @@ function SaveOutputs(aTXs, nIndex, cbError)
                 aInfoForSave[nIndex].time,
                 aInfoForSave[nIndex].n,
                 aInfoForSave[nIndex].height,
+                "0",
                 callbackErr
             );
         });
@@ -128,7 +129,8 @@ function SaveInputs(aTXs, nIndex, cbError)
             aInfoForSave.push({
                 'txid' : aVin[i].txid,
                 'vout' : aVin[i].vout || 0,
-                'parent' : aTXs[nIndex].txid
+                'parent' : aTXs[nIndex].txid,
+                'time' : aTXs[nIndex].time || 0
             });
         }
      
@@ -176,7 +178,7 @@ function SaveInputs(aTXs, nIndex, cbError)
                 return;
                 
             }
-            const SET = "txout='"+aInfoForSave[nIndex].parent+"'";
+            const SET = "txout='"+aInfoForSave[nIndex].parent+"', outtime='"+aInfoForSave[nIndex].time+"'";
             g_constants.dbTables['Address'].update(SET, WHERE, callbackErr);
         });
     }

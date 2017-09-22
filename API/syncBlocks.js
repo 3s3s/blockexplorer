@@ -98,7 +98,7 @@ function DeleteTail(heightEnd)
     
     g_constants.dbTables['Blocks'].delete("height > " + heightStart);
     g_constants.dbTables['Transactions'].delete("blockHeight > " + heightStart);
-    g_constants.dbTables['Address'].delete("height > " + heightStart);
+    if (g_constants.dbTables['Address']) g_constants.dbTables['Address'].delete("height > " + heightStart);
 }
 
 function SaveBlock(aBlockNumbers, nIndex, cbError)
