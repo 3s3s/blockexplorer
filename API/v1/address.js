@@ -252,9 +252,10 @@ exports.GetTransactionsByAddress2 = function(query, res)
                     for (var i=0; i<rows.length; i++)
                     {
                         const isoTime = (rows[i].time+'').indexOf('-') == -1 ? new Date(rows[i].time*1000).toISOString() : rows[i].time;
+                        const isoTimeOut = (rows[i].outtime+'').indexOf('-') == -1 ? new Date(rows[i].outtime*1000).toISOString() : rows[i].outtime;
                         mapAddrToTransactions[rows[i].address].nb_txs++;
                         mapAddrToTransactions[rows[i].address].txs.push(
-                            {'tx' : rows[i].txin, 'txout' : rows[i].txout || 0, 'time_utc' : isoTime, 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : rows[i].value});
+                            {'tx' : rows[i].txin, 'txout' : rows[i].txout || 0, 'time_utc' : isoTime, outtime: , 'confirmations' : (parseInt(nBlockCount)+1)-rows[i].height, 'amount' : rows[i].value});
                     }
                     ReturnSuccess(mapAddrToTransactions, res);
                 }
