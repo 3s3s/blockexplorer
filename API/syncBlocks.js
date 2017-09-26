@@ -10,8 +10,8 @@ const g_db = require("./database");
 exports.Sync = function()
 {
     console.log('syncBlocks started');
-  //  try
- //   {
+    try
+    {
         g_rpc.getblockcount('', function(rpcRet) {
             if (rpcRet.status != 'success' || !g_constants.dbTables['Blocks'])
             {
@@ -84,12 +84,12 @@ exports.Sync = function()
                 });
             });
         });
-   /* }
+    }
     catch(e)
     {
         throw 'unexpected Block Sync error';
         setTimeout(exports.Sync, 30000);
-    }*/
+    }
 };
 
 function DeleteTail(heightEnd)
