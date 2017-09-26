@@ -144,7 +144,7 @@ exports.GetTxByHash = function(hash, callback)
     if (cahched != 0 && cahched['tx'])
     {
         //cached
-        console.log('set tx from cache data: '+ JSON.stringify(cahched.tx));
+        console.log('set tx from cache data');
         callback( {'status' : 'success', 'data' : cahched.tx} );
         return;
     }
