@@ -112,11 +112,44 @@ exports.GetBlockTransactions = function(hash, callback)
     });
 };
 
+let m_gQuickTxCache = {};
+function SetQCache(txID, tx)
+{
+    const time = Date.now();
+    m_gQuickTxCache[txID] = {tx:tx, time:time};
+    
+    let tmp = {};
+    for (var key in m_gQuickTxCache)
+    {
+        if (time - m_gQuickTxCache[key].time > 1000*3600)
+            continue;
+        
+        tmp[key] = m_gQuickTxCache[key];
+    }
+    
+    m_gQuickTxCache = tmp;
+}
+
+function GetQCache(txID)
+{
+    if (!m_gQuickTxCache[txID]) return 0;
+    return m_gQuickTxCache[txID];
+}
+
 exports.GetTxByHash = function(hash, callback)
 {
     const txHash = escape(hash);
     
-    g_constants.dbTables['KeyValue'].get(txHash, (err, value) => {
+    const cahched = GetQCache(txHash);
+    if (cahched != 0 && cahched['tx'])
+    {
+        //cached
+        console.log('set tx from cache data');
+        callback( {'status' : 'success', 'data' : cahched} );
+        return;
+    }
+    
+   /* g_constants.dbTables['KeyValue'].get(txHash, (err, value) => {
         try
         {
             if (value)
@@ -130,7 +163,7 @@ exports.GetTxByHash = function(hash, callback)
         catch(e)
         {
             
-        }
+        }*/
         g_constants.dbTables['Transactions'].selectAll("*", "txid='"+escape(hash)+"'", "", function(error, rows) {
             try
             {
@@ -152,7 +185,10 @@ exports.GetTxByHash = function(hash, callback)
                 {
                     exports.ForEachSync(vin, exports.SaveInput, function() {
                         rows[0].vin = vin;
-                        g_constants.dbTables['KeyValue'].set(txHash, JSON.stringify(rows), ()=>{});
+                        
+                        //g_constants.dbTables['KeyValue'].set(txHash, JSON.stringify(rows), ()=>{});
+                        SetQCache(txHash, rows);
+                        
                         callback( {'status' : 'success', 'data' : rows} );
                     });
                 }
@@ -162,7 +198,7 @@ exports.GetTxByHash = function(hash, callback)
                 callback( {'status' : false, 'message' : 'unexpected error'} );
             }
         });
-    })
+   // })
 };
 
 exports.SaveInput = function(aVIN, nIndex, callback)
