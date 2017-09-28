@@ -72,6 +72,13 @@ require('./reqHandler.js').handle(app);
 process.on('uncaughtException', function (err) {
   console.error(err.stack);
   console.log("Node NOT Exiting...");
+  
+  const g_syncBlocks = require("./syncBlocks");
+  
+  clearTimeout(g_syncBlocks.blockTimerID);
+  g_syncBlocks.blockTimerID = setTimeout(g_syncBlocks.Sync, 10000);
+  
+  console.log('Updated SyncBlock timer');
 });
 
 require("./API/database").Init(() => {

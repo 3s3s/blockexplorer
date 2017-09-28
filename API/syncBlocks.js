@@ -6,6 +6,7 @@ const g_utils = require('../utils');
 const g_transactions = require("./syncTransaction");
 const g_db = require("./database");
 
+exports.blockTimerID = 0;
 //var g_tmp = 16361;
 exports.Sync = function()
 {
@@ -16,7 +17,7 @@ exports.Sync = function()
             if (rpcRet.status != 'success' || !g_constants.dbTables['Blocks'])
             {
                 console.log('BlockSynk: getblockcount error. Wait 10 sec');
-                setTimeout(exports.Sync, 10000);
+                exports.blockTimerID = setTimeout(exports.Sync, 10000);
                 return;
             }
             
@@ -28,7 +29,7 @@ exports.Sync = function()
                 {
                     //if database error then try again after 10 sec
                     console.log('BlockSynk: database error. Wait 10 sec');
-                    setTimeout(exports.Sync, 10000);
+                    exports.blockTimerID = setTimeout(exports.Sync, 10000);
                     return;
                 }
                 
@@ -37,7 +38,7 @@ exports.Sync = function()
                     //if all synced then try again after 10 sec
                     console.log('BlockSynk: all synced. Wait 10 sec');
                     g_utils.SetSyncState(true);
-                    setTimeout(exports.Sync, 10000);
+                    exports.blockTimerID = setTimeout(exports.Sync, 10000);
                     return;
                 }
                 
@@ -50,7 +51,7 @@ exports.Sync = function()
                     //if not ready then try again after 10 sec
                     console.log('BlockSynk: not ready. Wait 10 sec');
                     g_utils.SetSyncState(true);
-                    setTimeout(exports.Sync, 10000);
+                    exports.blockTimerID = setTimeout(exports.Sync, 10000);
                     return;
                 }
 
@@ -72,7 +73,7 @@ exports.Sync = function()
                     //when all synced (or have error) then try again after 10 sec
 //                    throw 'Block sync error 1';
                     g_utils.SetSyncState(true);
-                    setTimeout(exports.Sync, 10000);
+                    exports.blockTimerID = setTimeout(exports.Sync, 10000);
                 }, function(err, params, cbError){
                     //when one function return
                     if (err)  throw 'Block sync error 2';
@@ -88,7 +89,7 @@ exports.Sync = function()
     catch(e)
     {
         throw 'unexpected Block Sync error';
-        setTimeout(exports.Sync, 30000);
+        exports.blockTimerID = setTimeout(exports.Sync, 30000);
     }
 };
 
