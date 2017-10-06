@@ -225,6 +225,26 @@ exports.SaveInput = function(aVIN, nIndex, callback)
     });
 }
 
+exports.IsInMempoolInputs = function(tx)
+{
+    const mempool = periodic.GetMempoolTXs();
+    if (!mempool)
+        return false;
+        
+    for (var i=0; i<mempool.length; i++)
+    {
+        /*if (mempool[i].txid == '0439c1b39af59e5f5ddd2dd55a7a7b9fb082c77d57f214ed776e602a20e3fa5b')
+        {
+            var a = 1;
+        }*/
+        for (var j=0; j<mempool[i].vin.length; j++)
+        {
+            if (mempool[i].vin[j].txid && mempool[i].vin[j].txid == tx)
+                return true;
+        }
+    }
+}
+
 exports.GetTxFromMempool = function(hash, callback)
 {
     const mempool = periodic.GetMempoolTXs();

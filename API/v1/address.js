@@ -482,6 +482,9 @@ exports.GetUnspentTransactionsByAddress = function(query, res)
                             if (rows[i].txin == undefined) 
                                 continue;
                                 
+                            if (g_utils.IsInMempoolInputs(rows[i].txin))
+                                continue;
+                                
                             mapAddrToTransactions[rows[i].address].unspent.push({
                                 'tx' : rows[i].txin, 
                                 'amount' : rows[i].value,
