@@ -9,7 +9,7 @@ const options = {
     cert: fs.readFileSync(cert)
 };
 
-const http = require('http');
+//const http = require('http');
 const https = require('https');
 const periodic = require('./API/periodic');
 
@@ -56,10 +56,17 @@ app.use(function (req, res, next) {
 
 // your express configuration here
 
-var httpServer = http.createServer(app);
+// Redirect from http port 80 to https
+var http = require('http');
+http.createServer(function (req, res) {
+    res.writeHead(301, { "Location": "https://" + req.headers['host'] + req.url });
+    res.end();
+}).listen(g_constants.my_port);
+
+//var httpServer = http.createServer(app);
 var httpsServer = https.createServer(options, app);
 
-httpServer.listen(g_constants.my_port);
+//httpServer.listen(g_constants.my_port);
 httpsServer.listen(g_constants.my_portSSL, function(){
     console.log("SSL Proxy listening on port "+g_constants.my_portSSL);
 });
