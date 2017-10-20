@@ -173,6 +173,7 @@ function ShowCharts()
         
         rows.push([new Date(data.data[i][0]), Math.round(avg)]);
       }
+      rows.push([new Date(data.data[data.data.length-1][0]), Math.round(data.data[data.data.length-1][1])]);
       dataChart.addRows(rows);
       
       var options = {

@@ -19,6 +19,7 @@ exports.GetDiff = function(query, res)
         {
             ret.push([rows[i].time*1000, Math.round(rows[i].difficulty)]);
         }
+        ret.push([rows[rows.length-1].time*1000, Math.round(rows[rows.length-1].difficulty)]);
             
         res.end(  JSON.stringify({'status' : true, 'data' : ret})  );
     });
