@@ -172,7 +172,8 @@ function ShowCharts()
           title: 'Difficulty',
           height: 300,
           curveType: 'function',
-          legend: {position: 'none'}
+          legend: {position: 'none'},
+          vAxis: {viewWindowMode: "explicit", viewWindow:{ min: 0 }}
       };
       
       var chart = new google.visualization.LineChart(document.getElementById('diff_chart'));
