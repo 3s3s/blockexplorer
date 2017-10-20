@@ -162,7 +162,7 @@ function ShowCharts()
       dataChart.addColumn('number', 'Difficulty');  
       
       var rows = [];
-      for (var i=0; i<data.data.length; i++)
+      for (var i=0; i<data.data.length; i += 10)
       {
         rows.push([new Date(data.data[i][0]), data.data[i][1]]);
       }
