@@ -80,7 +80,7 @@ process.on('uncaughtException', function (err) {
   console.error(err.stack);
   console.log("Node NOT Exiting...");
   
-  const g_syncBlocks = require("./syncBlocks");
+  const g_syncBlocks = require("./API/syncBlocks");
   
   clearTimeout(g_syncBlocks.blockTimerID);
   g_syncBlocks.blockTimerID = setTimeout(g_syncBlocks.Sync, 10000);

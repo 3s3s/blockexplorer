@@ -6,6 +6,7 @@ const apiSearchV1 = require('./API/v1/search');
 const apiTransactionsV1 = require('./API/v1/transactions');
 const apiBlocksV1 = require('./API/v1/blocks');
 const apiAddressV1 = require('./API/v1/address');
+const apiHistoryV1 = require("./API/v1/history");
 
 exports.handle = function(app)
 {
@@ -34,6 +35,8 @@ exports.handle = function(app)
     app.get('/api/v1/address/unspent/*', onV1GetUnspentTransactionsByAddress);
     app.get('/api/v1/totalsup', onV1GetTotalSupply);
     app.post('/api/v1/tx/push', onV1PushTransaction);
+    
+    app.get('/api/v1/history/getdiff', onV1HistoryGetDiff);
   
     function onV1Search(req, res)
     {
@@ -59,6 +62,20 @@ exports.handle = function(app)
       catch(e) {
         console.log(e.message);
       }
+    }
+    
+    function onV1HistoryGetDiff(req, res)
+    {
+      try {
+        res.writeHead(200, {"Content-Type": "application/json"});
+        const query = url.parse(req.url, true).query;
+        
+        apiHistoryV1.GetDiff(query, res);
+      } 
+      catch(e) {
+        console.log(e.message);
+      }
+      
     }
     
     function onV1Mempool(req, res)

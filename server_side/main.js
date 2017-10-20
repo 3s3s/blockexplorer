@@ -113,6 +113,7 @@ $(function() {
     g_utils.HideAll();
     
     InitSearch();
+    ShowCharts();
 
     const nBlock = window.location.href.indexOf('/block/');
     const nTX = window.location.href.indexOf('/transaction/');
@@ -144,6 +145,41 @@ $(function() {
     InitBlocksTimer();
     
 });
+
+function ShowCharts()
+{
+  google.charts.load('current', {'packages':['corechart']});
+  google.charts.setOnLoadCallback(drawCharts);
+
+  function drawCharts()
+  {
+    $.getJSON( "/api/v1/history/getdiff", function(data) {
+      if (data.status == false)
+        return;
+
+      var dataChart = new google.visualization.DataTable();
+      dataChart.addColumn('date', '');
+      dataChart.addColumn('number', 'Difficulty');  
+      
+      var rows = [];
+      for (var i=0; i<data.data.length; i++)
+      {
+        rows.push([new Date(data.data[i][0]), data.data[i][1]]);
+      }
+      dataChart.addRows(rows);
+      
+      var options = {
+          title: 'Difficulty',
+          height: 300,
+          curveType: 'function',
+          legend: {position: 'none'}
+      };
+      
+      var chart = new google.visualization.LineChart(document.getElementById('diff_chart'));
+      chart.draw(dataChart, options);
+    });
+  }
+}
 
 
 //browserify --debug server_side/main.js -s htmlEvents > site/js/main.js
