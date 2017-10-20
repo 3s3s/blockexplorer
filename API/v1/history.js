@@ -15,10 +15,9 @@ exports.GetDiff = function(query, res)
         const divider = rows.length < 1001 ? 1 : Math.round(rows.length / 1000);
         
         let ret = [];
-        for (var i=0; i<rows.length; i++)
+        for (var i=0; i<rows.length; i+=divider)
         {
             ret.push([rows[i].time*1000, Math.round(rows[i].difficulty)]);
-            i += divider;
         }
             
         res.end(  JSON.stringify({'status' : true, 'data' : ret})  );

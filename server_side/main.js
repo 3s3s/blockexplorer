@@ -164,7 +164,14 @@ function ShowCharts()
       var rows = [];
       for (var i=0; i<data.data.length; i += 10)
       {
-        rows.push([new Date(data.data[i][0]), data.data[i][1]]);
+        const subarray = data.data.slice(i, i+10 < data.data.length ? i+10 : data.data.length-1);
+        var sum = 0;
+        for( var  j= 0; j < subarray.length; j++ ){
+            sum += parseInt( subarray[j][1], 10 ); //don't forget to add the base
+        }
+        var avg = sum / subarray.length;
+        
+        rows.push([new Date(data.data[i][0]), Math.round(avg)]);
       }
       dataChart.addRows(rows);
       
