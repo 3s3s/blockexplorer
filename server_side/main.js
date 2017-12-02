@@ -171,6 +171,8 @@ function ShowCharts()
         }
         var avg = sum / subarray.length;
         
+        if (data.data[i][0] < 1511778656) 
+          continue;
         rows.push([new Date(data.data[i][0]), Math.round(avg)]);
       }
       rows.push([new Date(data.data[data.data.length-1][0]), Math.round(data.data[data.data.length-1][1])]);
