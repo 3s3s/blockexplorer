@@ -111,26 +111,14 @@ function SaveBlock(aBlockNumbers, nIndex, cbError)
         return;
     }
     
+    /*if (nIndex > 0)
+    {
+        cbError(true);
+        return;
+    }*/
+    
     const WHERE = "height="+aBlockNumbers[nIndex]; 
-    //const OFFSET = ''; //'OFFSET ' + 0;//(parseInt(aBlockNumbers[nIndex]) > 0 ? parseInt(aBlockNumbers[nIndex])-1 : 0);
-    //console.log('SaveBlock start select * from Blocks where '+WHERE);
-    //g_constants.dbTables['Blocks'].selectAll("*", WHERE, "LIMIT 1 "+OFFSET, function(error, rows) {
-    /*    console.log('SaveBlock select * return '+(error && error.message ? error.message : ""));
-        if (error)
-        {
-            //if database error - wait 10 sec and try again
-            cbError(true);
-            return;
-        }
-            
-        if (rows.length && rows[0].nextblockhash.length)
-        {
-            //if block found in database - return for process new block
-            console.log('block #'+aBlockNumbers[nIndex]+' alredy in db');
-            cbError(false, rows[0]);
-            return;
-        }*/
-            
+
         //if block not found in database then call rpc to get block hash
         g_rpc.getblockhash({'nBlock' : aBlockNumbers[nIndex]}, function (rpcRet) {
             console.log('SaveBlock g_rpc.getblockhash return');

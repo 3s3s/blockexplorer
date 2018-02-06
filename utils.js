@@ -82,6 +82,21 @@ exports.postString = function(host, port, path, headers, strBody, callback)
 		});	
     }); 
     
+    /*req.on('socket', function (socket) {
+        socket.setTimeout(10000);  
+        socket.on('timeout', function() {
+            req.abort();
+        });
+    });*/
+    
+    req.on('error', function(err) {
+        if (err.code === "ECONNRESET") {
+            console.log("Timeout occurs");
+            //specific error treatment
+        }
+        //other error treatment
+    });
+
     req.on('error', function(e) { 
         console.log('problem with request: ' + e.message); 
         callback({'success': false, message: 'problem with request: ' + e.message});
